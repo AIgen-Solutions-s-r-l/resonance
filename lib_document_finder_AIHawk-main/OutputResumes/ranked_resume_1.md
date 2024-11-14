@@ -1,0 +1,137 @@
+### Curriculum Vitae
+# Resume
+
+## Personal Information
+- **Name:** Alex
+- **Surname:** Johnson
+- **Date of Birth:** March 15, 1990
+- **Country:** Canada
+- **City:** Toronto
+- **Address:** 123 Maple St, Apt 4B
+- **Phone Prefix:** +1
+- **Phone:** 416-555-1234
+- **Email:** alex.johnson@example.com
+- **GitHub:** [github.com/alexjohnson](https://github.com/alexjohnson)
+- **LinkedIn:** [linkedin.com/in/alexjohnson](https://linkedin.com/in/alexjohnson)
+
+## Education Details
+- **Education Level:** Master's Degree
+- **Institution:** University of Toronto
+- **Field of Study:** Computer Science
+- **Final Evaluation Grade:** A
+- **Start Date:** September 2012
+- **Year of Completion:** June 2014
+- **Exam:**
+  - **Algorithms:** A+
+  - **Data Structures:** A
+  - **Operating Systems:** A-
+  - **Machine Learning:** A
+  - **Database Systems:** A+
+  - **Software Engineering:** A
+
+## Experience Details
+- **Position:** Software Engineer
+- **Company:** Tech Innovations Inc.
+- **Employment Period:** July 2014 - Present
+- **Location:** Toronto, Canada
+- **Industry:** Information Technology
+- **Key Responsibilities:**
+  - Develop and maintain software applications.
+  - Collaborate with cross-functional teams.
+  - Perform code reviews and provide mentorship.
+  - Implement new features based on client feedback.
+  - Conduct tests and debug software issues.
+- **Skills Acquired:**
+  - Java
+  - Python
+  - JavaScript
+  - Agile Methodologies
+  - Version Control (Git)
+  - Cloud Computing (AWS)
+  - Database Management (SQL)
+  - Problem Solving
+  - Team Collaboration
+  - Communication Skills
+
+## Projects
+- **Name:** E-Commerce Platform
+  - **Description:** Developed a full-stack e-commerce application using React and Node.js.
+  - **Link:** [ecommerce-example.com](https://ecommerce-example.com)
+- **Name:** Mobile Fitness App
+  - **Description:** Created a fitness tracking app for iOS that integrates with wearables.
+  - **Link:** [fitness-app.com](https://fitness-app.com)
+
+## Achievements
+- **Name:** Best Software Engineer Award
+  - **Description:** Received for outstanding contributions to project development and team performance.
+- **Name:** Hackathon Winner
+  - **Description:** Won first place in a national hackathon for developing an innovative health tech solution.
+- **Name:** Community Speaker
+  - **Description:** Invited to speak at multiple tech conferences about software development best practices.
+
+## Certifications
+- **Name:** AWS Certified Solutions Architect
+  - **Description:** Validated expertise in designing distributed systems on AWS.
+
+## Languages
+- **Language:** English
+  - **Proficiency:** Native
+- **Language:** French
+  - **Proficiency:** Conversational
+- **Language:** Spanish
+  - **Proficiency:** Basic
+
+## Interests
+- Programming
+- Hiking
+- Video Games
+- Blogging
+- Traveling
+- Cooking
+- Photography
+
+## Availability
+- **Notice Period:** 2 weeks
+
+## Salary Expectations
+- **Salary Range (USD):** $80,000 - $100,000
+
+## Self Identification
+- **Gender:** Male
+- **Pronouns:** He/Him
+- **Veteran:** No
+- **Disability:** No
+- **Ethnicity:** Caucasian
+
+## Legal Authorization
+- **EU Work Authorization:** No
+- **US Work Authorization:** Yes
+- **Requires US Visa:** No
+- **Requires US Sponsorship:** No
+- **Requires EU Visa:** No
+- **Legally Allowed to Work in EU:** No
+- **Legally Allowed to Work in US:** Yes
+- **Requires EU Sponsorship:** No
+- **Canada Work Authorization:** Yes
+- **Requires Canada Visa:** No
+- **Legally Allowed to Work in Canada:** Yes
+- **Requires Canada Sponsorship:** No
+- **UK Work Authorization:** No
+- **Requires UK Visa:** No
+- **Legally Allowed to Work in UK:** No
+- **Requires UK Sponsorship:** No
+
+## Work Preferences
+- **Remote Work:** Yes
+- **In-Person Work:** Yes
+- **Open to Relocation:** Yes
+- **Willing to Complete Assessments:** Yes
+- **Willing to Undergo Drug Tests:** Yes
+- **Willing to Undergo Background Checks:** Yes
+--------------------------------------------------
+### Punteggio di Similarità e Metriche
+Cosine Similarity: 0.7680
+Keyword Match Percentage: 38.46%
+Keyword Density: 1.78%
+Sentiment Score: 0.1050
+Readability Score: 15.71

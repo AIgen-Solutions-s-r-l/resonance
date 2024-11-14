@@ -1,0 +1,140 @@
+### Curriculum Vitae
+# Resume
+
+## Personal Information
+**Name:** John  
+**Surname:** Doe  
+**Date of Birth:** 1988-07-15  
+**Country:** Canada  
+**City:** Toronto  
+**Address:** 123 Maple Street, Apt 4B  
+**Phone Prefix:** +1  
+**Phone:** 416-555-0199  
+**Email:** johndoe@example.com  
+**GitHub:** https://github.com/johndoe  
+**LinkedIn:** https://linkedin.com/in/johndoe  
+
+## Education Details
+- **Education Level:** Master's Degree  
+  **Institution:** University of Toronto  
+  **Field of Study:** Computer Science  
+  **Final Evaluation Grade:** 3.9/4.0  
+  **Start Date:** 2010-09-01  
+  **Year of Completion:** 2012  
+  **Exam:**  
+    - Algorithms: A  
+    - Data Structures: A+  
+    - Operating Systems: A  
+    - Software Engineering: A  
+    - Artificial Intelligence: A  
+    - Database Systems: A  
+
+## Experience Details
+- **Position:** Software Engineer  
+  **Company:** Tech Innovations Inc.  
+  **Employment Period:** 2015-06-01 to 2023-09-30  
+  **Location:** Toronto, Canada  
+  **Industry:** Information Technology  
+  **Key Responsibilities:**  
+    - Developed and maintained web applications.  
+    - Collaborated with cross-functional teams to define project requirements.  
+    - Conducted code reviews and mentored junior developers.  
+    - Optimized application performance and scalability.  
+    - Implemented automated testing procedures.  
+  **Skills Acquired:**  
+    - JavaScript  
+    - Python  
+    - React  
+    - Node.js  
+    - Agile Methodologies  
+    - RESTful Services  
+    - Git  
+    - SQL  
+    - Problem Solving  
+    - Team Leadership  
+
+## Projects
+- **Project Name:** Smart Home Automation  
+  **Description:** Developed a comprehensive system for controlling home appliances using IoT technology.  
+  **Link:** https://github.com/johndoe/smart-home-automation  
+
+- **Project Name:** E-commerce Platform  
+  **Description:** Created a full-stack e-commerce platform with payment gateway integration and user authentication.  
+  **Link:** https://github.com/johndoe/ecommerce-platform  
+
+## Achievements
+- **Achievement Name:** Employee of the Year 2021  
+  **Description:** Recognized for outstanding performance and significant contributions to project success.  
+
+- **Achievement Name:** Hackathon Winner 2020  
+  **Description:** Led a team to victory in a national hackathon, developing a mobile app for community engagement.  
+
+- **Achievement Name:** Published Research Paper  
+  **Description:** Co-authored a research paper on machine learning algorithms presented at an international conference.  
+
+## Certifications
+- **Certification Name:** AWS Certified Solutions Architect  
+  **Description:** Validated ability to design and deploy scalable systems on AWS.  
+
+## Languages
+- **Language:** English  
+  **Proficiency:** Native  
+- **Language:** French  
+  **Proficiency:** Intermediate  
+- **Language:** Spanish  
+  **Proficiency:** Basic  
+
+## Interests
+- Photography  
+- Traveling  
+- Hiking  
+- Coding  
+- Reading  
+- Cooking  
+- Volunteering  
+
+## Availability
+- **Notice Period:** 2 weeks  
+
+## Salary Expectations
+- **Salary Range (USD):** 80,000 - 100,000  
+
+## Self Identification
+- **Gender:** Male  
+- **Pronouns:** He/Him  
+- **Veteran:** No  
+- **Disability:** No  
+- **Ethnicity:** Caucasian  
+
+## Legal Authorization
+- **EU Work Authorization:** No  
+- **US Work Authorization:** Yes  
+- **Requires US Visa:** No  
+- **Requires US Sponsorship:** No  
+- **Requires EU Visa:** No  
+- **Legally Allowed to Work in EU:** No  
+- **Legally Allowed to Work in US:** Yes  
+- **Requires EU Sponsorship:** No  
+- **Canada Work Authorization:** Yes  
+- **Requires Canada Visa:** No  
+- **Legally Allowed to Work in Canada:** Yes  
+- **Requires Canada Sponsorship:** No  
+- **UK Work Authorization:** No  
+- **Requires UK Visa:** No  
+- **Legally Allowed to Work in UK:** No  
+- **Requires UK Sponsorship:** No  
+
+## Work Preferences
+- **Remote Work:** Yes  
+- **In Person Work:** No  
+- **Open to Relocation:** Yes  
+- **Willing to Complete Assessments:** Yes  
+- **Willing to Undergo Drug Tests:** Yes  
+- **Willing to Undergo Background Checks:** Yes  
+--------------------------------------------------
+### Punteggio di Similarità e Metriche
+Cosine Similarity: 0.7638
+Keyword Match Percentage: 38.46%
+Keyword Density: 1.78%
+Sentiment Score: 0.1050
+Readability Score: 15.71
