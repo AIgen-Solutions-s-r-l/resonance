@@ -1,129 +1,155 @@
-# Resume
-
-## Personal Information
-- **Name:** Alex
-- **Surname:** Johnson
-- **Date of Birth:** March 15, 1990
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple St, Apt 4B
-- **Phone Prefix:** +1
-- **Phone:** 416-555-1234
-- **Email:** alex.johnson@example.com
-- **GitHub:** [github.com/alexjohnson](https://github.com/alexjohnson)
-- **LinkedIn:** [linkedin.com/in/alexjohnson](https://linkedin.com/in/alexjohnson)
-
-## Education Details
-- **Education Level:** Master's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** A
-- **Start Date:** September 2012
-- **Year of Completion:** June 2014
-- **Exam:**
-  - **Algorithms:** A+
-  - **Data Structures:** A
-  - **Operating Systems:** A-
-  - **Machine Learning:** A
-  - **Database Systems:** A+
-  - **Software Engineering:** A
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** July 2014 - Present
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Develop and maintain software applications.
-  - Collaborate with cross-functional teams.
-  - Perform code reviews and provide mentorship.
-  - Implement new features based on client feedback.
-  - Conduct tests and debug software issues.
-- **Skills Acquired:**
-  - Java
-  - Python
-  - JavaScript
-  - Agile Methodologies
-  - Version Control (Git)
-  - Cloud Computing (AWS)
-  - Database Management (SQL)
-  - Problem Solving
-  - Team Collaboration
-  - Communication Skills
-
-## Projects
-- **Name:** E-Commerce Platform
-  - **Description:** Developed a full-stack e-commerce application using React and Node.js.
-  - **Link:** [ecommerce-example.com](https://ecommerce-example.com)
-- **Name:** Mobile Fitness App
-  - **Description:** Created a fitness tracking app for iOS that integrates with wearables.
-  - **Link:** [fitness-app.com](https://fitness-app.com)
-
-## Achievements
-- **Name:** Best Software Engineer Award
-  - **Description:** Received for outstanding contributions to project development and team performance.
-- **Name:** Hackathon Winner
-  - **Description:** Won first place in a national hackathon for developing an innovative health tech solution.
-- **Name:** Community Speaker
-  - **Description:** Invited to speak at multiple tech conferences about software development best practices.
-
-## Certifications
-- **Name:** AWS Certified Solutions Architect
-  - **Description:** Validated expertise in designing distributed systems on AWS.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Conversational
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Programming
-- Hiking
-- Video Games
-- Blogging
-- Traveling
-- Cooking
-- Photography
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** $80,000 - $100,000
-
-## Self Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** Yes
-- **Requires US Visa:** No
-- **Requires US Sponsorship:** No
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** Yes
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Aminah",
+    "surname": "Khan",
+    "date_of_birth": "1990-05-15",
+    "country": "Spain",
+    "city": "Valencia",
+    "address": "Calle de la Paz, 45, 5A",
+    "phone_prefix": "+34",
+    "phone": "612345678",
+    "email": "aminah.khan@email.com",
+    "github": "https://github.com/aminahkhan",
+    "linkedin": "https://www.linkedin.com/in/aminah-khan"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "University of Valencia",
+      "field_of_study": "Real Estate Management",
+      "final_evaluation_grade": "A",
+      "start_date": "2012-09-01",
+      "year_of_completion": "2014",
+      "exam": {
+        "Real Estate Principles": "A",
+        "Property Law": "A",
+        "Market Analysis": "A",
+        "Financial Management": "A",
+        "Real Estate Investment": "A",
+        "Negotiation Strategies": "A"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Real Estate Appraiser",
+      "company": "Valencia Realty Group",
+      "employment_period": "2015-01-01 to Present",
+      "location": "Valencia, Spain",
+      "industry": "Real Estate",
+      "key_responsibilities": [
+        "Conduct detailed property appraisals",
+        "Manage client relationships and property management",
+        "Utilize Microsoft Office for report preparation",
+        "Implement CRM software for tracking client interactions",
+        "Provide negotiation support for property transactions"
+      ],
+      "skills_acquired": [
+        "Appraisal",
+        "Property Management",
+        "Microsoft Office",
+        "CRM Software",
+        "Problem-solving",
+        "Negotiation",
+        "Attention to Detail",
+        "Client Relations",
+        "Market Research",
+        "Financial Analysis"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Valencia Urban Development Project",
+      "description": "Led a team to revitalize urban properties in Valencia, increasing property value by 30%.",
+      "link": "https://www.valenciaurbanproject.com"
+    },
+    {
+      "name": "Sustainable Housing Initiative",
+      "description": "Developed sustainable housing solutions, focusing on eco-friendly materials and practices.",
+      "link": "https://www.sustainablehousingvalencia.com"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Top Appraiser Award 2022",
+      "description": "Recognized for excellence in property valuation and client satisfaction."
+    },
+    {
+      "name": "Certified Property Manager",
+      "description": "Achieved certification for outstanding property management practices."
+    },
+    {
+      "name": "Veterans in Real Estate Leadership Award",
+      "description": "Honored for contributions to veteran community initiatives in real estate."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Residential Appraiser",
+      "description": "Professional certification in residential property appraisal."
+    }
+  ],
+  "languages": [
+    {
+      "language": "Spanish",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Arabic",
+      "proficiency": "Conversational"
+    }
+  ],
+  "interests": [
+    "Sustainable Development",
+    "Community Service",
+    "Art and Architecture",
+    "Travel",
+    "Photography",
+    "Cooking",
+    "Yoga"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "150,000+"
+  },
+  "self_identification": {
+    "gender": "Transgender",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Disabled",
+    "ethnicity": "Middle Eastern"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "No",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "No",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "No",
+    "in_person_work": "Yes",
+    "open_to_relocation": "Yes",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}

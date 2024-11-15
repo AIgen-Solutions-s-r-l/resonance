@@ -1,137 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-- **Name:** Alex
-- **Surname:** Johnson
-- **Date of Birth:** March 15, 1990
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple St, Apt 4B
-- **Phone Prefix:** +1
-- **Phone:** 416-555-1234
-- **Email:** alex.johnson@example.com
-- **GitHub:** [github.com/alexjohnson](https://github.com/alexjohnson)
-- **LinkedIn:** [linkedin.com/in/alexjohnson](https://linkedin.com/in/alexjohnson)
-
-## Education Details
-- **Education Level:** Master's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** A
-- **Start Date:** September 2012
-- **Year of Completion:** June 2014
-- **Exam:**
-  - **Algorithms:** A+
-  - **Data Structures:** A
-  - **Operating Systems:** A-
-  - **Machine Learning:** A
-  - **Database Systems:** A+
-  - **Software Engineering:** A
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** July 2014 - Present
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Develop and maintain software applications.
-  - Collaborate with cross-functional teams.
-  - Perform code reviews and provide mentorship.
-  - Implement new features based on client feedback.
-  - Conduct tests and debug software issues.
-- **Skills Acquired:**
-  - Java
-  - Python
-  - JavaScript
-  - Agile Methodologies
-  - Version Control (Git)
-  - Cloud Computing (AWS)
-  - Database Management (SQL)
-  - Problem Solving
-  - Team Collaboration
-  - Communication Skills
-
-## Projects
-- **Name:** E-Commerce Platform
-  - **Description:** Developed a full-stack e-commerce application using React and Node.js.
-  - **Link:** [ecommerce-example.com](https://ecommerce-example.com)
-- **Name:** Mobile Fitness App
-  - **Description:** Created a fitness tracking app for iOS that integrates with wearables.
-  - **Link:** [fitness-app.com](https://fitness-app.com)
-
-## Achievements
-- **Name:** Best Software Engineer Award
-  - **Description:** Received for outstanding contributions to project development and team performance.
-- **Name:** Hackathon Winner
-  - **Description:** Won first place in a national hackathon for developing an innovative health tech solution.
-- **Name:** Community Speaker
-  - **Description:** Invited to speak at multiple tech conferences about software development best practices.
-
-## Certifications
-- **Name:** AWS Certified Solutions Architect
-  - **Description:** Validated expertise in designing distributed systems on AWS.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Conversational
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Programming
-- Hiking
-- Video Games
-- Blogging
-- Traveling
-- Cooking
-- Photography
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** $80,000 - $100,000
-
-## Self Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** Yes
-- **Requires US Visa:** No
-- **Requires US Sponsorship:** No
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** Yes
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Jordan",
+    "surname": "Smith",
+    "date_of_birth": "1990-05-15",
+    "country": "United Kingdom",
+    "city": "Belfast",
+    "address": "123 Innovation Way",
+    "phone_prefix": "+44",
+    "phone": "1234567890",
+    "email": "jordan.smith@example.com",
+    "github": "https://github.com/jordansmith",
+    "linkedin": "https://linkedin.com/in/jordansmith"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "Queen's University Belfast",
+      "field_of_study": "Biotechnology",
+      "final_evaluation_grade": "Distinction",
+      "start_date": "2012-09-01",
+      "year_of_completion": "2014",
+      "exam": {
+        "Biology": "A",
+        "Chemistry": "A",
+        "Statistics": "A",
+        "Research Methods": "A",
+        "Bioinformatics": "A",
+        "Ethics in Research": "A"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Senior Research Scientist",
+      "company": "Innovate Research Labs",
+      "employment_period": "2016-08-01 to Present",
+      "location": "Belfast, Northern Ireland",
+      "industry": "Research and Development",
+      "key_responsibilities": [
+        "Led a team of researchers in developing innovative biotechnology solutions.",
+        "Managed multiple projects from conception to completion, ensuring timely delivery.",
+        "Conducted experiments using advanced laboratory techniques and equipment.",
+        "Prepared detailed technical reports and scientific papers for publication.",
+        "Collaborated with cross-functional teams to integrate research findings."
+      ],
+      "skills_acquired": [
+        "Technical Writing",
+        "Project Management",
+        "Laboratory Techniques",
+        "Laboratory Equipment",
+        "Microsoft Office",
+        "Statistical Software",
+        "Teamwork",
+        "Experimental Design",
+        "Data Analysis",
+        "Quality Assurance"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Gene Editing Initiative",
+      "description": "Developed a new method for precise gene editing using CRISPR technology.",
+      "link": "https://example.com/gene-editing-initiative"
+    },
+    {
+      "name": "Biomarker Discovery",
+      "description": "Led a research project identifying novel biomarkers for disease detection.",
+      "link": "https://example.com/biomarker-discovery"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best Paper Award",
+      "description": "Received the Best Paper Award at the International Biotechnology Conference 2022."
+    },
+    {
+      "name": "Patent Holder",
+      "description": "Co-inventor on a patent for a novel drug delivery system."
+    },
+    {
+      "name": "Leadership Award",
+      "description": "Awarded for outstanding leadership and contribution to team success."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Lab Technician",
+      "description": "Certified in advanced laboratory techniques and safety protocols."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Conversational"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Biotechnology",
+    "Sustainable Development",
+    "Open Source Projects",
+    "Science Communication",
+    "Photography",
+    "Traveling",
+    "Gaming"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$150,000+"
+  },
+  "self_identification": {
+    "gender": "Non-binary",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Not disabled",
+    "ethnicity": "African American"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "Yes",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "Yes",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7680
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7408
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

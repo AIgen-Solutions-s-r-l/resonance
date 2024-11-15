@@ -25,7 +25,7 @@ embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
 
 # Step 3: Leggi i curricula dalla cartella resumes
-cartella = os.getcwd()
+cartella = os.path.dirname(os.path.abspath(__file__))
 cartella_curricula = os.path.join(cartella, "resumes")
 curricula = []
 

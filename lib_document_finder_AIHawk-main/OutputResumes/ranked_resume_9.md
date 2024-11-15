@@ -1,136 +1,163 @@
 ### Curriculum Vitae
-# John Doe
-
-## Personal Information
-- **Surname:** Doe
-- **Date of Birth:** 1985-05-12
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street, Toronto, ON, M4B 1V6
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0198
-- **Email:** johndoe@email.com
-- **GitHub:** https://github.com/johndoe
-- **LinkedIn:** https://linkedin.com/in/johndoe
-
-## Education Details
-- **Education Level:** Master's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.9/4.0
-- **Start Date:** 2010-09-01
-- **Year of Completion:** 2012
-- **Exam:**
-  - Advanced Algorithms: A+
-  - Data Structures: A
-  - Software Engineering: A
-  - Database Systems: A
-  - Operating Systems: A
-  - Artificial Intelligence: A
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-03-01 to Present
-- **Location:** Toronto, Canada
-- **Industry:** Technology
-- **Key Responsibilities:**
-  - Developed scalable web applications using React and Node.js.
-  - Collaborated with cross-functional teams to define, design, and ship new features.
-  - Optimized applications for maximum speed and scalability.
-  - Troubleshot and debugged applications to ensure optimal performance.
-  - Delivered high-quality code through peer reviews and testing.
-- **Skills Acquired:**
-  - JavaScript
-  - React
-  - Node.js
-  - MongoDB
-  - Git
-  - Agile Methodologies
-  - RESTful APIs
-  - Unit Testing
-  - CI/CD
-  - Cloud Computing
-
-## Projects
-- **Project Name:** E-Commerce Platform
-  - **Description:** Developed a full-featured e-commerce platform with user authentication, product management, and shopping cart functionality.
-  - **Link:** https://github.com/johndoe/ecommerce-platform
-- **Project Name:** Health Tracker App
-  - **Description:** Created a mobile application that helps users track their health metrics and provides insights into their health habits.
-  - **Link:** https://github.com/johndoe/health-tracker
-
-## Achievements
-- **Achievement Name:** Best Innovation Award
-  - **Description:** Received the Best Innovation Award at the Tech Innovations Inc. annual conference for developing a groundbreaking application.
-- **Achievement Name:** Employee of the Month
-  - **Description:** Recognized as Employee of the Month for outstanding contributions to a major project.
-- **Achievement Name:** Hackathon Champion
-  - **Description:** Won first place in the company-wide hackathon for a project focused on machine learning.
-
-## Certifications
-- **Certification Name:** AWS Certified Solutions Architect
-  - **Description:** Achieved certification demonstrating expertise in designing and deploying scalable systems on AWS.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Fluent
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Hiking
-- Coding Challenges
-- Photography
-- Volunteering
-- Traveling
-- Reading Science Fiction
-- Playing Chess
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** 100,000 - 120,000
-
-## Self Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** No
-- **Requires US Visa:** Yes
-- **Requires US Sponsorship:** Yes
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** No
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Carlos",
+    "surname": "Gonzalez",
+    "date_of_birth": "1985-04-15",
+    "country": "United Kingdom",
+    "city": "Manchester",
+    "address": "221B Baker Street, Manchester, M1 2AB",
+    "phone_prefix": "+44",
+    "phone": "7941234567",
+    "email": "carlos.gonzalez@email.com",
+    "github": "https://github.com/carlosgonzalez",
+    "linkedin": "https://www.linkedin.com/in/carlosgonzalez"
+  },
+  "education_details": [
+    {
+      "education_level": "Bachelor's Degree",
+      "institution": "University of Manchester",
+      "field_of_study": "Business Administration",
+      "final_evaluation_grade": "2:1",
+      "start_date": "2003-09-01",
+      "year_of_completion": 2006,
+      "exam": {
+        "Mathematics": "A",
+        "Economics": "B",
+        "Business Studies": "A",
+        "Marketing": "B",
+        "Statistics": "A",
+        "Management": "B"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Insurance Agent",
+      "company": "SecureLife Insurance Ltd.",
+      "employment_period": "2015-06-01 to Present",
+      "location": "Manchester, UK",
+      "industry": "Insurance",
+      "key_responsibilities": [
+        "Provided exceptional customer service to clients.",
+        "Managed client accounts using CRM software.",
+        "Resolved client inquiries and complaints effectively.",
+        "Collaborated with team members to improve service delivery.",
+        "Developed personalized insurance plans for customers."
+      ],
+      "skills_acquired": [
+        "Customer Service",
+        "CRM Software",
+        "Problem-solving",
+        "Teamwork",
+        "Negotiation",
+        "Sales Strategies",
+        "Conflict Resolution",
+        "Time Management",
+        "Data Analysis",
+        "Product Knowledge"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Client Satisfaction Campaign",
+      "description": "Led a campaign to improve client satisfaction scores by implementing feedback loops.",
+      "link": "https://www.securelifecampaigns.com/satisfaction"
+    },
+    {
+      "name": "Insurance Awareness Program",
+      "description": "Developed and conducted workshops to educate clients on various insurance products.",
+      "link": "https://www.securelifecampaigns.com/awareness"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Top Performer Award 2022",
+      "description": "Recognized as the top insurance agent for outstanding sales performance."
+    },
+    {
+      "name": "Customer Service Excellence Award",
+      "description": "Awarded for consistently exceeding customer service expectations."
+    },
+    {
+      "name": "Team Leadership Recognition",
+      "description": "Acknowledged for leading a high-performance team during peak sales season."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Insurance Sales Certification",
+      "description": "Certified in insurance sales and customer relations management."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Traveling",
+    "Photography",
+    "Reading",
+    "Cooking",
+    "Volunteering",
+    "Fitness",
+    "Technology"
+  ],
+  "availability": {
+    "notice_period": "1 month"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$60,000 - $70,000"
+  },
+  "self_identification": {
+    "gender": "Male",
+    "pronouns": "he/him",
+    "veteran": "Non-veteran",
+    "disability": "Disabled",
+    "ethnicity": "Hispanic"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "Yes",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "Yes",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "Yes",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7579
-Keyword Match Percentage: 23.08%
-Keyword Density: 1.90%
-Sentiment Score: 0.1258
-Readability Score: 14.59
+Cosine Similarity: 0.7128
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

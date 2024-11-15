@@ -1,140 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-**Name:** John  
-**Surname:** Doe  
-**Date of Birth:** 1988-07-15  
-**Country:** Canada  
-**City:** Toronto  
-**Address:** 123 Maple Street, Apt 4B  
-**Phone Prefix:** +1  
-**Phone:** 416-555-0199  
-**Email:** johndoe@example.com  
-**GitHub:** https://github.com/johndoe  
-**LinkedIn:** https://linkedin.com/in/johndoe  
-
-## Education Details
-- **Education Level:** Master's Degree  
-  **Institution:** University of Toronto  
-  **Field of Study:** Computer Science  
-  **Final Evaluation Grade:** 3.9/4.0  
-  **Start Date:** 2010-09-01  
-  **Year of Completion:** 2012  
-  **Exam:**  
-    - Algorithms: A  
-    - Data Structures: A+  
-    - Operating Systems: A  
-    - Software Engineering: A  
-    - Artificial Intelligence: A  
-    - Database Systems: A  
-
-## Experience Details
-- **Position:** Software Engineer  
-  **Company:** Tech Innovations Inc.  
-  **Employment Period:** 2015-06-01 to 2023-09-30  
-  **Location:** Toronto, Canada  
-  **Industry:** Information Technology  
-  **Key Responsibilities:**  
-    - Developed and maintained web applications.  
-    - Collaborated with cross-functional teams to define project requirements.  
-    - Conducted code reviews and mentored junior developers.  
-    - Optimized application performance and scalability.  
-    - Implemented automated testing procedures.  
-  **Skills Acquired:**  
-    - JavaScript  
-    - Python  
-    - React  
-    - Node.js  
-    - Agile Methodologies  
-    - RESTful Services  
-    - Git  
-    - SQL  
-    - Problem Solving  
-    - Team Leadership  
-
-## Projects
-- **Project Name:** Smart Home Automation  
-  **Description:** Developed a comprehensive system for controlling home appliances using IoT technology.  
-  **Link:** https://github.com/johndoe/smart-home-automation  
-
-- **Project Name:** E-commerce Platform  
-  **Description:** Created a full-stack e-commerce platform with payment gateway integration and user authentication.  
-  **Link:** https://github.com/johndoe/ecommerce-platform  
-
-## Achievements
-- **Achievement Name:** Employee of the Year 2021  
-  **Description:** Recognized for outstanding performance and significant contributions to project success.  
-
-- **Achievement Name:** Hackathon Winner 2020  
-  **Description:** Led a team to victory in a national hackathon, developing a mobile app for community engagement.  
-
-- **Achievement Name:** Published Research Paper  
-  **Description:** Co-authored a research paper on machine learning algorithms presented at an international conference.  
-
-## Certifications
-- **Certification Name:** AWS Certified Solutions Architect  
-  **Description:** Validated ability to design and deploy scalable systems on AWS.  
-
-## Languages
-- **Language:** English  
-  **Proficiency:** Native  
-- **Language:** French  
-  **Proficiency:** Intermediate  
-- **Language:** Spanish  
-  **Proficiency:** Basic  
-
-## Interests
-- Photography  
-- Traveling  
-- Hiking  
-- Coding  
-- Reading  
-- Cooking  
-- Volunteering  
-
-## Availability
-- **Notice Period:** 2 weeks  
-
-## Salary Expectations
-- **Salary Range (USD):** 80,000 - 100,000  
-
-## Self Identification
-- **Gender:** Male  
-- **Pronouns:** He/Him  
-- **Veteran:** No  
-- **Disability:** No  
-- **Ethnicity:** Caucasian  
-
-## Legal Authorization
-- **EU Work Authorization:** No  
-- **US Work Authorization:** Yes  
-- **Requires US Visa:** No  
-- **Requires US Sponsorship:** No  
-- **Requires EU Visa:** No  
-- **Legally Allowed to Work in EU:** No  
-- **Legally Allowed to Work in US:** Yes  
-- **Requires EU Sponsorship:** No  
-- **Canada Work Authorization:** Yes  
-- **Requires Canada Visa:** No  
-- **Legally Allowed to Work in Canada:** Yes  
-- **Requires Canada Sponsorship:** No  
-- **UK Work Authorization:** No  
-- **Requires UK Visa:** No  
-- **Legally Allowed to Work in UK:** No  
-- **Requires UK Sponsorship:** No  
-
-## Work Preferences
-- **Remote Work:** Yes  
-- **In Person Work:** No  
-- **Open to Relocation:** Yes  
-- **Willing to Complete Assessments:** Yes  
-- **Willing to Undergo Drug Tests:** Yes  
-- **Willing to Undergo Background Checks:** Yes  
+{
+  "personal_information": {
+    "name": "Alex",
+    "surname": "Chen",
+    "date_of_birth": "1990-04-15",
+    "country": "China",
+    "city": "Anhui",
+    "address": "123 Science Road, Anhui",
+    "phone_prefix": "+86",
+    "phone": "13800001234",
+    "email": "alexchen@example.com",
+    "github": "https://github.com/alexchen",
+    "linkedin": "https://www.linkedin.com/in/alexchen"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "Anhui University",
+      "field_of_study": "Pharmaceutical Sciences",
+      "final_evaluation_grade": "A",
+      "start_date": "2013-09-01",
+      "year_of_completion": "2015",
+      "exam": {
+        "GRE": "320",
+        "TOEFL": "100",
+        "Pharma Certification": "Pass",
+        "Research Thesis": "A+",
+        "Internship Evaluation": "Excellent",
+        "Final Project": "A"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Senior Research Scientist",
+      "company": "Global Pharma Ltd.",
+      "employment_period": "2016-01-15 to Present",
+      "location": "Anhui, China",
+      "industry": "Pharmaceuticals",
+      "key_responsibilities": [
+        "Leading drug development projects from conception to clinical trials",
+        "Conducting pharmacological studies to assess efficacy and safety",
+        "Utilizing HPLC systems for drug analysis and formulation",
+        "Collaborating with cross-functional teams to align project goals",
+        "Training junior scientists and interns on laboratory techniques"
+      ],
+      "skills_acquired": [
+        "Laboratory Skills",
+        "Drug Development",
+        "Pharmacology",
+        "HPLC Systems",
+        "Communication",
+        "Analytical Thinking",
+        "Attention to Detail",
+        "Project Management",
+        "Data Analysis",
+        "Regulatory Compliance"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Novel Drug Formulation",
+      "description": "Development of a new formulation for a pain relief medication, improving bioavailability by 30%.",
+      "link": "https://example.com/projects/novel-drug-formulation"
+    },
+    {
+      "name": "Clinical Trial of Anticancer Agent",
+      "description": "Conducted phase II clinical trials for an innovative anticancer drug, resulting in significant patient response rates.",
+      "link": "https://example.com/projects/clinical-trial-anticancer-agent"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best Research Paper Award",
+      "description": "Received for outstanding research on drug interactions presented at the International Pharmaceuticals Conference."
+    },
+    {
+      "name": "Employee of the Year 2022",
+      "description": "Recognized for exceptional contributions to the drug development team and successful project leadership."
+    },
+    {
+      "name": "Published in Top Journal",
+      "description": "Co-authored a paper published in 'Journal of Pharmaceutical Sciences' on innovative drug delivery systems."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Pharmaceutical Scientist",
+      "description": "Certification demonstrating expertise in pharmaceutical science and drug development."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Mandarin",
+      "proficiency": "Native"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Conversational"
+    }
+  ],
+  "interests": [
+    "Biotechnology",
+    "Sustainable Drug Development",
+    "Science Communication",
+    "Gardening",
+    "Photography",
+    "Traveling",
+    "Volunteering"
+  ],
+  "availability": {
+    "notice_period": "Immediate"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$120,000 - $150,000"
+  },
+  "self_identification": {
+    "gender": "Non-binary",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Disabled",
+    "ethnicity": "Other"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "No",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "No",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "No",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "No",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "Yes",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7638
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7271
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

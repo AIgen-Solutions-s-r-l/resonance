@@ -1,140 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-- **Name:** Alex
-- **Surname:** Johnson
-- **Date of Birth:** 1990-05-25
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0198
-- **Email:** alex.johnson@example.com
-- **GitHub:** [github.com/alexjohnson](https://github.com/alexjohnson)
-- **LinkedIn:** [linkedin.com/in/alexjohnson](https://linkedin.com/in/alexjohnson)
-
-## Education Details
-- **Education Level:** Bachelor's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.9/4.0
-- **Start Date:** 2008-09-01
-- **Year of Completion:** 2012
-- **Exam:**
-  - Calculus: A
-  - Data Structures: A+
-  - Algorithms: A
-  - Operating Systems: A
-  - Databases: A
-  - Software Engineering: A
-
-## Experience Details
-- **Position:** Software Developer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-06-01 to Present
-- **Location:** Toronto, Canada
-- **Industry:** Technology
-- **Key Responsibilities:**
-  - Developed scalable web applications.
-  - Collaborated with cross-functional teams.
-  - Implemented RESTful APIs.
-  - Conducted code reviews and unit testing.
-  - Mentored junior developers.
-- **Skills Acquired:**
-  - JavaScript
-  - Python
-  - React
-  - Node.js
-  - SQL
-  - Agile Methodologies
-  - Git
-  - Docker
-  - REST APIs
-  - Problem Solving
-
-## Projects
-- **Project Name:** Personal Finance Tracker
-  - **Description:** A web application to help users manage their personal finances and track expenses.
-  - **Link:** [personalfinancetracker.com](https://personalfinancetracker.com)
-
-- **Project Name:** E-commerce Platform
-  - **Description:** Developed a full-featured e-commerce platform with user authentication and payment processing.
-  - **Link:** [ecommerceplatform.com](https://ecommerceplatform.com)
-
-## Achievements
-- **Achievement Name:** Employee of the Year 2020
-  - **Description:** Recognized for outstanding performance and contributions to team success.
-  
-- **Achievement Name:** Published Research Paper
-  - **Description:** Co-authored a research paper on machine learning algorithms in a peer-reviewed journal.
-
-- **Achievement Name:** Hackathon Winner
-  - **Description:** Led a team to victory in a 48-hour hackathon focusing on innovative app development.
-
-## Certifications
-- **Certification Name:** Certified Scrum Master
-  - **Description:** Completed training to manage Scrum processes effectively.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Coding
-- Hiking
-- Photography
-- Traveling
-- Reading
-- Gaming
-- Cooking
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** $80,000 - $100,000
-
-## Self-Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** Yes
-- **Requires US Visa:** No
-- **Requires US Sponsorship:** No
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** Yes
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Jordan",
+    "surname": "Smith",
+    "date_of_birth": "1990-04-15",
+    "country": "France",
+    "city": "Corsica",
+    "address": "1234 Media Lane, Corsica",
+    "phone_prefix": "+33",
+    "phone": "612345678",
+    "email": "jordan.smith@example.com",
+    "github": "https://github.com/jordansmith",
+    "linkedin": "https://linkedin.com/in/jordansmith"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "University of Corsica",
+      "field_of_study": "Media Studies",
+      "final_evaluation_grade": "A",
+      "start_date": "2015-09-01",
+      "year_of_completion": "2017",
+      "exam": {
+        "Media Theory": "A",
+        "Digital Communication": "A-",
+        "Photography Techniques": "A",
+        "Public Relations Strategies": "B+",
+        "SEO and Analytics": "A",
+        "Teamwork and Leadership": "A"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Media Relations Specialist",
+      "company": "Corsica News Network",
+      "employment_period": "2018-05-01 to Present",
+      "location": "Corsica, France",
+      "industry": "Media",
+      "key_responsibilities": [
+        "Develop and implement communication strategies.",
+        "Manage public relations campaigns across various platforms.",
+        "Analyze media trends using Google Analytics and SEO tools.",
+        "Create and curate content for the company blog using WordPress.",
+        "Collaborate with cross-functional teams to enhance media outreach."
+      ],
+      "skills_acquired": [
+        "Photography",
+        "Public Relations",
+        "Google Analytics",
+        "SEO Tools",
+        "WordPress",
+        "Teamwork",
+        "Communication",
+        "Content Creation",
+        "Data Analysis",
+        "Crisis Management"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Corsica Culture Project",
+      "description": "A multimedia project showcasing the rich culture of Corsica through photography and storytelling.",
+      "link": "https://corsicacultureproject.com"
+    },
+    {
+      "name": "Public Relations Workshop",
+      "description": "Organized a series of workshops focusing on public relations strategies for local businesses.",
+      "link": "https://corsicaworkshops.com"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best PR Campaign Award",
+      "description": "Received recognition for developing a successful media campaign for Corsica's tourism board."
+    },
+    {
+      "name": "Top Blogger of the Year",
+      "description": "Awarded by the Corsican Digital Media Association for outstanding blogging and content creation."
+    },
+    {
+      "name": "Photography Exhibit",
+      "description": "Hosted a solo exhibit featuring photographs of Corsica, gaining positive media coverage."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Digital Marketing Professional",
+      "description": "Certification in digital marketing strategies and tools."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "French",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Italian",
+      "proficiency": "Conversational"
+    }
+  ],
+  "interests": [
+    "Traveling",
+    "Photography",
+    "Blogging",
+    "Cooking",
+    "Hiking",
+    "Art Exhibition",
+    "Cultural Events"
+  ],
+  "availability": {
+    "notice_period": "1 week"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$120,000 - $150,000"
+  },
+  "self_identification": {
+    "gender": "Transgender",
+    "pronouns": "they/them",
+    "veteran": "Prefer not to say",
+    "disability": "Not disabled",
+    "ethnicity": "African American"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "No",
+    "requires_us_sponsorship": "No",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "No",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "No",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7584
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7192
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

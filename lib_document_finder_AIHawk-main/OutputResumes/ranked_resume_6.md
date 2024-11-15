@@ -1,141 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-- **Name:** Sarah
-- **Surname:** Johnson
-- **Date of Birth:** 1988-04-15
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street, Toronto, ON
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0178
-- **Email:** sarah.johnson@example.com
-- **GitHub:** https://github.com/sarahjohnson
-- **LinkedIn:** https://linkedin.com/in/sarahjohnson
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-2023
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Developed and maintained web applications.
-  - Collaborated with cross-functional teams to define project requirements.
-  - Conducted code reviews and provided mentorship to junior developers.
-  - Implemented automated testing processes to improve software quality.
-  - Participated in Agile ceremonies and contributed to sprint planning.
-
-- **Skills Acquired:**
-  - JavaScript
-  - React.js
-  - Node.js
-  - Python
-  - SQL
-  - Git
-  - Docker
-  - Agile Methodologies
-  - Problem Solving
-  - Communication Skills
-
-## Education Details
-- **Education Level:** Bachelor's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.8/4.0
-- **Start Date:** 2006-09-01
-- **Year of Completion:** 2010
-- **Exam:**
-  - Calculus: A
-  - Data Structures: A
-  - Algorithms: A-
-  - Software Engineering: A
-  - Database Management: B+
-  - Web Development: A
-
-## Projects
-- **Name:** E-commerce Platform
-  - **Description:** Developed a full-stack e-commerce platform using React and Node.js.
-  - **Link:** https://github.com/sarahjohnson/ecommerce-platform
-
-- **Name:** Personal Finance Tracker
-  - **Description:** Created a personal finance management web application to help users track their expenses.
-  - **Link:** https://github.com/sarahjohnson/finance-tracker
-
-## Achievements
-- **Name:** Best Innovation Award
-  - **Description:** Received the Best Innovation Award at Tech Innovations for developing a unique software solution.
-
-- **Name:** Speaker at Tech Conference
-  - **Description:** Invited to speak at the Annual Tech Conference about Agile Development Practices.
-
-- **Name:** Employee of the Month
-  - **Description:** Recognized as Employee of the Month three times for outstanding performance.
-
-## Certifications
-- **Name:** AWS Certified Solutions Architect
-  - **Description:** Achieved certification to validate expertise in designing distributed systems on AWS.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Traveling
-- Coding Challenges
-- Photography
-- Hiking
-- Cooking
-- Volunteering
-- Reading
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range USD:** $80,000 - $100,000
-
-## Self Identification
-- **Gender:** Female
-- **Pronouns:** She/Her
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** Yes
-- **Requires US Visa:** No
-- **Requires US Sponsorship:** No
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** Yes
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** No
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Alex",
+    "surname": "Taylor",
+    "date_of_birth": "1990-05-15",
+    "country": "United Kingdom",
+    "city": "Belfast",
+    "address": "123 Art Lane, Belfast, Northern Ireland",
+    "phone_prefix": "+44",
+    "phone": "1234567890",
+    "email": "alex.taylor@email.com",
+    "github": "https://github.com/alextaylorart",
+    "linkedin": "https://linkedin.com/in/alextaylorart"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "University of the Arts London",
+      "field_of_study": "Fine Arts",
+      "final_evaluation_grade": "Distinction",
+      "start_date": "2014-09-01",
+      "year_of_completion": "2016",
+      "exam": {
+        "BA Fine Arts": "First Class",
+        "Art History": "A+",
+        "Painting Techniques": "A",
+        "Curation Studies": "A+",
+        "Visual Culture": "A",
+        "Critical Theory": "A-"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Art Curator",
+      "company": "Belfast Contemporary Art Centre",
+      "employment_period": "2018-04-01 to Present",
+      "location": "Belfast, Northern Ireland",
+      "industry": "Arts and Culture",
+      "key_responsibilities": [
+        "Curate art exhibitions showcasing local and international artists",
+        "Manage relationships with artists and art suppliers",
+        "Organize workshops and educational programs for the community",
+        "Develop marketing strategies to promote events and exhibitions",
+        "Evaluate and select artwork for exhibits"
+      ],
+      "skills_acquired": [
+        "Curation",
+        "Art History",
+        "Teamwork",
+        "Attention to Detail",
+        "Time Management",
+        "Event Planning",
+        "Public Speaking",
+        "Networking",
+        "Research",
+        "Collaboration"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Artistic Reflections",
+      "description": "An interactive exhibition exploring identity and self-expression through various art forms.",
+      "link": "https://belfastartcentre.com/artistic-reflections"
+    },
+    {
+      "name": "Local Artists Showcase",
+      "description": "A project aimed at promoting emerging local artists through curated exhibitions.",
+      "link": "https://belfastartcentre.com/local-artists-showcase"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best Curatorial Practice Award",
+      "description": "Received recognition for excellence in curatorial practice at the Belfast Arts Festival."
+    },
+    {
+      "name": "Community Engagement Award",
+      "description": "Honored for outstanding contributions to community art programs."
+    },
+    {
+      "name": "Emerging Artist Support Fund",
+      "description": "Secured funding to support local emerging artists in their creative endeavors."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Professional Art Curation Certification",
+      "description": "Certified by the Arts Council for advanced curation skills and practices."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native"
+    },
+    {
+      "language": "Irish",
+      "proficiency": "Intermediate"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Abstract Painting",
+    "Art Therapy",
+    "Cultural Heritage",
+    "Photography",
+    "Community Arts",
+    "Graphic Design",
+    "Traveling"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$150,000+"
+  },
+  "self_identification": {
+    "gender": "Non-binary",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Not disabled",
+    "ethnicity": "Caucasian"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "No",
+    "requires_us_sponsorship": "No",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7600
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7234
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

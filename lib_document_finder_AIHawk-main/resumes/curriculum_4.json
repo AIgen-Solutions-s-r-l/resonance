@@ -1,129 +1,155 @@
-# Resume
-
-## Personal Information
-- **Name:** Olivia
-- **Surname:** Carter
-- **Date of Birth:** April 22, 1990
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 45 Maple Street, Apt 12
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0198
-- **Email:** olivia.carter@example.com
-- **GitHub:** https://github.com/oliviacarter
-- **LinkedIn:** https://linkedin.com/in/olivia-carter
-
-## Education Details
-- **Education Level:** Master's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.9/4.0
-- **Start Date:** September 2012
-- **Year of Completion:** June 2014
-- **Exam:**
-  - "Algorithms": "A-"
-  - "Data Structures": "A"
-  - "Machine Learning": "A"
-  - "Software Engineering": "B+"
-  - "Database Systems": "A"
-  - "Web Development": "A"
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovators Inc.
-- **Employment Period:** January 2015 - Present
-- **Location:** Toronto, Canada
-- **Industry:** Technology
-- **Key Responsibilities:**
-  - Developing high-quality software solutions
-  - Collaborating with cross-functional teams
-  - Conducting code reviews and ensuring best practices
-  - Implementing new features based on client requirements
-  - Troubleshooting and debugging applications
-- **Skills Acquired:**
-  - Java
-  - Python
-  - SQL
-  - React
-  - Agile Methodologies
-  - RESTful APIs
-  - Version Control (Git)
-  - Cloud Computing (AWS)
-  - Problem Solving
-  - Team Collaboration
-
-## Projects
-- **Name:** E-Commerce Web Application
-  - **Description:** Developed a full-stack e-commerce application using React and Node.js, integrating payment processing and user authentication.
-  - **Link:** https://github.com/oliviacarter/e-commerce-app
-- **Name:** Machine Learning Model for Predictive Analysis
-  - **Description:** Created a machine learning model using Python to predict sales trends based on historical data, achieving 85% accuracy.
-  - **Link:** https://github.com/oliviacarter/ml-predictive-analysis
-
-## Achievements
-- **Name:** Best Project Award
-  - **Description:** Received the Best Project Award for the E-Commerce Web Application at the 2021 Tech Conference.
-- **Name:** Employee of the Month
-  - **Description:** Awarded Employee of the Month twice in 2020 for outstanding performance and project contributions.
-- **Name:** Hackathon Winner
-  - **Description:** Won first place at the 2019 Hackathon for developing an innovative mobile app within 24 hours.
-
-## Certifications
-- **Name:** Certified Scrum Master
-  - **Description:** Achieved Certified Scrum Master certification in 2018, demonstrating expertise in Agile project management.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Traveling
-- Reading
-- Coding challenges
-- Photography
-- Volunteering
-- Hiking
-- Cooking
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** $80,000 - $95,000
-
-## Self-Identification
-- **Gender:** Female
-- **Pronouns:** She/Her
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** No
-- **Requires US Visa:** Yes
-- **Requires US Sponsorship:** Yes
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** No
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Jordan",
+    "surname": "Smith",
+    "date_of_birth": "1990-05-15",
+    "country": "United Kingdom",
+    "city": "Belfast",
+    "address": "123 Innovation Way",
+    "phone_prefix": "+44",
+    "phone": "1234567890",
+    "email": "jordan.smith@example.com",
+    "github": "https://github.com/jordansmith",
+    "linkedin": "https://linkedin.com/in/jordansmith"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "Queen's University Belfast",
+      "field_of_study": "Biotechnology",
+      "final_evaluation_grade": "Distinction",
+      "start_date": "2012-09-01",
+      "year_of_completion": "2014",
+      "exam": {
+        "Biology": "A",
+        "Chemistry": "A",
+        "Statistics": "A",
+        "Research Methods": "A",
+        "Bioinformatics": "A",
+        "Ethics in Research": "A"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Senior Research Scientist",
+      "company": "Innovate Research Labs",
+      "employment_period": "2016-08-01 to Present",
+      "location": "Belfast, Northern Ireland",
+      "industry": "Research and Development",
+      "key_responsibilities": [
+        "Led a team of researchers in developing innovative biotechnology solutions.",
+        "Managed multiple projects from conception to completion, ensuring timely delivery.",
+        "Conducted experiments using advanced laboratory techniques and equipment.",
+        "Prepared detailed technical reports and scientific papers for publication.",
+        "Collaborated with cross-functional teams to integrate research findings."
+      ],
+      "skills_acquired": [
+        "Technical Writing",
+        "Project Management",
+        "Laboratory Techniques",
+        "Laboratory Equipment",
+        "Microsoft Office",
+        "Statistical Software",
+        "Teamwork",
+        "Experimental Design",
+        "Data Analysis",
+        "Quality Assurance"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Gene Editing Initiative",
+      "description": "Developed a new method for precise gene editing using CRISPR technology.",
+      "link": "https://example.com/gene-editing-initiative"
+    },
+    {
+      "name": "Biomarker Discovery",
+      "description": "Led a research project identifying novel biomarkers for disease detection.",
+      "link": "https://example.com/biomarker-discovery"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best Paper Award",
+      "description": "Received the Best Paper Award at the International Biotechnology Conference 2022."
+    },
+    {
+      "name": "Patent Holder",
+      "description": "Co-inventor on a patent for a novel drug delivery system."
+    },
+    {
+      "name": "Leadership Award",
+      "description": "Awarded for outstanding leadership and contribution to team success."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Lab Technician",
+      "description": "Certified in advanced laboratory techniques and safety protocols."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Conversational"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Biotechnology",
+    "Sustainable Development",
+    "Open Source Projects",
+    "Science Communication",
+    "Photography",
+    "Traveling",
+    "Gaming"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$150,000+"
+  },
+  "self_identification": {
+    "gender": "Non-binary",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Not disabled",
+    "ethnicity": "African American"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "Yes",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "Yes",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}

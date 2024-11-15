@@ -1,141 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-- **Name:** Jonathan
-- **Surname:** Smith
-- **Date of Birth:** 1990-07-15
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street, Apt 45
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0123
-- **Email:** jonathan.smith@email.com
-- **GitHub:** [github.com/jonathansmith](https://github.com/jonathansmith)
-- **LinkedIn:** [linkedin.com/in/jonathansmith](https://linkedin.com/in/jonathansmith)
-
-## Education Details
-- **Education Level:** Bachelor's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.8/4.0
-- **Start Date:** 2008-09-01
-- **Year of Completion:** 2012
-- **Exam:**
-  - Calculus I: A
-  - Data Structures: A+
-  - Algorithms: A
-  - Operating Systems: B+
-  - Software Engineering: A
-  - Database Systems: A
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-Present
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Developed and maintained web applications.
-  - Collaborated with cross-functional teams to deliver projects.
-  - Implemented new features based on user feedback.
-  - Conducted code reviews and provided mentorship to junior developers.
-  - Optimized application performance and security.
-
-- **Skills Acquired:**
-  - JavaScript
-  - React
-  - Node.js
-  - SQL
-  - Agile Methodologies
-  - Git
-  - RESTful APIs
-  - Unit Testing
-  - Problem Solving
-  - Team Collaboration
-
-## Projects
-- **Name:** E-commerce Platform Development
-  - **Description:** Designed and implemented a scalable e-commerce platform using MERN stack.
-  - **Link:** [ecommerce-project.com](https://ecommerce-project.com)
-
-- **Name:** Personal Finance Tracker
-  - **Description:** Developed a web application that helps users track their expenses and savings.
-  - **Link:** [finance-tracker.com](https://finance-tracker.com)
-
-## Achievements
-- **Name:** Employee of the Year
-  - **Description:** Awarded for outstanding performance and contributions to the team in 2020.
-
-- **Name:** Hackathon Winner
-  - **Description:** Led a team to victory in a 48-hour hackathon with an innovative app solution.
-
-- **Name:** Published Author
-  - **Description:** Authored a technical article in a renowned IT journal on modern web development practices.
-
-## Certifications
-- **Name:** Certified Scrum Master
-  - **Description:** Completed training and certification in Scrum methodologies.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Technology trends
-- Hiking
-- Photography
-- Cooking
-- Traveling
-- Gaming
-- Volunteering
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** 80,000 - 100,000
-
-## Self Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** No
-- **Requires US Visa:** Yes
-- **Requires US Sponsorship:** Yes
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** No
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Lina",
+    "surname": "Chen",
+    "date_of_birth": "1985-07-15",
+    "country": "Italy",
+    "city": "Veneto",
+    "address": "Via Roma 123",
+    "phone_prefix": "+39",
+    "phone": "0412345678",
+    "email": "lina.chen@example.com",
+    "github": "https://github.com/linachen",
+    "linkedin": "https://linkedin.com/in/linachen"
+  },
+  "education_details": [
+    {
+      "education_level": "Bachelor's Degree",
+      "institution": "University of Padova",
+      "field_of_study": "Electrical Engineering",
+      "final_evaluation_grade": "110/110",
+      "start_date": "2003-09-01",
+      "year_of_completion": "2007",
+      "exam": {
+        "Mathematics": "30",
+        "Physics": "28",
+        "Electrical Circuits": "29",
+        "Thermodynamics": "30",
+        "Control Systems": "28",
+        "Electromagnetism": "30"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Utilities Technician",
+      "company": "Veneto Utilities",
+      "employment_period": "2010-03-01 to Present",
+      "location": "Veneto, Italy",
+      "industry": "Utilities",
+      "key_responsibilities": [
+        "Conduct routine maintenance on electrical and plumbing systems",
+        "Utilize diagnostic equipment to identify issues in utility services",
+        "Implement SCADA systems for monitoring and controlling utilities",
+        "Collaborate with a team to develop efficient solutions for system challenges",
+        "Maintain detailed records of maintenance work and inspections"
+      ],
+      "skills_acquired": [
+        "Electrical Systems",
+        "Plumbing",
+        "Maintenance",
+        "Diagnostic Equipment",
+        "SCADA Systems",
+        "Problem-solving",
+        "Attention to Detail",
+        "Team Collaboration",
+        "Technical Documentation",
+        "Safety Protocols"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Smart Grid Implementation",
+      "description": "Led a project to integrate smart grid technology into existing utility systems, improving efficiency and reliability.",
+      "link": "https://venetoutilities.com/projects/smart-grid"
+    },
+    {
+      "name": "Water Quality Monitoring System",
+      "description": "Developed and implemented a SCADA-based water quality monitoring system to ensure compliance with safety standards.",
+      "link": "https://venetoutilities.com/projects/water-quality"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Employee of the Year",
+      "description": "Recognized for outstanding performance and commitment to safety in 2022."
+    },
+    {
+      "name": "Best Innovation Award",
+      "description": "Received for the development of a new maintenance protocol that reduced downtime by 20%."
+    },
+    {
+      "name": "SCADA Systems Certification",
+      "description": "Achieved certification in SCADA systems management to enhance operational efficiency."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Maintenance & Reliability Technician (CMRT)",
+      "description": "Certification demonstrating expertise in maintenance and reliability best practices."
+    }
+  ],
+  "languages": [
+    {
+      "language": "Italian",
+      "proficiency": "Native"
+    },
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Mandarin",
+      "proficiency": "Conversational"
+    }
+  ],
+  "interests": [
+    "Renewable Energy",
+    "DIY Projects",
+    "Traveling",
+    "Photography",
+    "Hiking",
+    "Cooking",
+    "Volunteering"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$60,000 - $70,000"
+  },
+  "self_identification": {
+    "gender": "Female",
+    "pronouns": "she/her",
+    "veteran": "Veteran",
+    "disability": "Not disabled",
+    "ethnicity": "Asian"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "No",
+    "requires_us_sponsorship": "No",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "No",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "No",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "No",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "Yes",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7664
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7320
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46

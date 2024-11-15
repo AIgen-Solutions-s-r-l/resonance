@@ -1,133 +1,155 @@
-# Resume
-
-## Personal Information
-- **Name:** Jonathan
-- **Surname:** Smith
-- **Date of Birth:** 1990-07-15
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street, Apt 45
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0123
-- **Email:** jonathan.smith@email.com
-- **GitHub:** [github.com/jonathansmith](https://github.com/jonathansmith)
-- **LinkedIn:** [linkedin.com/in/jonathansmith](https://linkedin.com/in/jonathansmith)
-
-## Education Details
-- **Education Level:** Bachelor's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.8/4.0
-- **Start Date:** 2008-09-01
-- **Year of Completion:** 2012
-- **Exam:**
-  - Calculus I: A
-  - Data Structures: A+
-  - Algorithms: A
-  - Operating Systems: B+
-  - Software Engineering: A
-  - Database Systems: A
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-Present
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Developed and maintained web applications.
-  - Collaborated with cross-functional teams to deliver projects.
-  - Implemented new features based on user feedback.
-  - Conducted code reviews and provided mentorship to junior developers.
-  - Optimized application performance and security.
-
-- **Skills Acquired:**
-  - JavaScript
-  - React
-  - Node.js
-  - SQL
-  - Agile Methodologies
-  - Git
-  - RESTful APIs
-  - Unit Testing
-  - Problem Solving
-  - Team Collaboration
-
-## Projects
-- **Name:** E-commerce Platform Development
-  - **Description:** Designed and implemented a scalable e-commerce platform using MERN stack.
-  - **Link:** [ecommerce-project.com](https://ecommerce-project.com)
-
-- **Name:** Personal Finance Tracker
-  - **Description:** Developed a web application that helps users track their expenses and savings.
-  - **Link:** [finance-tracker.com](https://finance-tracker.com)
-
-## Achievements
-- **Name:** Employee of the Year
-  - **Description:** Awarded for outstanding performance and contributions to the team in 2020.
-
-- **Name:** Hackathon Winner
-  - **Description:** Led a team to victory in a 48-hour hackathon with an innovative app solution.
-
-- **Name:** Published Author
-  - **Description:** Authored a technical article in a renowned IT journal on modern web development practices.
-
-## Certifications
-- **Name:** Certified Scrum Master
-  - **Description:** Completed training and certification in Scrum methodologies.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Technology trends
-- Hiking
-- Photography
-- Cooking
-- Traveling
-- Gaming
-- Volunteering
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range (USD):** 80,000 - 100,000
-
-## Self Identification
-- **Gender:** Male
-- **Pronouns:** He/Him
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** No
-- **Requires US Visa:** Yes
-- **Requires US Sponsorship:** Yes
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** No
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In-Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** Yes
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Alex",
+    "surname": "Taylor",
+    "date_of_birth": "1990-05-15",
+    "country": "United Kingdom",
+    "city": "Belfast",
+    "address": "123 Art Lane, Belfast, Northern Ireland",
+    "phone_prefix": "+44",
+    "phone": "1234567890",
+    "email": "alex.taylor@email.com",
+    "github": "https://github.com/alextaylorart",
+    "linkedin": "https://linkedin.com/in/alextaylorart"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "University of the Arts London",
+      "field_of_study": "Fine Arts",
+      "final_evaluation_grade": "Distinction",
+      "start_date": "2014-09-01",
+      "year_of_completion": "2016",
+      "exam": {
+        "BA Fine Arts": "First Class",
+        "Art History": "A+",
+        "Painting Techniques": "A",
+        "Curation Studies": "A+",
+        "Visual Culture": "A",
+        "Critical Theory": "A-"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Art Curator",
+      "company": "Belfast Contemporary Art Centre",
+      "employment_period": "2018-04-01 to Present",
+      "location": "Belfast, Northern Ireland",
+      "industry": "Arts and Culture",
+      "key_responsibilities": [
+        "Curate art exhibitions showcasing local and international artists",
+        "Manage relationships with artists and art suppliers",
+        "Organize workshops and educational programs for the community",
+        "Develop marketing strategies to promote events and exhibitions",
+        "Evaluate and select artwork for exhibits"
+      ],
+      "skills_acquired": [
+        "Curation",
+        "Art History",
+        "Teamwork",
+        "Attention to Detail",
+        "Time Management",
+        "Event Planning",
+        "Public Speaking",
+        "Networking",
+        "Research",
+        "Collaboration"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Artistic Reflections",
+      "description": "An interactive exhibition exploring identity and self-expression through various art forms.",
+      "link": "https://belfastartcentre.com/artistic-reflections"
+    },
+    {
+      "name": "Local Artists Showcase",
+      "description": "A project aimed at promoting emerging local artists through curated exhibitions.",
+      "link": "https://belfastartcentre.com/local-artists-showcase"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Best Curatorial Practice Award",
+      "description": "Received recognition for excellence in curatorial practice at the Belfast Arts Festival."
+    },
+    {
+      "name": "Community Engagement Award",
+      "description": "Honored for outstanding contributions to community art programs."
+    },
+    {
+      "name": "Emerging Artist Support Fund",
+      "description": "Secured funding to support local emerging artists in their creative endeavors."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Professional Art Curation Certification",
+      "description": "Certified by the Arts Council for advanced curation skills and practices."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native"
+    },
+    {
+      "language": "Irish",
+      "proficiency": "Intermediate"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Abstract Painting",
+    "Art Therapy",
+    "Cultural Heritage",
+    "Photography",
+    "Community Arts",
+    "Graphic Design",
+    "Traveling"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$150,000+"
+  },
+  "self_identification": {
+    "gender": "Non-binary",
+    "pronouns": "they/them",
+    "veteran": "Veteran",
+    "disability": "Not disabled",
+    "ethnicity": "Caucasian"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "No",
+    "requires_us_sponsorship": "No",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "No",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}

@@ -1,133 +1,155 @@
-# Resume
-
-## Personal Information
-- **Name:** Sarah
-- **Surname:** Johnson
-- **Date of Birth:** 1988-04-15
-- **Country:** Canada
-- **City:** Toronto
-- **Address:** 123 Maple Street, Toronto, ON
-- **Phone Prefix:** +1
-- **Phone:** 416-555-0178
-- **Email:** sarah.johnson@example.com
-- **GitHub:** https://github.com/sarahjohnson
-- **LinkedIn:** https://linkedin.com/in/sarahjohnson
-
-## Experience Details
-- **Position:** Software Engineer
-- **Company:** Tech Innovations Inc.
-- **Employment Period:** 2015-2023
-- **Location:** Toronto, Canada
-- **Industry:** Information Technology
-- **Key Responsibilities:**
-  - Developed and maintained web applications.
-  - Collaborated with cross-functional teams to define project requirements.
-  - Conducted code reviews and provided mentorship to junior developers.
-  - Implemented automated testing processes to improve software quality.
-  - Participated in Agile ceremonies and contributed to sprint planning.
-
-- **Skills Acquired:**
-  - JavaScript
-  - React.js
-  - Node.js
-  - Python
-  - SQL
-  - Git
-  - Docker
-  - Agile Methodologies
-  - Problem Solving
-  - Communication Skills
-
-## Education Details
-- **Education Level:** Bachelor's Degree
-- **Institution:** University of Toronto
-- **Field of Study:** Computer Science
-- **Final Evaluation Grade:** 3.8/4.0
-- **Start Date:** 2006-09-01
-- **Year of Completion:** 2010
-- **Exam:**
-  - Calculus: A
-  - Data Structures: A
-  - Algorithms: A-
-  - Software Engineering: A
-  - Database Management: B+
-  - Web Development: A
-
-## Projects
-- **Name:** E-commerce Platform
-  - **Description:** Developed a full-stack e-commerce platform using React and Node.js.
-  - **Link:** https://github.com/sarahjohnson/ecommerce-platform
-
-- **Name:** Personal Finance Tracker
-  - **Description:** Created a personal finance management web application to help users track their expenses.
-  - **Link:** https://github.com/sarahjohnson/finance-tracker
-
-## Achievements
-- **Name:** Best Innovation Award
-  - **Description:** Received the Best Innovation Award at Tech Innovations for developing a unique software solution.
-
-- **Name:** Speaker at Tech Conference
-  - **Description:** Invited to speak at the Annual Tech Conference about Agile Development Practices.
-
-- **Name:** Employee of the Month
-  - **Description:** Recognized as Employee of the Month three times for outstanding performance.
-
-## Certifications
-- **Name:** AWS Certified Solutions Architect
-  - **Description:** Achieved certification to validate expertise in designing distributed systems on AWS.
-
-## Languages
-- **Language:** English
-  - **Proficiency:** Native
-- **Language:** French
-  - **Proficiency:** Intermediate
-- **Language:** Spanish
-  - **Proficiency:** Basic
-
-## Interests
-- Traveling
-- Coding Challenges
-- Photography
-- Hiking
-- Cooking
-- Volunteering
-- Reading
-
-## Availability
-- **Notice Period:** 2 weeks
-
-## Salary Expectations
-- **Salary Range USD:** $80,000 - $100,000
-
-## Self Identification
-- **Gender:** Female
-- **Pronouns:** She/Her
-- **Veteran:** No
-- **Disability:** No
-- **Ethnicity:** Caucasian
-
-## Legal Authorization
-- **EU Work Authorization:** No
-- **US Work Authorization:** Yes
-- **Requires US Visa:** No
-- **Requires US Sponsorship:** No
-- **Requires EU Visa:** No
-- **Legally Allowed to Work in EU:** No
-- **Legally Allowed to Work in US:** Yes
-- **Requires EU Sponsorship:** No
-- **Canada Work Authorization:** Yes
-- **Requires Canada Visa:** No
-- **Legally Allowed to Work in Canada:** Yes
-- **Requires Canada Sponsorship:** No
-- **UK Work Authorization:** No
-- **Requires UK Visa:** No
-- **Legally Allowed to Work in UK:** No
-- **Requires UK Sponsorship:** No
-
-## Work Preferences
-- **Remote Work:** Yes
-- **In Person Work:** Yes
-- **Open to Relocation:** Yes
-- **Willing to Complete Assessments:** Yes
-- **Willing to Undergo Drug Tests:** No
-- **Willing to Undergo Background Checks:** Yes
+{
+  "personal_information": {
+    "name": "Carlos",
+    "surname": "Gonzalez",
+    "date_of_birth": "1985-04-15",
+    "country": "United Kingdom",
+    "city": "Manchester",
+    "address": "221B Baker Street, Manchester, M1 2AB",
+    "phone_prefix": "+44",
+    "phone": "7941234567",
+    "email": "carlos.gonzalez@email.com",
+    "github": "https://github.com/carlosgonzalez",
+    "linkedin": "https://www.linkedin.com/in/carlosgonzalez"
+  },
+  "education_details": [
+    {
+      "education_level": "Bachelor's Degree",
+      "institution": "University of Manchester",
+      "field_of_study": "Business Administration",
+      "final_evaluation_grade": "2:1",
+      "start_date": "2003-09-01",
+      "year_of_completion": 2006,
+      "exam": {
+        "Mathematics": "A",
+        "Economics": "B",
+        "Business Studies": "A",
+        "Marketing": "B",
+        "Statistics": "A",
+        "Management": "B"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Insurance Agent",
+      "company": "SecureLife Insurance Ltd.",
+      "employment_period": "2015-06-01 to Present",
+      "location": "Manchester, UK",
+      "industry": "Insurance",
+      "key_responsibilities": [
+        "Provided exceptional customer service to clients.",
+        "Managed client accounts using CRM software.",
+        "Resolved client inquiries and complaints effectively.",
+        "Collaborated with team members to improve service delivery.",
+        "Developed personalized insurance plans for customers."
+      ],
+      "skills_acquired": [
+        "Customer Service",
+        "CRM Software",
+        "Problem-solving",
+        "Teamwork",
+        "Negotiation",
+        "Sales Strategies",
+        "Conflict Resolution",
+        "Time Management",
+        "Data Analysis",
+        "Product Knowledge"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Client Satisfaction Campaign",
+      "description": "Led a campaign to improve client satisfaction scores by implementing feedback loops.",
+      "link": "https://www.securelifecampaigns.com/satisfaction"
+    },
+    {
+      "name": "Insurance Awareness Program",
+      "description": "Developed and conducted workshops to educate clients on various insurance products.",
+      "link": "https://www.securelifecampaigns.com/awareness"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Top Performer Award 2022",
+      "description": "Recognized as the top insurance agent for outstanding sales performance."
+    },
+    {
+      "name": "Customer Service Excellence Award",
+      "description": "Awarded for consistently exceeding customer service expectations."
+    },
+    {
+      "name": "Team Leadership Recognition",
+      "description": "Acknowledged for leading a high-performance team during peak sales season."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Insurance Sales Certification",
+      "description": "Certified in insurance sales and customer relations management."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "French",
+      "proficiency": "Basic"
+    }
+  ],
+  "interests": [
+    "Traveling",
+    "Photography",
+    "Reading",
+    "Cooking",
+    "Volunteering",
+    "Fitness",
+    "Technology"
+  ],
+  "availability": {
+    "notice_period": "1 month"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$60,000 - $70,000"
+  },
+  "self_identification": {
+    "gender": "Male",
+    "pronouns": "he/him",
+    "veteran": "Non-veteran",
+    "disability": "Disabled",
+    "ethnicity": "Hispanic"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "Yes",
+    "us_work_authorization": "No",
+    "requires_us_visa": "Yes",
+    "requires_us_sponsorship": "Yes",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "Yes",
+    "legally_allowed_to_work_in_us": "No",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "Yes",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "Yes",
+    "uk_work_authorization": "Yes",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "Yes",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "Yes",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "Yes",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}

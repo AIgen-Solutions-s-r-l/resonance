@@ -1,142 +1,163 @@
 ### Curriculum Vitae
-# Resume
-
-## Personal Information
-**Name:** Alexander  
-**Surname:** Carter  
-**Date of Birth:** 1990-05-15  
-**Country:** Canada  
-**City:** Toronto  
-**Address:** 123 Maple Street  
-**Phone Prefix:** +1  
-**Phone:** 416-555-0199  
-**Email:** alexander.carter@example.com  
-**GitHub:** [github.com/alexcarter](https://github.com/alexcarter)  
-**LinkedIn:** [linkedin.com/in/alexcarter](https://linkedin.com/in/alexcarter)  
-
-## Education Details
-- **Education Level:** Master’s Degree  
-  **Institution:** University of Toronto  
-  **Field of Study:** Computer Science  
-  **Final Evaluation Grade:** A  
-  **Start Date:** 2012-09-01  
-  **Year of Completion:** 2014  
-  **Exam:**  
-  - Advanced Algorithms: A  
-  - Machine Learning: A  
-  - Data Structures: A-  
-  - Software Engineering: A  
-  - Database Systems: B+  
-  - Network Security: A  
-
-## Experience Details
-- **Position:** Software Engineer  
-  **Company:** Tech Innovations Inc.  
-  **Employment Period:** 2015-06-01 to Present  
-  **Location:** Toronto, Canada  
-  **Industry:** Information Technology  
-  **Key Responsibilities:**  
-  - Developed and maintained web applications.  
-  - Collaborated with cross-functional teams to define project specifications.  
-  - Implemented API integrations for third-party services.  
-  - Conducted code reviews and provided mentorship to junior developers.  
-  - Analyzed user feedback to improve software functionality.  
-  **Skills Acquired:**  
-  - JavaScript  
-  - Python  
-  - React  
-  - Node.js  
-  - SQL  
-  - Agile Methodologies  
-  - Problem Solving  
-  - Team Collaboration  
-  - API Development  
-  - Cloud Computing  
-
-## Projects
-- **Name:** Smart Home Automation  
-  **Description:** Developed a smart home system that allows users to control appliances via mobile application.  
-  **Link:** [github.com/alexcarter/smart-home-automation](https://github.com/alexcarter/smart-home-automation)  
-
-- **Name:** E-commerce Platform  
-  **Description:** Created a full-stack e-commerce platform with payment integration and user authentication.  
-  **Link:** [github.com/alexcarter/e-commerce-platform](https://github.com/alexcarter/e-commerce-platform)  
-
-## Achievements
-- **Name:** Employee of the Month  
-  **Description:** Recognized as Employee of the Month for outstanding performance and project delivery.  
-
-- **Name:** Hackathon Winner  
-  **Description:** Won first place in a regional hackathon for developing an innovative app within 48 hours.  
-
-- **Name:** Published Article  
-  **Description:** Published an article on emerging technologies in the Journal of Computer Science.  
-
-## Certifications
-- **Name:** AWS Certified Solutions Architect  
-  **Description:** Achieved certification demonstrating expertise in designing distributed systems on AWS.  
-
-## Languages
-- **Language:** English  
-  **Proficiency:** Native  
-
-- **Language:** French  
-  **Proficiency:** Intermediate  
-
-- **Language:** Spanish  
-  **Proficiency:** Basic  
-
-## Interests
-- Hiking  
-- Photography  
-- Technology Trends  
-- Traveling  
-- Videogames  
-- Reading  
-- Cooking  
-
-## Availability
-- **Notice Period:** 2 weeks  
-
-## Salary Expectations
-- **Salary Range (USD):** 80,000 - 100,000  
-
-## Self Identification
-- **Gender:** Male  
-- **Pronouns:** He/Him  
-- **Veteran:** No  
-- **Disability:** No  
-- **Ethnicity:** Caucasian  
-
-## Legal Authorization
-- **EU Work Authorization:** No  
-- **US Work Authorization:** No  
-- **Requires US Visa:** Yes  
-- **Requires US Sponsorship:** Yes  
-- **Requires EU Visa:** No  
-- **Legally Allowed to Work in EU:** No  
-- **Legally Allowed to Work in US:** No  
-- **Requires EU Sponsorship:** No  
-- **Canada Work Authorization:** Yes  
-- **Requires Canada Visa:** No  
-- **Legally Allowed to Work in Canada:** Yes  
-- **Requires Canada Sponsorship:** No  
-- **UK Work Authorization:** No  
-- **Requires UK Visa:** No  
-- **Legally Allowed to Work in UK:** No  
-- **Requires UK Sponsorship:** No  
-
-## Work Preferences
-- **Remote Work:** Yes  
-- **In Person Work:** No  
-- **Open to Relocation:** Yes  
-- **Willing to Complete Assessments:** Yes  
-- **Willing to Undergo Drug Tests:** No  
-- **Willing to Undergo Background Checks:** Yes  
+{
+  "personal_information": {
+    "name": "Jessica",
+    "surname": "Lopez",
+    "date_of_birth": "1988-04-15",
+    "country": "USA",
+    "city": "New York",
+    "address": "123 Elm Street, Apt 4B",
+    "phone_prefix": "+1",
+    "phone": "5551234567",
+    "email": "jessica.lopez@example.com",
+    "github": "https://github.com/jessicalopez",
+    "linkedin": "https://www.linkedin.com/in/jessica-lopez"
+  },
+  "education_details": [
+    {
+      "education_level": "Master's Degree",
+      "institution": "Columbia University",
+      "field_of_study": "Insurance Management",
+      "final_evaluation_grade": "3.9",
+      "start_date": "2010-09-01",
+      "year_of_completion": "2012",
+      "exam": {
+        "GRE": "320",
+        "TOEFL": "110",
+        "Insurance Principles": "A",
+        "Finance for Insurance": "A-",
+        "Risk Management": "A",
+        "Quantitative Methods": "B+"
+      }
+    }
+  ],
+  "experience_details": [
+    {
+      "position": "Senior Underwriter",
+      "company": "Great American Insurance",
+      "employment_period": "2015-06-01 to Present",
+      "location": "New York, USA",
+      "industry": "Insurance",
+      "key_responsibilities": [
+        "Assessing risks for various insurance policies",
+        "Working with clients to understand their insurance needs",
+        "Reviewing and analyzing underwriting submissions",
+        "Ensuring compliance with regulatory requirements",
+        "Collaborating with team members to enhance underwriting processes"
+      ],
+      "skills_acquired": [
+        "Regulatory Compliance",
+        "Microsoft Office",
+        "Underwriting Software",
+        "Data Analysis Tools",
+        "Teamwork",
+        "Decision Making",
+        "Risk Assessment",
+        "Client Relationship Management",
+        "Report Generation",
+        "Market Research"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Insurance Process Optimization",
+      "description": "Led a project to streamline the underwriting process, reducing time by 30%",
+      "link": "https://www.exampleproject.com/optimization"
+    },
+    {
+      "name": "Client Satisfaction Initiative",
+      "description": "Developed a client feedback system to improve service delivery and policy satisfaction.",
+      "link": "https://www.exampleproject.com/satisfaction"
+    }
+  ],
+  "achievements": [
+    {
+      "name": "Top Underwriter Award",
+      "description": "Recognized as the top underwriter in the company for two consecutive years."
+    },
+    {
+      "name": "Process Improvement Champion",
+      "description": "Awarded for significant contributions to process enhancements within the underwriting team."
+    },
+    {
+      "name": "Certified Insurance Professional",
+      "description": "Achieved certification in insurance management and underwriting."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Chartered Property Casualty Underwriter (CPCU)",
+      "description": "Professional designation for property-casualty insurance and risk management."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Fluent"
+    },
+    {
+      "language": "French",
+      "proficiency": "Intermediate"
+    }
+  ],
+  "interests": [
+    "Traveling",
+    "Yoga",
+    "Photography",
+    "Cooking",
+    "Reading",
+    "Volunteering",
+    "Gardening"
+  ],
+  "availability": {
+    "notice_period": "2 months"
+  },
+  "salary_expectations": {
+    "salary_range_usd": "$70,000 - $80,000"
+  },
+  "self_identification": {
+    "gender": "Female",
+    "pronouns": "she/her",
+    "veteran": "Prefer not to say",
+    "disability": "Disabled",
+    "ethnicity": "Multiracial"
+  },
+  "legal_authorization": {
+    "eu_work_authorization": "No",
+    "us_work_authorization": "Yes",
+    "requires_us_visa": "No",
+    "requires_us_sponsorship": "No",
+    "requires_eu_visa": "No",
+    "legally_allowed_to_work_in_eu": "No",
+    "legally_allowed_to_work_in_us": "Yes",
+    "requires_eu_sponsorship": "No",
+    "canada_work_authorization": "No",
+    "requires_canada_visa": "No",
+    "legally_allowed_to_work_in_canada": "No",
+    "requires_canada_sponsorship": "No",
+    "uk_work_authorization": "No",
+    "requires_uk_visa": "No",
+    "legally_allowed_to_work_in_uk": "No",
+    "requires_uk_sponsorship": "No"
+  },
+  "work_preferences": {
+    "remote_work": "No",
+    "in_person_work": "Yes",
+    "open_to_relocation": "No",
+    "willing_to_complete_assessments": "Yes",
+    "willing_to_undergo_drug_tests": "Yes",
+    "willing_to_undergo_background_checks": "Yes"
+  }
+}
 --------------------------------------------------
 ### Punteggio di Similarità e Metriche
-Cosine Similarity: 0.7594
-Keyword Match Percentage: 38.46%
-Keyword Density: 1.78%
-Sentiment Score: 0.1050
-Readability Score: 15.71
+Cosine Similarity: 0.7215
+Keyword Match Percentage: 7.69%
+Keyword Density: 0.79%
+Sentiment Score: -0.2300
+Readability Score: -37.46
