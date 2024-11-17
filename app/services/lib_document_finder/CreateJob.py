@@ -1,18 +1,4 @@
 import os
-import psycopg
-from openai import OpenAI
-from pgvector.psycopg import register_vector
-
-# Step 1: Set up OpenAI API Key
-openai_api_key = "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"
-os.environ["OPENAI_API_KEY"] = openai_api_key
-
-# Step 2: Initialize OpenAI client
-client = OpenAI()
-
-
-
-import os
 import requests
 from langchain import OpenAI
 from langchain.docstore.document import Document
@@ -695,6 +681,8 @@ Include the following sections in a random order, and ensure that all data corre
 Provide only the plaintext code for the job description, without any explanations or additional text and also without ```markdown ```, ```json ```, ``` ```
 """
 
+
+
 # Create the prompt and LLM chain
 prompt = ChatPromptTemplate.from_template(prompt_template)
 chain = prompt | llm | StrOutputParser()
@@ -709,7 +697,6 @@ cartella = os.path.dirname(os.path.abspath(__file__))
 cartella_jobs = os.path.join(cartella, "jobs_descriptions")
 os.makedirs(cartella_jobs, exist_ok=True)
 
-job_descriptions = []
 # Genera e salva i file curriculum
 for i in range(num_curriculum):
     variables = generate_variables()
@@ -718,45 +705,5 @@ for i in range(num_curriculum):
     file_path = os.path.join(cartella_jobs, filename)
     # with open(file_path, "w", encoding="utf-8") as file:
     #     file.write(curriculum)
-    job_descriptions.append(curriculum)
     curricula.append(curriculum)
-    # print(f"Created {file_path}")
-
-
-
-# Step 4: Embed the job descriptions using OpenAI
-response = client.embeddings.create(input=job_descriptions, model='text-embedding-ada-002')
-embeddings = [v.embedding for v in response.data]
-
-# Step 5: Connect to PostgreSQL and insert data
-conn = psycopg.connect(dbname="hawk", user="user", password="pass", host="127.0.0.1", port="5432", autocommit=True)
-
-# Register the pgvector extension
-register_vector(conn)
-
-# Create a cursor for executing SQL commands
-cursor = conn.cursor()
-
-# Ensure the table exists. You can use the following SQL schema to create it:
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS job_descriptions (
-    id bigserial PRIMARY KEY,
-    job_description text,
-    embedding vector(1536)  -- Assuming OpenAI's embedding has dimension 1536
-);
-""")
-
-# Step 6: Insert the job descriptions and embeddings into the table
-insert_sql = """
-INSERT INTO job_descriptions (job_description, embedding)
-VALUES (%s, %s);
-"""
-
-for job_desc, embedding in zip(job_descriptions, embeddings):
-    cursor.execute(insert_sql, (job_desc, embedding))
-
-# Close the cursor and the connection
-cursor.close()
-conn.close()
-
-print("Job descriptions and embeddings have been inserted into the database.")
+    print(f"Created {file_path}")
