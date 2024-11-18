@@ -1,4 +1,6 @@
+# app/services/message_sender.py
 from loguru import logger
+
 from app.core.config import Settings
 from app.core.rabbitmq_client import RabbitMQClient
 

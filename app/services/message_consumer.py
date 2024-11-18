@@ -3,6 +3,7 @@
 import json
 import logging
 
+
 def process_message(ch, method, properties, body):
     try:
         message = json.loads(body)

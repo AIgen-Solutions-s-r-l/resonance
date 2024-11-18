@@ -1,3 +1,4 @@
+# app/core/rabbitmq_client.py
 import json
 import pika
 from loguru import logger
