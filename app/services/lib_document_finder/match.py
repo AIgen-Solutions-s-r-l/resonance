@@ -1,9 +1,4 @@
 import os
-import re
-import numpy as np
-from collections import Counter
-from datetime import datetime
-
 
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -21,8 +16,6 @@ os.environ["OPENAI_API_KEY"] = openai_api_key
 
 # Step 2: Initialize OpenAI embeddings
 embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
-
-
 
 # Step 3: Leggi i curricula dalla cartella resumes
 cartella = os.path.dirname(os.path.abspath(__file__))

@@ -1,11 +1,8 @@
 import os
 import numpy as np
-from datetime import datetime
-from typing import List, Dict
+from typing import Dict
 import json
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.docstore.document import Document
-from langchain.vectorstores import FAISS
 import openai
 
 class CVMetricsAnalyzer:
@@ -158,26 +155,3 @@ class CVMetricsAnalyzer:
                 f.write(f"Active Voice Percentage: {metrics['active_voice_percentage']:.2%}\n")
                 f.write(f"Soft Skill Match Percentage: {metrics['soft_skill_match_percentage']:.2%}\n")
                 f.write(f"Education Match Percentage: {metrics['education_match_percentage']:.2%}\n")
-
-def main():
-    # Initialize analyzer
-    api_key = "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA"
-    analyzer = CVMetricsAnalyzer(api_key)
-    
-    # Set paths
-    current_dir = os.getcwd()
-    cv_folder = os.path.join(current_dir, "CreateCV")
-    output_folder = os.path.join(cv_folder, "OutputResumes")
-    
-    # Example job description
-    job_description = """
-    Tech Innovators Inc. is seeking a Senior Data Scientist with proficiency in Python, 
-    deep learning frameworks, and cloud platforms...
-    """
-    
-    # Process all CVs
-    analyzer.process_curricula(cv_folder, job_description, output_folder)
-    print("Analysis complete. Results saved in OutputResumes folder.")
-
-if __name__ == "__main__":
-    main()
