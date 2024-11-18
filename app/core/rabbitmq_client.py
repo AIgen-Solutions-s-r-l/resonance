@@ -1,85 +1,53 @@
-# app/core/rabbitmq_client.py
+import aio_pika
+import asyncio
 import json
-import pika
-from loguru import logger
-from typing import Optional, Callable
+import logging
 
-
-class RabbitMQClient:
-    """
-    A utility class for managing RabbitMQ connections, channels, and basic message operations.
-    """
-
-    def __init__(self, rabbitmq_url: str) -> None:
-        """
-        Initializes the RabbitMQClient with a connection URL.
-        """
+class AsyncRabbitMQClient:
+    def __init__(self, rabbitmq_url: str):
         self.rabbitmq_url = rabbitmq_url
-        self.connection: Optional[pika.BlockingConnection] = None
-        self.channel: Optional[pika.adapters.blocking_connection.BlockingChannel] = None
+        self.connection = None
+        self.channel = None
 
-    def connect(self) -> None:
-        """
-        Connects to RabbitMQ using the BlockingConnection and opens a channel.
-        """
-        if not self.connection or self.connection.is_closed:
-            parameters = pika.URLParameters(self.rabbitmq_url)
-            self.connection = pika.BlockingConnection(parameters)
-            self.channel = self.connection.channel()
-            logger.info("Connected to RabbitMQ")
+    async def connect(self) -> None:
+        """Establish an asynchronous connection to RabbitMQ using aio_pika."""
+        self.connection = await aio_pika.connect_robust(self.rabbitmq_url)
+        self.channel = await self.connection.channel()
+        logging.info("RabbitMQ connection and channel initialized.")
 
-    def ensure_queue(self, queue: str, durable: bool = False) -> None:
-        """
-        Declares a queue to ensure it exists.
+    async def declare_queue(self, queue_name: str) -> aio_pika.Queue:
+        queue = await self.channel.declare_queue(queue_name, durable=True)
+        logging.info(f"Declared queue '{queue_name}' with durability set to True.")
+        return queue
 
-        Parameters:
-            queue (str): The queue name.
-            durable (bool): If True, makes the queue durable.
-        """
-        if self.channel and self.channel.is_open:
-            self.channel.queue_declare(queue=queue, durable=durable)
-            logger.info(f"Queue '{queue}' ensured (declared with durability={durable})")
+    async def send_message(self, queue: str, message: dict):
+        """Asynchronously send a message to the specified queue."""
+        if not self.channel:
+            await self.connect()
 
-    def publish_message(self, queue: str, message: dict, persistent: bool = False) -> None:
-        """
-        Publishes a JSON-encoded message to the specified queue.
+        await self.declare_queue(queue)
 
-        Parameters:
-            queue (str): The queue to which the message will be published.
-            message (dict): The message content as a dictionary.
-            persistent (bool): If True, makes the message persistent.
-        """
-        self.connect()
-        # Set durable=False when ensuring the queue, to match the non-durable configuration
-        self.ensure_queue(queue, durable=False)
-        message_body = json.dumps(message)
-        self.channel.basic_publish(
-            exchange='',
-            routing_key=queue,
-            body=message_body,
-            properties=pika.BasicProperties(delivery_mode=2 if persistent else 1)
+        message_body = json.dumps(message).encode()
+        await self.channel.default_exchange.publish(
+            aio_pika.Message(body=message_body, delivery_mode=aio_pika.DeliveryMode.PERSISTENT),
+            routing_key=queue
         )
-        logger.info(f"Message sent to queue '{queue}': {message}")
+        logging.info(f"Message sent to queue '{queue}': {message}")
 
-    def consume_messages(self, queue: str, callback: Callable, auto_ack: bool = True) -> None:
-        """
-        Sets up a consumer with the specified callback.
+    async def consume_messages(self, queue: str, callback):
+        """Consume messages asynchronously from the queue."""
+        if not self.channel:
+            await self.connect()
 
-        Parameters:
-            queue (str): The queue to consume messages from.
-            callback (Callable): The callback function to process each message.
-            auto_ack (bool): If True, enables automatic message acknowledgment.
-        """
-        self.connect()
-        self.ensure_queue(queue, durable=False)  # Set durable=False for non-durable queues
-        self.channel.basic_consume(queue=queue, on_message_callback=callback, auto_ack=auto_ack)
-        logger.info(f"Started consuming messages from queue '{queue}'")
-        self.channel.start_consuming()
+        queue_obj = await self.declare_queue(queue)
+        logging.info(f"Started consuming messages from queue '{queue}'")
 
-    def close(self) -> None:
-        """
-        Closes the RabbitMQ connection if it is open.
-        """
-        if self.connection and not self.connection.is_closed:
-            self.connection.close()
-            logger.info("RabbitMQ connection closed")
+        async with queue_obj.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process():
+                    await callback(message)
+
+    async def close_connection(self):
+        if self.connection:
+            await self.connection.close()
+            logging.info("RabbitMQ connection closed.")
