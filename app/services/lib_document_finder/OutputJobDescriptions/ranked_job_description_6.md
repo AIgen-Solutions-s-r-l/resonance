@@ -1,42 +1,46 @@
 ### Job Description
-Job Title: Senior Project Consultant
+Job Title: Human Resources Coordinator
 
-Location: Karnataka, India
+Location: Catalonia, Spain
 
-Industry: Consulting
+Industry: Human Resources
 
-Salary Range: $100,000 - $120,000
+Salary Range: $20,000 - $30,000
 
-Notice Period: 1 Week
+Notice Period: More than 3 months
 
 Job Description:
-We are seeking a highly skilled Senior Project Consultant to join our dynamic team in Karnataka. The ideal candidate will possess strong project management skills and a deep understanding of consulting practices. You will be responsible for leading projects from inception to completion, ensuring they are delivered on time, within scope, and with a high level of quality.
+We are seeking a dedicated and detail-oriented Human Resources Coordinator to join our dynamic team in Catalonia. This position is crucial in supporting our HR functions and ensuring a positive workplace environment. The ideal candidate will possess strong skills in training and development, payroll software, and HRIS systems.
 
-Responsibilities:
-- Manage multiple consulting projects simultaneously, overseeing all phases from planning to execution.
-- Utilize ERP systems to streamline project processes and resources.
-- Conduct thorough data analysis using advanced data analysis tools to inform decision-making and project strategies.
-- Collaborate closely with clients to understand their needs and provide tailored solutions.
-- Prepare and present reports and presentations using Microsoft Office tools to stakeholders.
-- Facilitate effective communication across teams and with clients to ensure project alignment.
-- Apply analytical thinking to solve complex project challenges and identify opportunities for improvement.
-- Maintain a structured timeline for project deliverables, demonstrating exceptional time management skills.
+Key Responsibilities:
+- Develop and implement training programs to enhance employee skills and performance.
+- Manage payroll processing using payroll software, ensuring accuracy and compliance.
+- Maintain and update the HRIS systems, ensuring all employee records are accurate and up to date.
+- Provide empathetic support to employees regarding HR-related inquiries and concerns.
+- Communicate effectively with team members and management to foster a collaborative work environment.
+- Demonstrate attention to detail in all aspects of HR administration and documentation.
 
 Required Skills:
-- Proven experience in Project Management within the consulting industry.
-- Proficiency in Microsoft Office Suite (Excel, PowerPoint, Word).
-- Hands-on experience with ERP systems and their application in project management.
-- Strong familiarity with data analysis tools and techniques.
-- Excellent analytical thinking skills to break down complex issues and develop effective solutions.
-- Exceptional time management skills to prioritize tasks and meet deadlines.
-- Outstanding communication skills, both verbal and written, with the ability to engage and influence stakeholders.
+- Training and Development: Ability to design and deliver effective training programs.
+- Payroll Software: Proficient in using payroll systems to manage employee compensation.
+- HRIS Systems: Experience with HRIS software for record-keeping and reporting.
+- Empathy: Strong interpersonal skills to understand and address employee needs.
+- Communication: Excellent verbal and written communication skills.
+- Attention to Detail: Keen ability to maintain accuracy in HR documentation and processes.
 
 Qualifications:
-- Bachelor’s degree in Business Administration, Project Management, or a related field.
-- 5+ years of experience in project management or consulting roles.
-- Relevant certifications in project management (PMP, PRINCE2) are a plus.
+- Bachelor's degree in Human Resources, Business Administration, or a related field.
+- Minimum of 2 years of experience in an HR role or similar position.
+- Familiarity with labor laws and HR best practices.
+- Proficient in Microsoft Office Suite and HR software applications.
 
-If you are a motivated professional with a passion for consulting and a commitment to excellence, we invite you to apply for this exciting opportunity.
+Benefits:
+- Competitive salary within the specified range.
+- Opportunities for professional development and growth.
+- A supportive and inclusive work environment.
+
+To Apply:
+Interested candidates should submit their resume and a cover letter detailing their relevant experience and skills. We look forward to welcoming a new member to our HR team!
 --------------------------------------------------
 ### Cosine Distance
--0.7297
+0.2828

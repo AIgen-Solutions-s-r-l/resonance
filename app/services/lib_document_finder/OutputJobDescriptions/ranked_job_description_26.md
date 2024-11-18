@@ -1,47 +1,45 @@
 ### Job Description
-Job Title: Junior Fashion Designer
+Job Title: Fashion Merchandiser
 
-Company: Trendy Threads GmbH
+Location: Perth, Western Australia, Australia
 
-Location: Berlin, Germany
+Salary Range: $40,000 - $50,000 per annum
+
+Notice Period: 3 months
 
 Industry: Fashion
 
-Salary Range: $20,000 - $30,000
-
-Notice Period: 3 Months
-
-Job Description:
-Trendy Threads GmbH is seeking a passionate and creative Junior Fashion Designer to join our innovative team in Berlin. Our company focuses on blending modern aesthetics with sustainable practices in the fashion industry. This role is perfect for someone who thrives in a fast-paced environment and is eager to contribute to our dynamic design team.
+Job Summary:
+We are seeking a creative and organized Fashion Merchandiser to join our dynamic team at Trendy Threads, an innovative fashion enterprise located in the heart of Western Australia. The ideal candidate will be responsible for planning and executing merchandising strategies that enhance product visibility and drive sales. 
 
 Key Responsibilities:
-- Collaborate with senior designers to develop new fashion collections, ensuring alignment with brand vision.
-- Create detailed technical sketches and design concepts using Adobe Illustrator.
-- Participate in brainstorming sessions and contribute to the development of innovative design ideas.
-- Assist in preparing presentation materials for internal and external stakeholders.
-- Conduct market research to identify emerging trends and competitors.
-- Ensure all designs meet quality standards and adhere to production timelines.
+- Develop and implement effective merchandising strategies that align with the company's brand identity.
+- Utilize sketching tools to create visual representations of merchandise displays and product layouts.
+- Collaborate with the design team using Adobe Illustrator to develop promotional materials and product designs.
+- Employ CAD software to create technical drawings and specifications for product designs.
+- Manage timelines effectively to ensure projects are completed on schedule, meeting all deadlines.
+- Communicate regularly with suppliers, vendors, and other stakeholders to ensure smooth operations and product availability.
 
 Required Skills:
-- Proficient in Adobe Illustrator and other design software.
-- Strong design skills with a keen eye for detail and aesthetics.
-- Excellent communication abilities to effectively collaborate with team members and present ideas.
-- High attention to detail, ensuring accuracy in designs and technical specifications.
-- Creative mindset with a passion for fashion and sustainability.
+- Proven experience in merchandising within the fashion industry.
+- Proficiency in sketching tools to visualize concepts and layouts.
+- Strong knowledge of Adobe Illustrator for graphic design and promotional materials.
+- Experience using CAD software for technical drawings related to fashion design.
+- Exceptional time management skills to balance multiple projects and deadlines.
+- Excellent communication skills, both written and verbal, to collaborate with various teams.
 
 Qualifications:
-- Bachelor’s degree in Fashion Design or a related field.
-- 1-2 years of experience in fashion design or a similar role (internships included).
-- A portfolio showcasing your design skills and projects.
+- Bachelor's degree in Fashion Merchandising, Design, or a related field.
+- Minimum of 2 years of experience in a merchandising role within the fashion industry.
+- Strong portfolio showcasing previous design and merchandising work.
 
-What We Offer:
-- A collaborative and supportive work environment in the heart of Berlin.
-- Opportunity to work on exciting projects with a focus on sustainability.
-- Professional development opportunities and mentorship from experienced designers.
-- Flexible working hours and a healthy work-life balance.
+Benefits:
+- Competitive salary within the specified range.
+- Opportunity for career growth and advancement within the company.
+- Employee discounts on all products.
+- Dynamic and creative work environment.
 
-Application Process:
-Interested candidates should submit their resume, cover letter, and portfolio to careers@trendythreads.com. Please include "Junior Fashion Designer Application" in the subject line. We look forward to seeing how you can contribute to our team!
+To apply, please submit your resume and a cover letter outlining your relevant experience and why you are the perfect fit for Trendy Threads.
 --------------------------------------------------
 ### Cosine Distance
--0.7076
+0.3057

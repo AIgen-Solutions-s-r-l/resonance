@@ -1,7 +1,37 @@
+import sys
 import os
 import psycopg
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.docstore.document import Document
+from app.core.config import Settings
+from app.core.rabbitmq_client import RabbitMQClient
+
+async def notify_apply(jobs: list[str]):
+    """
+    Publishes a message to the career_docs queue after a job is processed.
+
+    Args:
+        user_id (str): The ID of the user associated with the job.
+        job_id (str): The ID of the processed job.
+    """
+    message = {
+        "jobs": jobs,
+    }
+    try:
+        rabbitmq_client.publish_message(queue=settings.career_docs_queue, message=message)
+        print(f"Notification sent for job list {jobs[0][:30]}")
+    except Exception as e:
+        print(f"Failed to send notification for job list {jobs[0][:30]}")
+
+
+# Initialize settings and RabbitMQ client
+settings = Settings()
+rabbitmq_client = RabbitMQClient(settings.rabbitmq_url)
+rabbitmq_client.connect()
+rabbitmq_client.start()
+
 
 # Step 1: Set up OpenAI API Key
 openai_api_key = "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA"
@@ -24,9 +54,12 @@ cursor = conn.cursor()
 # Step 4: Retrieve the CV text from the database
 # cursor.execute("SELECT cv_text FROM cvs WHERE cv_id = 1;")
 # cv_text = cursor.fetchone()[0]
-cv_text = """
-John Doe is an experienced data scientist with a strong background in machine learning, deep learning, and cloud technologies. He has worked extensively with Python, TensorFlow, PyTorch, and AWS. John has a PhD in Computer Science and has published several papers on AI and machine learning algorithms. He has also led teams in deploying scalable ML models in production environments.
-"""
+# cv_text = """
+# John Doe is an experienced data scientist with a strong background in machine learning, deep learning, and cloud technologies. He has worked extensively with Python, TensorFlow, PyTorch, and AWS. John has a PhD in Computer Science and has published several papers on AI and machine learning algorithms. He has also led teams in deploying scalable ML models in production environments.
+# """
+
+with open('plain_text_resume.yaml', 'r') as file:
+    cv_text = file.read()
 
 # Step 5: Create the embedding for the CV
 cv_embedding = embedding_model.embed_documents([cv_text])[0]
@@ -36,7 +69,7 @@ cv_embedding_str = "[" + ",".join(map(str, cv_embedding)) + "]"
 
 # Step 6: Execute the SQL query to find the top 4 job descriptions
 query = """
-SELECT job_description, embedding <#> %s::vector AS distance
+SELECT job_description, embedding <=> %s::vector AS distance
 FROM job_descriptions
 ORDER BY distance
 LIMIT 50;
@@ -62,4 +95,6 @@ for idx, (job_desc_text, distance) in enumerate(top_job_descriptions):
         output_file.write(f"{distance:.4f}\n")
         print(f"Created {output_filename} with distance {distance:.4f}")
 
-print("Top 4 job descriptions have been ranked and saved to the OutputJobDescriptions folder.")
+notify_apply(top_job_descriptions)
+    
+print("Top job descriptions have been ranked and saved to the OutputJobDescriptions folder.")

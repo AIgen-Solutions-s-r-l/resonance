@@ -1,43 +1,45 @@
 ### Job Description
-Job Title: Agricultural Technician
+Job Title: Drilling and Excavation Specialist
 
-Location: Hesse, Germany
+Location: Australian Capital Territory, Australia
 
-Industry: Agriculture
+Industry: Mining
 
-Salary Range: $60,000 - $70,000
+Salary Range: $20,000 - $30,000
 
-Notice Period: Immediate
+Notice Period: 1 Month
 
-Job Description:
-We are seeking a dedicated and skilled Agricultural Technician to join our innovative farming enterprise in Hesse, Germany. The ideal candidate will play a crucial role in the management and optimization of irrigation systems, ensuring efficient water usage and crop health.
+Job Summary:
+We are seeking a dedicated Drilling and Excavation Specialist to join our dynamic team in the mining industry. The successful candidate will play a crucial role in ensuring the safe and efficient operation of drilling equipment and excavators while adhering to safety compliance regulations. This position requires a proactive approach to teamwork and collaboration with various departments.
 
 Key Responsibilities:
-- Design, install, and maintain advanced irrigation systems tailored to specific crop needs.
-- Utilize GPS technology to map and monitor farm fields, optimizing plant growth and resource allocation.
-- Collaborate with team members to develop and implement effective agricultural strategies.
-- Troubleshoot and resolve issues related to irrigation and equipment functionality.
-- Maintain detailed records of irrigation schedules, equipment maintenance, and crop yields.
+- Operate and maintain drilling equipment and excavators to ensure optimal performance and adherence to safety standards.
+- Conduct regular inspections and maintenance of machinery to prevent operational failures and ensure compliance with safety regulations.
+- Utilize GIS software to analyze site data and assist in planning drilling and excavation activities effectively.
+- Collaborate with team members to develop and implement best practices for safety and operational efficiency.
+- Prepare detailed reports on drilling progress and findings, and provide recommendations for improvement.
 
 Required Skills:
-- Strong knowledge of irrigation systems and their operational requirements.
-- Proficiency in GPS technology for precision farming applications.
-- Physical stamina to work long hours in various weather conditions and perform manual labor as needed.
-- Ability to work effectively in a team-oriented environment, fostering collaboration and communication.
-- Excellent problem-solving skills to address challenges quickly and efficiently.
+- Strong knowledge of safety compliance regulations and best practices in the mining industry.
+- Proficiency in GIS software for site analysis and planning purposes.
+- Experience operating and maintaining drilling equipment and excavators.
+- Excellent teamwork skills with the ability to collaborate effectively in a fast-paced environment.
+- Strong problem-solving and decision-making abilities.
 
-Qualifications:
-- Degree or certification in Agriculture, Horticulture, or a related field preferred.
-- Previous experience in agricultural technology or farm management is an advantage.
-- Familiarity with modern farming techniques and equipment.
+Desired Qualifications:
+- A minimum of 3 years experience in a similar role within the mining or construction industry.
+- Certification in safety compliance and heavy machinery operation.
+- Familiarity with environmental regulations related to mining operations.
 
 Benefits:
-- Competitive salary within the specified range.
-- Opportunities for professional development and training.
-- A dynamic work environment with a focus on sustainability and innovation.
+- Competitive salary within the range of $20,000 - $30,000.
+- Opportunities for career development and advancement within the company.
+- Supportive work environment with a focus on safety and teamwork.
 
-How to Apply:
-Interested candidates should submit their resume and a cover letter detailing their relevant experience and skills to careers@agritech-hesse.de. Applications will be accepted until the position is filled.
+Application Process:
+Interested candidates are encouraged to submit their resumes and cover letters outlining their relevant experience and skills. Please include references from previous employers. Applications will be accepted until [insert closing date]. 
+
+Join us in shaping the future of the mining industry with your expertise and commitment to safety and efficiency!
 --------------------------------------------------
 ### Cosine Distance
--0.7050
+0.3089

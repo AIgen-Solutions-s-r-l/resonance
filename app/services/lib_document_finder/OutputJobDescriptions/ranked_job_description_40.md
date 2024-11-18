@@ -1,49 +1,47 @@
 ### Job Description
-Job Title: Hotel Operations Manager
+Job Title: Network Technician
 
-Location: Tamil Nadu, India
+Location: Brittany, France
 
-Industry: Hospitality
+Industry: Telecommunications
 
-Salary Range: $60,000 - $70,000 per annum
+Salary Range: $20,000 - $30,000
 
-Notice Period: 3 months
+Notice Period: 2 weeks
 
 Job Summary:
-We are seeking a dedicated and experienced Hotel Operations Manager to oversee the daily operations of our esteemed hotel located in Tamil Nadu. The ideal candidate will possess strong skills in hotel management, reservation software, and customer service, ensuring an exceptional experience for our guests.
+We are seeking a motivated and detail-oriented Network Technician to join our dynamic team at TeleLink Solutions. In this role, you will be responsible for the installation, maintenance, and troubleshooting of network systems to ensure optimal performance and reliability. Your expertise in network engineering and communication will play a crucial role in enhancing our telecommunications infrastructure.
 
-Key Responsibilities:
-- Manage front office operations, including reservations, guest services, and concierge services.
-- Implement and maintain reservation software systems to optimize booking efficiency.
-- Coordinate with housekeeping, maintenance, and food and beverage departments to ensure seamless operations.
-- Monitor guest feedback and implement improvements based on detailed attention to guest experiences.
-- Develop and enforce standard operating procedures to enhance service quality and operational efficiency.
-- Provide training and support to staff to promote adaptability and a strong team environment.
+Responsibilities:
+- Install and configure routing equipment to establish and maintain network connectivity.
+- Utilize network analyzers to monitor network performance and troubleshoot issues in real-time.
+- Perform cabling tasks with specialized cabling tools to ensure proper installation and maintenance of network wiring.
+- Collaborate with team members to design and implement network solutions tailored to client needs.
+- Maintain detailed documentation of network configurations, changes, and troubleshooting steps.
+- Provide exceptional communication and support to clients, addressing their networking concerns promptly.
+
+Skills Required:
+- Proven experience in network engineering and administration.
+- Proficient in using network analyzers for performance monitoring.
+- Familiarity with cabling tools and techniques for network installation.
+- Knowledge of routing equipment and protocols to optimize network traffic.
+- Strong communication skills to effectively interact with clients and team members.
+- Exceptional attention to detail to ensure accuracy in installations and documentation.
 
 Qualifications:
-- Bachelor’s degree in Hotel Management or a related field.
-- Minimum of 5 years of experience in hotel operations, with at least 2 years in a managerial role.
-- Proficient in reservation software and Microsoft Office Suite.
-- Strong time management skills with the ability to prioritize tasks effectively.
-- Excellent communication and interpersonal skills to foster a positive work environment.
-
-Skills:
-- Hotel Management
-- Reservation Software
-- Time Management
-- Adaptability
-- Attention to Detail
+- Bachelor’s degree in Computer Science, Information Technology, or a related field.
+- Minimum of 2 years of experience in network support or engineering.
+- Relevant certifications (e.g., Cisco Certified Network Associate - CCNA) are a plus.
+- Ability to work independently and as part of a collaborative team environment.
 
 Benefits:
-- Competitive salary within the specified range.
-- Health and wellness benefits.
-- Opportunities for professional development and career advancement.
-- A dynamic and supportive work environment focused on employee satisfaction. 
+- Competitive salary within the range of $20,000 - $30,000.
+- Opportunities for professional development and certifications.
+- Friendly and supportive work environment.
+- Flexible working hours and potential for remote work.
 
 Application Process:
-Interested candidates are invited to submit their resume and a cover letter detailing their experience and qualifications. Please include examples of how you have demonstrated adaptability and attention to detail in your previous roles.
-
-We look forward to welcoming a passionate Hotel Operations Manager to our team!
+Interested candidates should submit their resume and a cover letter detailing their relevant experience and skills. We look forward to welcoming you to our team at TeleLink Solutions!
 --------------------------------------------------
 ### Cosine Distance
--0.6999
+0.3145

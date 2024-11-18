@@ -1,51 +1,43 @@
 ### Job Description
-**Job Title:** Construction Technician  
+Job Title: Agricultural Technician
 
-**Location:** Occitanie, France  
+Location: Hesse, Germany
 
-**Industry:** Construction  
+Industry: Agriculture
 
-**Salary Range:** $20,000 - $30,000  
+Salary Range: $60,000 - $70,000
 
-**Notice Period:** 3 months  
+Notice Period: Immediate
 
-**Job Summary:**  
-We are seeking a dedicated and skilled Construction Technician to join our dynamic team in Occitanie. The successful candidate will have a strong foundation in various construction tasks, including plumbing and electrical work, and will be responsible for ensuring that projects are completed on time and within budget.
+Job Description:
+We are seeking a dedicated and skilled Agricultural Technician to join our innovative farming enterprise in Hesse, Germany. The ideal candidate will play a crucial role in the management and optimization of irrigation systems, ensuring efficient water usage and crop health.
 
-**Key Responsibilities:**  
-- Perform cost estimation for various construction projects, ensuring accuracy and feasibility.  
-- Execute plumbing installations and repairs, adhering to safety and quality standards.  
-- Carry out electrical work, including wiring and circuit installations.  
-- Operate excavators and concrete mixers for site preparation and material handling.  
-- Utilize safety harnesses and other safety equipment to ensure a safe working environment.  
-- Collaborate with team members to achieve project milestones and deliver high-quality work.  
-- Maintain clear and effective communication with project managers and other stakeholders.  
-- Demonstrate physical stamina by performing manual labor and operating heavy machinery as required.  
-- Participate in team meetings to discuss progress, challenges, and solutions.  
+Key Responsibilities:
+- Design, install, and maintain advanced irrigation systems tailored to specific crop needs.
+- Utilize GPS technology to map and monitor farm fields, optimizing plant growth and resource allocation.
+- Collaborate with team members to develop and implement effective agricultural strategies.
+- Troubleshoot and resolve issues related to irrigation and equipment functionality.
+- Maintain detailed records of irrigation schedules, equipment maintenance, and crop yields.
 
-**Required Skills:**  
-- Strong cost estimation abilities with a focus on accuracy.  
-- Proficient in plumbing techniques and practices.  
-- Knowledge of electrical systems and installation procedures.  
-- Experience operating excavators and concrete mixers.  
-- Familiarity with safety harnesses and construction safety protocols.  
-- Excellent communication skills, both verbal and written.  
-- High level of physical stamina to handle demanding tasks.  
-- Proven ability to work effectively as part of a team.  
+Required Skills:
+- Strong knowledge of irrigation systems and their operational requirements.
+- Proficiency in GPS technology for precision farming applications.
+- Physical stamina to work long hours in various weather conditions and perform manual labor as needed.
+- Ability to work effectively in a team-oriented environment, fostering collaboration and communication.
+- Excellent problem-solving skills to address challenges quickly and efficiently.
 
-**Qualifications:**  
-- Minimum of 2 years of experience in construction or a related field.  
-- Relevant certifications in plumbing and electrical work are preferred.  
-- Strong problem-solving skills and attention to detail.  
-- Ability to work in a fast-paced environment and manage multiple tasks.  
+Qualifications:
+- Degree or certification in Agriculture, Horticulture, or a related field preferred.
+- Previous experience in agricultural technology or farm management is an advantage.
+- Familiarity with modern farming techniques and equipment.
 
-**Benefits:**  
-- Competitive salary within the specified range.  
-- Opportunities for professional development and training.  
-- Supportive team environment and culture.  
-- Health and safety training provided.  
+Benefits:
+- Competitive salary within the specified range.
+- Opportunities for professional development and training.
+- A dynamic work environment with a focus on sustainability and innovation.
 
-If you are passionate about construction and meet the qualifications outlined above, we encourage you to apply for the Construction Technician position.
+How to Apply:
+Interested candidates should submit their resume and a cover letter detailing their relevant experience and skills to careers@agritech-hesse.de. Applications will be accepted until the position is filled.
 --------------------------------------------------
 ### Cosine Distance
--0.7005
+0.3141

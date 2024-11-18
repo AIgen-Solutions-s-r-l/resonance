@@ -1,47 +1,41 @@
 ### Job Description
-Job Title: Satellite Communications Engineer
+Job Title: Executive Chef
 
-Location: Saxony, Germany
+Location: Canary Islands, Spain
 
-Industry: Defense and Space
+Industry: Food and Beverage
 
-Salary Range: $60,000 - $70,000
+Salary Range: $120,000 - $150,000
 
 Notice Period: 1 Month
 
-Job Summary:
-We are seeking a highly skilled Satellite Communications Engineer to join our dynamic team in Saxony, Germany. The ideal candidate will have a strong background in satellite communications, robotics, and design using CAD software. This role involves working on cutting-edge projects in the defense and space sector, contributing to the design and development of advanced satellite systems.
+Job Description:
+We are seeking a highly skilled Executive Chef to lead our culinary team in a premier restaurant located in the beautiful Canary Islands. The ideal candidate will have a passion for creating innovative dishes and a strong background in both cooking and baking.
 
 Key Responsibilities:
-- Design, develop, and implement satellite communication systems for defense applications.
-- Collaborate with robotics teams to integrate satellite systems with robotic platforms.
-- Utilize CAD software to create detailed designs and schematics for satellite components.
-- Conduct system testing and troubleshooting to ensure optimal performance.
-- Prepare technical documentation and present findings to stakeholders.
-- Maintain effective communication with team members and external partners to ensure project alignment.
+- Develop and execute a seasonal menu that showcases local ingredients and reflects current food trends.
+- Oversee daily kitchen operations, ensuring high standards of food quality and presentation.
+- Train and mentor kitchen staff in cooking techniques, baking methods, and proper use of kitchen equipment.
+- Manage inventory and procurement of kitchen supplies, including food processors and other essential kitchen tools.
+- Ensure compliance with health and safety regulations, maintaining a clean and organized kitchen environment.
+- Collaborate with the management team to create promotional events and special dining experiences.
 
 Required Skills:
-- Proficient in satellite communications technologies and protocols.
-- Strong experience in robotics, including programming and system integration.
-- Advanced skills in CAD software for designing complex systems.
-- Excellent communication skills, both written and verbal, to convey technical information clearly.
+- Cooking: Expertise in various cooking techniques and cuisines.
+- Baking: Proficiency in baking a wide array of desserts and bread.
+- Menu Planning: Ability to design creative, appealing, and nutritious menus.
+- Kitchen Equipment: Knowledge of various kitchen equipment and their maintenance.
+- Food Processors: Experience in using food processors and other kitchen technology for efficient food preparation.
+- Time Management: Strong skills in managing multiple tasks and prioritizing effectively in a fast-paced environment.
 
 Qualifications:
-- Bachelor’s degree in Electrical Engineering, Aerospace Engineering, or a related field.
-- Minimum of 3 years of experience in satellite communications or a related field.
-- Experience working in the defense and space industry is preferred.
-- Ability to work independently and as part of a team in a fast-paced environment.
+- Culinary degree or equivalent professional experience.
+- Minimum of 5 years in a kitchen leadership role, preferably in a fine dining environment.
+- Proven track record of menu development and execution.
+- Excellent communication and team leadership skills.
+- Ability to work flexible hours including evenings, weekends, and holidays.
 
-Benefits:
-- Competitive salary within the range of $60,000 - $70,000.
-- Opportunities for professional development and career advancement.
-- Comprehensive health and wellness benefits.
-- Collaborative and innovative work environment.
-
-Application Process:
-Interested candidates are invited to submit their resume and a cover letter outlining their relevant experience and skills. Please include your availability for an interview and your notice period. 
-
-Join us in creating the future of defense and space technology!
+If you are a dynamic and creative chef looking to make your mark in the culinary world, we encourage you to apply and join our dedicated team in the stunning Canary Islands.
 --------------------------------------------------
 ### Cosine Distance
--0.7099
+0.3037

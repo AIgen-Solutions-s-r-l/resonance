@@ -1,43 +1,39 @@
 ### Job Description
-Job Title: Software Engineer
+Job Title: HR Specialist  
+Location: Veneto, Italy  
+Industry: Human Resources  
+Salary Range: $20,000 - $30,000  
+Notice Period: More than 3 months  
 
-Location: Veneto, Italy
+Job Summary:  
+We are seeking a dedicated and detail-oriented HR Specialist to join our dynamic team in Veneto, Italy. This role will be pivotal in managing employee relations, ensuring HR compliance, and supporting our recruitment processes through efficient use of applicant tracking systems.
 
-Industry: Technology
+Key Responsibilities:  
+- Manage and resolve employee relations issues, promoting a positive workplace culture.  
+- Ensure compliance with HR policies and labor regulations, conducting regular audits.  
+- Utilize Microsoft Office Suite to prepare reports, presentations, and other documentation.  
+- Oversee the applicant tracking systems to streamline recruitment processes and enhance candidate experience.  
+- Demonstrate empathy in interactions with employees, fostering trust and open communication.  
 
-Salary Range: $50,000 - $60,000
+Required Skills:  
+- Proven experience in employee relations and conflict resolution.  
+- Strong knowledge of HR compliance regulations and best practices.  
+- Proficient in Microsoft Office, particularly Excel and PowerPoint.  
+- Experience with applicant tracking systems and recruitment software.  
+- Exceptional interpersonal skills with a high degree of empathy and understanding.  
 
-Notice Period: 1 Month
+Qualifications:  
+- Bachelor’s degree in Human Resources, Business Administration, or related field.  
+- Minimum 2 years of experience in a human resources role.  
+- Fluent in Italian and English; additional languages are a plus.  
 
-Job Description:
-We are seeking a talented Software Engineer to join our innovative team in Veneto. The ideal candidate will be responsible for developing high-quality software solutions and will be involved in all stages of the development lifecycle. You will work closely with cross-functional teams to design, implement, and maintain software applications that meet the needs of our clients.
+Benefits:  
+- Competitive salary within the range of $20,000 - $30,000.  
+- Opportunities for professional development and career advancement.  
+- Supportive work environment with a focus on employee well-being.  
 
-Responsibilities:
-- Design, develop, and implement software applications using Matlab, C++, Django, and Spring frameworks.
-- Collaborate with product management and other engineering teams to define software requirements and specifications.
-- Utilize Git for version control and collaboration on software projects.
-- Participate in code reviews and ensure adherence to best practices.
-- Troubleshoot and debug applications to enhance performance and user experience.
-- Communicate effectively with team members and stakeholders to convey technical information and project updates.
-
-Required Skills:
-- Proficiency in Matlab and C++ programming languages.
-- Experience with Django and Spring frameworks for web application development.
-- Familiarity with Git for version control and collaborative development.
-- Strong communication skills to facilitate teamwork and project collaboration.
-- Excellent teamwork abilities to work effectively in a dynamic environment.
-
-Preferred Qualifications:
-- Bachelor’s degree in Computer Science, Engineering, or a related field.
-- Previous experience in software development within the technology industry.
-- Knowledge of agile methodologies and software development best practices.
-
-Benefits:
-- Competitive salary within the specified range.
-- Opportunity to work in a collaborative and innovative environment.
-- Professional development opportunities and resources.
-
-Join us in shaping the future of technology in Veneto! If you are passionate about software development and possess the required skills, we would love to hear from you. Please submit your resume and cover letter for consideration.
+Application Process:  
+Interested candidates are invited to submit their resume and a cover letter outlining their relevant experience and skills. Please include "HR Specialist Application" in the subject line. Only shortlisted candidates will be contacted.
 --------------------------------------------------
 ### Cosine Distance
--0.7527
+0.2524

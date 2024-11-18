@@ -1,46 +1,44 @@
 ### Job Description
-Job Title: Senior Process Engineer
+Job Title: Senior Network Engineer
 
-Location: Birmingham, England, UK
+Company: Basque Telecomm Solutions
 
-Industry: Chemical Industry
+Location: Basque Country, Spain
 
-Salary Range: $70,000 - $80,000
+Industry: Telecommunications
 
-Notice Period: 2 weeks
+Salary Range: $120,000 - $150,000
 
-Job Description:
-We are seeking a highly skilled Senior Process Engineer to join our dynamic team in the chemical industry. The ideal candidate will be responsible for optimizing chemical processes and enhancing product quality through innovative solutions.
+Job Summary:
+Basque Telecomm Solutions is seeking a highly skilled Senior Network Engineer to join our dynamic team in the vibrant Basque Country. The ideal candidate will have extensive experience in network engineering with a focus on fiber optics and routing equipment. This role is crucial for ensuring the efficiency and reliability of our telecommunications infrastructure.
 
 Key Responsibilities:
-- Design, develop, and implement process engineering solutions for chemical reactors to improve efficiency and output.
-- Conduct research and development activities to explore new methodologies and materials for chemical production.
-- Utilize analytical instruments to monitor and evaluate chemical processes, ensuring compliance with safety and quality standards.
-- Collaborate with cross-functional teams to troubleshoot and resolve engineering challenges and improve production workflows.
-- Document processes and maintain records with a strong focus on attention to detail to ensure precision in execution and reporting.
+- Design, implement, and maintain fiber optic networks to optimize performance and reliability.
+- Troubleshoot and resolve complex network issues related to routing equipment and cabling tools.
+- Collaborate with cross-functional teams to deliver high-quality telecommunications solutions.
+- Develop and execute network upgrade plans while adhering to project timelines.
+- Conduct regular assessments and audits of network performance and recommend improvements.
+- Provide technical guidance and mentorship to junior engineers and technicians.
+
+Required Skills:
+- Proven experience in Fiber Optics technology and its applications in telecommunications.
+- Strong knowledge of Network Engineering principles and practices.
+- Hands-on experience with Routing Equipment and its configuration.
+- Proficiency with Cabling Tools and installation techniques.
+- Excellent Teamwork abilities, with a track record of working effectively in collaborative environments.
+- Strong Problem-solving skills, with the ability to diagnose and resolve issues quickly.
+- Exceptional Time Management skills to handle multiple tasks and projects concurrently.
 
 Qualifications:
-- Bachelor's degree in Chemical Engineering or a related field.
-- Proven experience in process engineering within the chemical industry.
-- Strong knowledge of chemical reactors and associated technologies.
-- Proficiency in using analytical instruments and software for process monitoring.
-- Excellent problem-solving skills with a proactive approach to tackling engineering challenges.
+- Bachelor’s degree in Computer Science, Information Technology, or a related field.
+- Minimum of 5 years of experience in network engineering within the telecommunications industry.
+- Relevant certifications such as CCNA, CCNP, or equivalent.
 
-Skills Required:
-- Process Engineering
-- Research and Development
-- Chemical Reactors
-- Analytical Instruments
-- Attention to Detail
-- Problem-solving
+Notice Period:
+The selected candidate will be required to provide a notice period of 3 months.
 
-Benefits:
-- Competitive salary within the specified range.
-- Opportunities for professional development and career advancement.
-- Collaborative work environment with a focus on innovation.
-
-Application Process:
-Interested candidates are invited to submit their CV and a cover letter detailing their relevant experience and skills. Please ensure to include your notice period in your application.
+Why Join Us?
+At Basque Telecomm Solutions, we value innovation and collaboration. Join our team and play a pivotal role in shaping the future of telecommunications in the Basque Country. Enjoy competitive compensation, professional development opportunities, and a dynamic work environment that fosters growth and creativity.
 --------------------------------------------------
 ### Cosine Distance
--0.7095
+0.3038

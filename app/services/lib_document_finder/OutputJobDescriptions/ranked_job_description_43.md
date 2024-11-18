@@ -1,42 +1,41 @@
 ### Job Description
-Job Title: Junior Production Assistant
+Job Title: Senior Structural Engineer
 
-Company: Northern Lights Entertainment
+Location: Missouri, USA
 
-Location: Northern Territory, Australia
+Industry: Architecture
 
-Industry: Entertainment
+Salary Range: $120,000 - $150,000
 
-Salary Range: $20,000 - $30,000
-
-Notice Period: Immediate
+Notice Period: 2 Weeks
 
 Job Description:
-Northern Lights Entertainment is seeking a passionate and creative Junior Production Assistant to join our dynamic team. The ideal candidate will play a key role in supporting our productions and ensuring seamless execution from start to finish.
+We are seeking a highly skilled Senior Structural Engineer to join our dynamic team in Missouri. The ideal candidate will have extensive experience in structural analysis, building codes, and advanced 3D modeling software. The successful applicant will work on various architectural projects and collaborate with architects and contractors to ensure that designs are structurally sound and comply with all applicable codes.
 
 Key Responsibilities:
-- Assist in managing stage operations, including setting up and dismantling stage props.
-- Collaborate with the acting team to facilitate rehearsals and performances.
-- Edit and refine production content using various editing software.
-- Help design and organize stage props that enhance the overall production experience.
-- Adapt quickly to changing situations and feedback from the creative team.
+- Conduct thorough structural analysis for a variety of architectural projects.
+- Ensure compliance with local and national building codes.
+- Utilize 3D modeling software, including Revit and AutoCAD, to create and modify structural designs.
+- Collaborate effectively within a team environment, providing insights and support to project members.
+- Identify and resolve structural problems, proposing innovative solutions to complex engineering challenges.
+- Prepare detailed documentation and reports for project stakeholders.
+- Stay current with industry trends and technological advancements in structural engineering.
 
 Required Skills:
-- Proven experience in stage management to coordinate various aspects of live performances.
-- Strong acting skills with the ability to collaborate effectively with performers.
-- Proficient in editing software for video and audio content.
-- Knowledge of stage props and their effective use in productions.
-- Exceptional adaptability to thrive in a fast-paced environment with evolving demands.
+- Proficient in Structural Analysis techniques and tools.
+- In-depth knowledge of Building Codes relevant to structural engineering.
+- Hands-on experience with 3D Modeling Software, specifically Revit and AutoCAD.
+- Strong Teamwork skills, fostering a collaborative work environment.
+- Excellent Problem-solving abilities, with a proven track record of resolving engineering issues effectively.
 
 Qualifications:
-- Bachelor's degree in Theatre Arts, Film Production, or a related field (preferred but not essential).
-- Hands-on experience in live production settings is a plus.
-- Strong communication and teamwork abilities.
+- Bachelor’s degree in Civil or Structural Engineering.
+- Minimum of 5 years of experience in structural engineering within the architecture industry.
+- Professional Engineer (PE) license is preferred but not mandatory.
+- Strong communication and interpersonal skills.
 
-Application Instructions:
-Interested candidates are encouraged to send their resume and cover letter to hr@northernlightsentertainment.com. Please include relevant experience and references.
-
-Join us at Northern Lights Entertainment and be part of a team that brings captivating stories to life!
+Why Join Us:
+We offer a competitive salary, comprehensive benefits, and opportunities for professional growth in a supportive and innovative work environment. If you are passionate about architecture and structural engineering, we want to hear from you!
 --------------------------------------------------
 ### Cosine Distance
--0.6946
+0.3156

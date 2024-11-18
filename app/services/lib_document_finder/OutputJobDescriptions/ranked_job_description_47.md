@@ -1,43 +1,49 @@
 ### Job Description
-Job Title: Digital Media Coordinator
+Job Title: Hotel Operations Manager
 
-Location: Victoria, Australia
+Location: Tamil Nadu, India
 
-Industry: Media
+Industry: Hospitality
 
-Salary Range: $40,000 - $50,000
+Salary Range: $60,000 - $70,000 per annum
 
-Notice Period: 2 months
+Notice Period: 3 months
 
 Job Summary:
-We are seeking a creative and driven Digital Media Coordinator to join our dynamic team in Victoria. The ideal candidate will have a strong background in social media management and photography, along with excellent communication skills. As a Digital Media Coordinator, you will be responsible for managing our brand's online presence, creating engaging content, and promoting our services across various social media platforms.
+We are seeking a dedicated and experienced Hotel Operations Manager to oversee the daily operations of our esteemed hotel located in Tamil Nadu. The ideal candidate will possess strong skills in hotel management, reservation software, and customer service, ensuring an exceptional experience for our guests.
 
 Key Responsibilities:
-- Develop and execute social media strategies across platforms including Facebook, Instagram, Twitter, and LinkedIn to enhance brand visibility and engagement.
-- Capture high-quality photographs for use in social media campaigns, website content, and promotional materials.
-- Manage the organization’s WordPress website, ensuring content is up-to-date, visually appealing, and optimized for SEO.
-- Collaborate with team members to create compelling multimedia content that resonates with our target audience.
-- Monitor social media analytics to assess the performance of campaigns and adjust strategies accordingly.
-- Communicate effectively with team members, clients, and stakeholders to ensure alignment on project goals and deliverables.
-- Stay updated on industry trends and best practices in social media and digital marketing.
+- Manage front office operations, including reservations, guest services, and concierge services.
+- Implement and maintain reservation software systems to optimize booking efficiency.
+- Coordinate with housekeeping, maintenance, and food and beverage departments to ensure seamless operations.
+- Monitor guest feedback and implement improvements based on detailed attention to guest experiences.
+- Develop and enforce standard operating procedures to enhance service quality and operational efficiency.
+- Provide training and support to staff to promote adaptability and a strong team environment.
 
-Required Skills:
-- Proven experience in social media management and familiarity with various social media platforms.
-- Strong photography skills and proficiency in editing software.
-- Experience with WordPress for website content management.
-- Excellent verbal and written communication skills.
-- Ability to work collaboratively in a fast-paced environment and manage multiple projects.
+Qualifications:
+- Bachelor’s degree in Hotel Management or a related field.
+- Minimum of 5 years of experience in hotel operations, with at least 2 years in a managerial role.
+- Proficient in reservation software and Microsoft Office Suite.
+- Strong time management skills with the ability to prioritize tasks effectively.
+- Excellent communication and interpersonal skills to foster a positive work environment.
 
-Preferred Qualifications:
-- Bachelor’s degree in Marketing, Communications, Media Studies, or a related field.
-- Experience with digital marketing tools and analytics platforms.
+Skills:
+- Hotel Management
+- Reservation Software
+- Time Management
+- Adaptability
+- Attention to Detail
 
 Benefits:
-- Competitive salary based on experience.
-- Opportunity for professional development and growth within the company.
-- Flexible working hours and a supportive team environment. 
+- Competitive salary within the specified range.
+- Health and wellness benefits.
+- Opportunities for professional development and career advancement.
+- A dynamic and supportive work environment focused on employee satisfaction. 
 
-To apply, please submit your resume and a portfolio showcasing your photography and social media management work.
+Application Process:
+Interested candidates are invited to submit their resume and a cover letter detailing their experience and qualifications. Please include examples of how you have demonstrated adaptability and attention to detail in your previous roles.
+
+We look forward to welcoming a passionate Hotel Operations Manager to our team!
 --------------------------------------------------
 ### Cosine Distance
--0.6933
+0.3170

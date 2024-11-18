@@ -1,47 +1,47 @@
 ### Job Description
-Job Title: Digital Communications Specialist
+Job Title: Research and Development Technician
 
-Company: Maple Leaf Media Solutions  
-Location: British Columbia, Canada  
-Industry: Media  
-Salary Range: $90,000 - $100,000  
-Notice Period: 2 months  
+Location: North Carolina, USA
 
-About Us:  
-Maple Leaf Media Solutions is a pioneering media agency dedicated to delivering innovative content and engaging experiences across various platforms. With a commitment to excellence and creativity, we leverage the latest technology and insights to connect brands with their audiences effectively.
+Industry: Research and Development
 
-Job Overview:  
-We are seeking a dynamic Digital Communications Specialist to join our team. The ideal candidate will be responsible for managing our public relations efforts, social media platforms, and digital content strategies. This role requires a creative thinker who can adapt to changing trends and engage effectively with diverse audiences.
+Salary Range: $30,000 - $40,000
 
-Key Responsibilities:  
-- Develop and implement public relations strategies to enhance the company’s brand image and manage media relations.  
-- Create, curate, and manage published content across social media platforms including Facebook, Twitter, Instagram, and LinkedIn.  
-- Analyze website and social media performance using Google Analytics to inform future strategies.  
-- Maintain and update the company website through WordPress, ensuring content is fresh and aligned with marketing goals.  
-- Engage with followers and respond to inquiries on various social media platforms to foster community engagement.  
-- Collaborate with team members to brainstorm and execute creative campaigns that resonate with target audiences.  
-- Monitor trends in social media tools, applications, channels, design, and strategy to keep the brand relevant and innovative.  
+Notice Period: 2 weeks
 
-Required Skills:  
-- Proven experience in public relations and social media management.  
-- Proficiency in Google Analytics and WordPress.  
-- Strong understanding of various social media platforms and their best practices.  
-- Excellent communication skills, both written and verbal.  
-- Ability to adapt to changing environments and work under tight deadlines.  
-- Creative mindset with a passion for storytelling and content creation.  
+Job Description:
+We are seeking a motivated and detail-oriented Research and Development Technician to join our innovative team in North Carolina. The ideal candidate will possess a strong background in laboratory techniques and experimental design, coupled with solid skills in statistical analysis. 
 
-Education & Experience:  
-- Bachelor’s degree in Communications, Marketing, Public Relations, or a related field.  
-- Minimum of 3 years of experience in digital communications or social media management.  
+Key Responsibilities:
+- Conduct experiments and analyses using various laboratory techniques and equipment.
+- Design and implement experimental protocols to test hypotheses and gather data.
+- Utilize statistical software to analyze experimental data and interpret results.
+- Collaborate with team members to develop and manage project timelines and objectives.
+- Prepare technical reports and presentations to communicate findings effectively.
+- Troubleshoot experimental processes and equipment as needed to solve problems.
+- Maintain accurate records of experiments and ensure compliance with safety regulations.
 
-Benefits:  
-- Competitive salary within the range of $90,000 - $100,000.  
-- Comprehensive health and dental benefits.  
-- Opportunity for professional development and training.  
-- Flexible work environment and emphasis on work-life balance.  
+Qualifications:
+- Bachelor’s degree in a relevant field (e.g., Biology, Chemistry, or Engineering) preferred.
+- Experience with laboratory techniques and laboratory equipment.
+- Proficiency in statistical analysis and familiarity with statistical software.
+- Strong project management skills and experience using project management tools.
+- Excellent communication skills, both written and verbal.
+- Ability to work collaboratively in a team-oriented environment.
+- Strong problem-solving skills and a proactive approach to challenges.
 
-How to Apply:  
-Interested candidates are invited to send their resume and a cover letter detailing their relevant experience to careers@mapleleafmedia.ca. Please include "Digital Communications Specialist Application" in the subject line. Applications will be accepted until [Insert Application Deadline].
+Skills:
+- Laboratory Techniques
+- Statistical Analysis
+- Experimental Design
+- Project Management Tools
+- Laboratory Equipment
+- Statistical Software
+- Communication
+- Problem-solving
+- Teamwork
+
+If you are passionate about research and development and eager to contribute to exciting projects, we encourage you to apply for this position. Join us in our mission to innovate and improve outcomes in our field.
 --------------------------------------------------
 ### Cosine Distance
--0.7038
+0.3113

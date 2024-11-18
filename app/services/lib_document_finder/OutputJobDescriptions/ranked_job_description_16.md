@@ -1,46 +1,47 @@
 ### Job Description
-Job Title: Robotics Safety Specialist
+Job Title: Satellite Communications Engineer
 
-Location: Maryland, USA
+Location: Saxony, Germany
 
-Industry: Manufacturing
+Industry: Defense and Space
 
-Salary Range: $50,000 - $60,000
+Salary Range: $60,000 - $70,000
 
-Notice Period: More than 3 months
+Notice Period: 1 Month
 
-Job Description:
-We are seeking a detail-oriented Robotics Safety Specialist to join our dynamic team in the manufacturing sector. The ideal candidate will play a critical role in ensuring the safety and efficiency of robotic operations within our facility.
+Job Summary:
+We are seeking a highly skilled Satellite Communications Engineer to join our dynamic team in Saxony, Germany. The ideal candidate will have a strong background in satellite communications, robotics, and design using CAD software. This role involves working on cutting-edge projects in the defense and space sector, contributing to the design and development of advanced satellite systems.
 
 Key Responsibilities:
-- Develop, implement, and monitor safety protocols to ensure compliance with industry standards and regulations.
-- Collaborate with engineering teams to enhance the functionality and safety of robotic systems.
-- Conduct regular safety audits and risk assessments to identify potential hazards and recommend corrective actions.
-- Lead training sessions for staff on safety procedures, robotic operation, and emergency response protocols.
-- Foster a culture of safety and teamwork within the organization by promoting open communication and collaboration among teams.
+- Design, develop, and implement satellite communication systems for defense applications.
+- Collaborate with robotics teams to integrate satellite systems with robotic platforms.
+- Utilize CAD software to create detailed designs and schematics for satellite components.
+- Conduct system testing and troubleshooting to ensure optimal performance.
+- Prepare technical documentation and present findings to stakeholders.
+- Maintain effective communication with team members and external partners to ensure project alignment.
 
 Required Skills:
-- Proficient in Safety Protocols: Extensive knowledge of safety regulations and best practices in a manufacturing environment.
-- Expertise in Robotics: Familiarity with robotic systems, programming, and troubleshooting.
-- Strong Adaptability: Ability to adjust to new technologies, procedures, and challenges in a fast-paced environment.
-- Excellent Teamwork: Proven track record of working effectively with cross-functional teams to achieve common goals.
+- Proficient in satellite communications technologies and protocols.
+- Strong experience in robotics, including programming and system integration.
+- Advanced skills in CAD software for designing complex systems.
+- Excellent communication skills, both written and verbal, to convey technical information clearly.
 
 Qualifications:
-- Bachelor’s degree in Engineering, Robotics, Safety Management, or a related field.
-- Minimum of 3 years of experience in a safety role within the manufacturing or robotics industry.
-- Certifications in safety management and robotics preferred.
-- Demonstrated ability to communicate effectively at all levels of the organization.
+- Bachelor’s degree in Electrical Engineering, Aerospace Engineering, or a related field.
+- Minimum of 3 years of experience in satellite communications or a related field.
+- Experience working in the defense and space industry is preferred.
+- Ability to work independently and as part of a team in a fast-paced environment.
 
 Benefits:
-- Competitive salary within the specified range.
-- Health, dental, and vision insurance.
-- Retirement savings plan with company match.
-- Opportunities for professional development and continuous education.
+- Competitive salary within the range of $60,000 - $70,000.
+- Opportunities for professional development and career advancement.
+- Comprehensive health and wellness benefits.
+- Collaborative and innovative work environment.
 
 Application Process:
-Interested candidates should submit their resume and a cover letter detailing their experience and qualifications related to robotics and safety in manufacturing. Applications will be accepted until the position is filled. 
+Interested candidates are invited to submit their resume and a cover letter outlining their relevant experience and skills. Please include your availability for an interview and your notice period. 
 
-Join our team and contribute to creating a safe and innovative manufacturing environment!
+Join us in creating the future of defense and space technology!
 --------------------------------------------------
 ### Cosine Distance
--0.7142
+0.2972

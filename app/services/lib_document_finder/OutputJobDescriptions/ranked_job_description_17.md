@@ -1,48 +1,43 @@
 ### Job Description
-Job Title: Financial Analyst
+Job Title: Culinary and Bartending Specialist
 
-Location: Grand Est, France
+Location: Andalusia, Spain
 
-Industry: Finance
+Industry: Food and Beverage
 
-Salary Range: $70,000 - $80,000
+Salary Range: $30,000 - $40,000
 
-Notice Period: 1 month
+Notice Period: More than 3 months
 
 Job Description:
-We are seeking a highly motivated and detail-oriented Financial Analyst to join our dynamic finance team in Grand Est. The successful candidate will play a crucial role in our financial planning and analysis processes, driving informed decision-making through accurate forecasting and insightful reporting.
+We are seeking an enthusiastic and skilled Culinary and Bartending Specialist to join our vibrant team in the heart of Andalusia. This role is perfect for someone who thrives in a fast-paced environment and possesses a passion for innovative food and beverage experiences.
 
 Key Responsibilities:
-- Conduct financial forecasting and modeling to support strategic initiatives and business planning.
-- Develop and maintain complex Excel spreadsheets for data analysis and reporting purposes.
-- Utilize Power BI to create interactive dashboards and visualizations that facilitate data-driven insights.
-- Perform detailed variance analysis and identify trends, providing recommendations for corrective actions.
-- Exercise ethical judgment in all financial analyses and reporting, ensuring compliance with regulatory standards.
-- Collaborate with cross-functional teams to solve financial challenges and enhance operational efficiency.
-- Maintain a high level of attention to detail in all financial reports and presentations.
+- Prepare and cook a variety of dishes while adhering to established recipes and presentation standards.
+- Operate and maintain ovens and other kitchen equipment efficiently.
+- Craft a diverse range of beverages, ensuring quality and creativity in every drink served.
+- Manage POS systems to process customer orders accurately and efficiently.
+- Collaborate with the culinary team to develop new menu items that reflect current trends and customer preferences.
+- Exhibit exceptional time management skills to ensure timely service and delivery during peak hours.
+- Maintain a clean and organized work environment, paying close attention to detail in all aspects of food preparation and service.
 
-Required Skills:
-- Proven experience in financial forecasting and analysis.
-- Proficient in Microsoft Excel, including advanced formulas and pivot tables.
-- Familiarity with Power BI for data visualization and reporting.
-- Strong ethical judgment and a commitment to integrity in financial practices.
-- Excellent problem-solving skills with a proactive approach to identifying issues.
-- Exceptional attention to detail and accuracy in financial documentation.
-
-Qualifications:
-- Bachelor’s degree in Finance, Accounting, or a related field.
-- Minimum of 3 years of experience in a financial analysis role.
-- Strong analytical skills and the ability to interpret complex financial data.
-- Effective communication skills, both written and verbal, in French and English.
+Skills and Qualifications:
+- Proven experience in cooking and bartending within a busy food and beverage environment.
+- Proficient in operating commercial ovens and kitchen equipment.
+- Strong understanding of POS systems and their functionalities.
+- Demonstrated creativity in menu development and drink creation.
+- Excellent time management skills with the ability to prioritize tasks effectively.
+- Keen attention to detail, ensuring high standards in food and beverage presentation and hygiene.
+- Strong communication and interpersonal skills to interact with team members and customers.
 
 Benefits:
-- Competitive salary within the specified range.
-- Opportunities for professional development and advancement.
-- Comprehensive health and wellness benefits.
-- Collaborative and innovative work environment. 
+- Competitive salary within the range of $30,000 - $40,000.
+- Opportunities for professional development and creative expression.
+- A dynamic work environment in one of Spain's most picturesque regions.
+- Employee discounts on food and beverages.
 
 Application Process:
-Interested candidates are invited to submit their resume and a cover letter detailing their relevant experience and qualifications. Please ensure that you are available to start within a 1-month notice period.
+Interested candidates are encouraged to submit their resume and a cover letter detailing their relevant experience and culinary philosophy. Please note that the notice period for this position is more than 3 months.
 --------------------------------------------------
 ### Cosine Distance
--0.7122
+0.2974

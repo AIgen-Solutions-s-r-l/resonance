@@ -1,40 +1,48 @@
 ### Job Description
-Job Title: Aerospace Engineer
+Job Title: E-commerce Operations Manager
 
-Location: Uttar Pradesh, India
+Location: Aragon, Spain
 
-Industry: Defense and Space
+Industry: E-commerce
 
 Salary Range: $90,000 - $100,000
 
-Notice Period: 1 month
+Notice Period: 1 week
 
-Job Description:
-We are seeking a highly motivated Aerospace Engineer to join our dynamic team in the Defense and Space industry. The ideal candidate will possess strong technical skills and a passion for innovation, contributing to the design, development, and testing of advanced aerospace systems.
+Job Summary:
+We are seeking a dynamic E-commerce Operations Manager to oversee and optimize our supply chain processes, enhance our online presence through effective SEO strategies, and manage customer relationships via CRM software. The ideal candidate will possess strong analytical thinking skills to drive data-driven decisions and improve operational efficiency.
 
-Responsibilities:
-- Develop and design aerospace systems and components using CAD software.
-- Conduct testing of aerospace equipment and systems, utilizing state-of-the-art testing equipment.
-- Implement and manage encryption tools to ensure data security and integrity during all phases of project development.
-- Collaborate with multidisciplinary teams to solve complex engineering problems, demonstrating strong problem-solving skills.
-- Prepare technical documentation and reports, ensuring clear communication of project status and findings.
-- Maintain a high level of attention to detail throughout all phases of project work, from initial design to final testing and implementation.
-
-Skills Required:
-- Proficient in Aerospace Engineering principles and practices.
-- Experience with testing equipment relevant to aerospace systems.
-- Familiarity with encryption tools and data security measures.
-- Advanced skills in CAD software for designing aerospace components.
-- Excellent communication skills to effectively collaborate with team members and stakeholders.
-- Strong problem-solving abilities to address engineering challenges.
-- Keen attention to detail to ensure accuracy in designs and testing processes.
+Key Responsibilities:
+- Develop and implement supply chain strategies to improve overall efficiency and reduce costs.
+- Utilize SEO tools to enhance website visibility and drive organic traffic growth.
+- Oversee the integration and utilization of CRM software to enhance customer engagement and retention.
+- Analyze data and market trends to identify opportunities for improvement and growth in the e-commerce sector.
+- Collaborate with cross-functional teams to ensure smooth operations and alignment with business objectives.
+- Monitor key performance indicators (KPIs) and report on findings to senior management.
+- Manage vendor relationships and negotiate contracts to ensure the best terms for the company.
+- Stay updated on industry trends and best practices in e-commerce and supply chain management.
 
 Qualifications:
-- Bachelor’s degree in Aerospace Engineering or a related field.
-- Minimum of 5 years of experience in the aerospace or defense industry.
-- Proven track record of successful project management and execution.
+- Bachelor’s degree in Business Administration, Supply Chain Management, or a related field.
+- 5+ years of experience in e-commerce operations or supply chain management.
+- Proficiency in using SEO tools and CRM software.
+- Strong analytical thinking skills with the ability to interpret complex data sets.
+- Excellent communication and interpersonal skills.
+- Proven ability to manage multiple projects and meet deadlines in a fast-paced environment.
 
-Join our team and be part of a pioneering organization that is shaping the future of defense and space technology in Uttar Pradesh. Apply today to contribute your expertise and grow your career in an exciting and challenging environment.
+Skills Required:
+- Supply Chain Management
+- SEO Tools
+- CRM Software
+- Analytical Thinking
+
+Benefits:
+- Competitive salary within the specified range.
+- Health and wellness benefits.
+- Opportunities for professional development and growth.
+- Flexible working hours and remote work options.
+
+To apply, please submit your resume and a cover letter detailing your relevant experience and skills. We look forward to your application!
 --------------------------------------------------
 ### Cosine Distance
--0.7302
+0.2826

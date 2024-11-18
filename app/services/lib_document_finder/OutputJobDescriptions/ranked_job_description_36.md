@@ -1,46 +1,44 @@
 ### Job Description
-Job Title: Human Resources Coordinator
+Job Title: Retail Visual Merchandising Specialist
 
-Location: Catalonia, Spain
+Location: London, England, UK
 
-Industry: Human Resources
+Salary Range: $40,000 - $50,000 per annum
 
-Salary Range: $20,000 - $30,000
+Industry: Retail
 
-Notice Period: More than 3 months
+Notice Period: Immediate
 
 Job Description:
-We are seeking a dedicated and detail-oriented Human Resources Coordinator to join our dynamic team in Catalonia. This position is crucial in supporting our HR functions and ensuring a positive workplace environment. The ideal candidate will possess strong skills in training and development, payroll software, and HRIS systems.
+We are seeking a dynamic and experienced Retail Visual Merchandising Specialist to join our innovative team. The successful candidate will be responsible for enhancing the aesthetic appeal of our retail environments and driving sales through strategic visual displays.
 
 Key Responsibilities:
-- Develop and implement training programs to enhance employee skills and performance.
-- Manage payroll processing using payroll software, ensuring accuracy and compliance.
-- Maintain and update the HRIS systems, ensuring all employee records are accurate and up to date.
-- Provide empathetic support to employees regarding HR-related inquiries and concerns.
-- Communicate effectively with team members and management to foster a collaborative work environment.
-- Demonstrate attention to detail in all aspects of HR administration and documentation.
+- Develop and implement creative visual merchandising strategies to maximize product visibility and sales.
+- Collaborate with the marketing team to ensure alignment of merchandising displays with promotional campaigns.
+- Conduct regular assessments of product placement and inventory levels to enhance customer experience.
+- Utilize inventory software to track product availability and report discrepancies in a timely manner.
+- Maintain up-to-date knowledge of industry trends, competitor activities, and customer preferences.
 
 Required Skills:
-- Training and Development: Ability to design and deliver effective training programs.
-- Payroll Software: Proficient in using payroll systems to manage employee compensation.
-- HRIS Systems: Experience with HRIS software for record-keeping and reporting.
-- Empathy: Strong interpersonal skills to understand and address employee needs.
-- Communication: Excellent verbal and written communication skills.
-- Attention to Detail: Keen ability to maintain accuracy in HR documentation and processes.
+- Proven experience in visual merchandising within a retail environment.
+- Strong product knowledge to effectively communicate features and benefits to customers.
+- Proficiency in inventory software to manage stock levels and optimize displays.
+- Advanced skills in Microsoft Office, particularly Excel and PowerPoint for reporting and presentations.
+- Exceptional time management skills with the ability to prioritize tasks effectively.
 
 Qualifications:
-- Bachelor's degree in Human Resources, Business Administration, or a related field.
-- Minimum of 2 years of experience in an HR role or similar position.
-- Familiarity with labor laws and HR best practices.
-- Proficient in Microsoft Office Suite and HR software applications.
+- Bachelor's degree in Marketing, Retail Management, or a related field preferred.
+- Minimum of 3 years experience in a visual merchandising role.
+- Strong understanding of retail metrics and sales analysis.
 
 Benefits:
-- Competitive salary within the specified range.
-- Opportunities for professional development and growth.
-- A supportive and inclusive work environment.
+- Competitive salary with performance-based bonuses.
+- Opportunities for professional development and career advancement.
+- Employee discounts on products.
+- Health and wellness programs.
 
-To Apply:
-Interested candidates should submit their resume and a cover letter detailing their relevant experience and skills. We look forward to welcoming a new member to our HR team!
+Application Process:
+Interested candidates should submit their CV and a cover letter outlining their relevant experience and skills. We are looking to fill this position immediately, so prompt applications are encouraged.
 --------------------------------------------------
 ### Cosine Distance
--0.7007
+0.3130

@@ -1,45 +1,49 @@
 ### Job Description
-Job Title: Environmental Services Specialist
+Job Title: Junior Architect
 
-Company: Green Earth Solutions
+Location: Valencian Community, Spain
 
-Location: Hunan, China
+Industry: Architecture
 
-Salary Range: $50,000 - $60,000
+Salary Range: $20,000 - $30,000 per annum
 
-Notice Period: More than 3 months
+Notice Period: Immediate
 
-Job Summary:
-Green Earth Solutions is seeking an Environmental Services Specialist to support our initiatives in sustainability planning, waste management, and environmental monitoring. The ideal candidate will have a strong foundation in GIS mapping and statistical analysis, with hands-on experience in environmental testing equipment. This role is crucial for developing innovative strategies to enhance our environmental impact assessments and waste reduction practices.
+Job Description:
+We are seeking a passionate and detail-oriented Junior Architect to join our dynamic team in the Valencian Community. The ideal candidate will have a keen interest in sustainable design and a strong foundation in architectural software.
 
 Key Responsibilities:
-- Conduct GIS mapping and analysis to support environmental assessments and spatial planning.
-- Develop and implement sustainability plans in line with organizational goals and regulatory requirements.
-- Manage waste management projects, ensuring compliance with local and national regulations.
-- Utilize GIS software to create detailed maps and visualizations for reporting and presentations.
-- Analyze statistical data using statistical software to inform decision-making processes.
-- Operate and maintain environmental testing equipment to conduct field studies and monitor environmental parameters.
-- Collaborate with cross-functional teams to promote sustainable practices and community engagement.
-- Prepare detailed reports and presentations summarizing findings, recommendations, and project outcomes.
-- Maintain meticulous records and documentation, demonstrating attention to detail in all phases of project work.
+- Collaborate with senior architects on various projects, ensuring adherence to design principles and sustainability practices.
+- Utilize AutoCAD, Revit, and SketchUp to create detailed architectural drawings and 3D models.
+- Assist in project management tasks, including scheduling, budgeting, and resource allocation.
+- Conduct site visits to assess project progress and address any issues that arise.
+- Participate in client meetings, effectively communicating design concepts and project updates.
+- Develop innovative solutions to design challenges through effective problem-solving techniques.
+- Maintain up-to-date knowledge of industry trends and sustainable design practices.
 
 Required Skills:
-- Proficiency in GIS mapping and GIS software applications.
-- Strong knowledge of waste management principles and practices.
-- Experience in sustainability planning and implementation.
-- Familiarity with statistical software for data analysis and interpretation.
-- Hands-on experience with environmental testing equipment.
-- Exceptional attention to detail with the ability to manage multiple projects simultaneously.
-- Strong communication and interpersonal skills to liaise with stakeholders and community members.
+- Project Management: Ability to manage time effectively and prioritize tasks to meet project deadlines.
+- Sustainable Design: Understanding of sustainable building practices and materials.
+- AutoCAD: Proficiency in using AutoCAD for drafting and design.
+- Revit: Experience with Revit for Building Information Modeling (BIM).
+- SketchUp: Familiarity with SketchUp for 3D modeling and design visualization.
+- Communication: Strong verbal and written communication skills for client interactions and team collaboration.
+- Problem-solving: Ability to identify issues and develop creative solutions in a timely manner.
 
 Qualifications:
-- Bachelor’s degree in Environmental Science, Geography, or a related field.
-- A minimum of 3 years of experience in environmental services or a related field.
-- Relevant certifications in GIS, waste management, or sustainability planning are a plus.
-- Fluency in Mandarin and English is preferred.
+- Bachelor’s degree in Architecture or related field.
+- Previous internship or work experience in an architectural firm is preferred.
+- Strong portfolio showcasing design skills and project experience.
+- Fluent in Spanish; proficiency in English is a plus.
 
-Why Join Us:
-At Green Earth Solutions, we are dedicated to making a positive impact on the environment. We offer a collaborative work environment, opportunities for professional development, and the chance to contribute to meaningful projects that promote sustainability. If you are passionate about environmental services and possess the required skills, we encourage you to apply and be a part of our mission to create a greener future.
+Benefits:
+- Competitive salary within the specified range.
+- Opportunity to work on diverse projects within a collaborative environment.
+- Professional development and training opportunities.
+- Flexible working hours and potential for remote work.
+
+Application Process:
+Interested candidates should submit their CV and portfolio to careers@randomarchitecture.com. Please include a cover letter detailing your relevant experience and why you would be a great fit for our team.
 --------------------------------------------------
 ### Cosine Distance
--0.7194
+0.2935

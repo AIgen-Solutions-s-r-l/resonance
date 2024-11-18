@@ -1,44 +1,51 @@
 ### Job Description
-Job Title: Senior Network Engineer
+**Job Title:** Construction Technician  
 
-Company: Basque Telecomm Solutions
+**Location:** Occitanie, France  
 
-Location: Basque Country, Spain
+**Industry:** Construction  
 
-Industry: Telecommunications
+**Salary Range:** $20,000 - $30,000  
 
-Salary Range: $120,000 - $150,000
+**Notice Period:** 3 months  
 
-Job Summary:
-Basque Telecomm Solutions is seeking a highly skilled Senior Network Engineer to join our dynamic team in the vibrant Basque Country. The ideal candidate will have extensive experience in network engineering with a focus on fiber optics and routing equipment. This role is crucial for ensuring the efficiency and reliability of our telecommunications infrastructure.
+**Job Summary:**  
+We are seeking a dedicated and skilled Construction Technician to join our dynamic team in Occitanie. The successful candidate will have a strong foundation in various construction tasks, including plumbing and electrical work, and will be responsible for ensuring that projects are completed on time and within budget.
 
-Key Responsibilities:
-- Design, implement, and maintain fiber optic networks to optimize performance and reliability.
-- Troubleshoot and resolve complex network issues related to routing equipment and cabling tools.
-- Collaborate with cross-functional teams to deliver high-quality telecommunications solutions.
-- Develop and execute network upgrade plans while adhering to project timelines.
-- Conduct regular assessments and audits of network performance and recommend improvements.
-- Provide technical guidance and mentorship to junior engineers and technicians.
+**Key Responsibilities:**  
+- Perform cost estimation for various construction projects, ensuring accuracy and feasibility.  
+- Execute plumbing installations and repairs, adhering to safety and quality standards.  
+- Carry out electrical work, including wiring and circuit installations.  
+- Operate excavators and concrete mixers for site preparation and material handling.  
+- Utilize safety harnesses and other safety equipment to ensure a safe working environment.  
+- Collaborate with team members to achieve project milestones and deliver high-quality work.  
+- Maintain clear and effective communication with project managers and other stakeholders.  
+- Demonstrate physical stamina by performing manual labor and operating heavy machinery as required.  
+- Participate in team meetings to discuss progress, challenges, and solutions.  
 
-Required Skills:
-- Proven experience in Fiber Optics technology and its applications in telecommunications.
-- Strong knowledge of Network Engineering principles and practices.
-- Hands-on experience with Routing Equipment and its configuration.
-- Proficiency with Cabling Tools and installation techniques.
-- Excellent Teamwork abilities, with a track record of working effectively in collaborative environments.
-- Strong Problem-solving skills, with the ability to diagnose and resolve issues quickly.
-- Exceptional Time Management skills to handle multiple tasks and projects concurrently.
+**Required Skills:**  
+- Strong cost estimation abilities with a focus on accuracy.  
+- Proficient in plumbing techniques and practices.  
+- Knowledge of electrical systems and installation procedures.  
+- Experience operating excavators and concrete mixers.  
+- Familiarity with safety harnesses and construction safety protocols.  
+- Excellent communication skills, both verbal and written.  
+- High level of physical stamina to handle demanding tasks.  
+- Proven ability to work effectively as part of a team.  
 
-Qualifications:
-- Bachelor’s degree in Computer Science, Information Technology, or a related field.
-- Minimum of 5 years of experience in network engineering within the telecommunications industry.
-- Relevant certifications such as CCNA, CCNP, or equivalent.
+**Qualifications:**  
+- Minimum of 2 years of experience in construction or a related field.  
+- Relevant certifications in plumbing and electrical work are preferred.  
+- Strong problem-solving skills and attention to detail.  
+- Ability to work in a fast-paced environment and manage multiple tasks.  
 
-Notice Period:
-The selected candidate will be required to provide a notice period of 3 months.
+**Benefits:**  
+- Competitive salary within the specified range.  
+- Opportunities for professional development and training.  
+- Supportive team environment and culture.  
+- Health and safety training provided.  
 
-Why Join Us?
-At Basque Telecomm Solutions, we value innovation and collaboration. Join our team and play a pivotal role in shaping the future of telecommunications in the Basque Country. Enjoy competitive compensation, professional development opportunities, and a dynamic work environment that fosters growth and creativity.
+If you are passionate about construction and meet the qualifications outlined above, we encourage you to apply for the Construction Technician position.
 --------------------------------------------------
 ### Cosine Distance
--0.7182
+0.2943

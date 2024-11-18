@@ -1,38 +1,44 @@
 ### Job Description
-Job Title: Digital Marketing Specialist
+Job Title: Real Estate Agent
 
-Location: Maharashtra, India
+Location: Tuscany, Italy
 
-Industry: Marketing and Advertising
+Industry: Real Estate
 
-Salary Range: $50,000 - $60,000
+Salary Range: $20,000 - $30,000
 
-Notice Period: More than 3 months
+Notice Period: 1 week
 
 Job Description:
-We are seeking a highly creative and motivated Digital Marketing Specialist to join our dynamic team in Maharashtra. The ideal candidate will possess a strong background in content creation, market research, and social media management. You will be responsible for developing innovative marketing strategies that enhance our brand presence and drive customer engagement.
+We are seeking a highly motivated and skilled Real Estate Agent to join our dynamic team in Tuscany. The ideal candidate will have a passion for real estate, excellent negotiation skills, and a proven track record of success in property sales and client relations.
 
 Key Responsibilities:
-- Develop and execute content creation strategies that align with our marketing goals.
-- Conduct comprehensive market research to identify trends, customer preferences, and competitive analysis.
-- Manage and grow our social media platforms by creating engaging content and interacting with our audience.
-- Utilize Adobe Creative Suite to design visually appealing marketing materials and social media graphics.
-- Implement SEO tools to optimize website content and improve search engine rankings.
-- Collaborate with cross-functional teams to brainstorm and execute creative marketing campaigns.
+- Utilize MLS systems to research and analyze property listings, market trends, and pricing strategies.
+- Build and maintain strong relationships with clients through effective communication and exceptional customer service.
+- Conduct property tours and showcase features to potential buyers, highlighting the unique aspects of each property.
+- Negotiate contracts and agreements on behalf of clients to ensure favorable outcomes.
+- Manage a diverse portfolio of properties and clients, ensuring timely follow-ups and responsiveness to inquiries.
+- Utilize CRM software to track leads, manage client interactions, and streamline sales processes.
+- Handle all aspects of property transactions, from initial listing to closing, while maintaining compliance with local regulations.
 
 Required Skills:
-- Strong skills in Content Creation, Market Research, and Social Media Management.
-- Proficiency in Adobe Creative Suite (Photoshop, Illustrator, InDesign).
-- Familiarity with SEO Tools and techniques to drive organic traffic.
-- Exceptional Creativity and ability to think outside the box.
-- Excellent written and verbal communication skills.
+- Strong negotiation skills with the ability to influence and persuade clients.
+- Proficient in CRM software and MLS systems, with the ability to leverage technology for efficiency.
+- Excellent time management skills, capable of prioritizing tasks effectively in a fast-paced environment.
+- Strong problem-solving abilities to creatively address challenges and provide solutions for clients.
+- Exceptional interpersonal and communication skills, both verbal and written.
 
 Qualifications:
-- Bachelor’s degree in Marketing, Communications, or a related field.
-- 3+ years of experience in digital marketing or related roles.
-- A strong portfolio showcasing your content creation and design work.
+- Previous experience in real estate sales or related field preferred.
+- Valid real estate license in Italy.
+- Familiarity with the Tuscany real estate market is a plus.
 
-If you are passionate about marketing and advertising and are looking to make a significant impact in a fast-paced environment, we encourage you to apply!
+Benefits:
+- Competitive salary with performance-based incentives.
+- Opportunities for professional development and training.
+- Supportive team environment with a focus on collaboration and success.
+
+Join our team and take the next step in your real estate career in the beautiful region of Tuscany!
 --------------------------------------------------
 ### Cosine Distance
--0.7334
+0.2642

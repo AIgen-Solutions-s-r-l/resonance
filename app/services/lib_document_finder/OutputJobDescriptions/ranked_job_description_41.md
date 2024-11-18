@@ -1,41 +1,39 @@
 ### Job Description
-Job Title: Senior Structural Engineer
+Job Title: HVAC Technician
 
-Location: Missouri, USA
+Location: New South Wales, Australia  
+Industry: Utilities  
+Salary Range: $40,000 - $50,000  
+Notice Period: Immediate  
 
-Industry: Architecture
+Job Summary:  
+We are seeking a dedicated HVAC Technician to join our growing utilities company in New South Wales. The successful candidate will be responsible for installing, maintaining, and repairing HVAC systems, ensuring compliance with safety protocols and standards.
 
-Salary Range: $120,000 - $150,000
+Key Responsibilities:  
+- Install and maintain heating, ventilation, and air conditioning (HVAC) systems in residential and commercial properties.  
+- Conduct routine inspections and troubleshoot HVAC systems to identify issues and perform necessary repairs.  
+- Utilize meters to measure airflow, temperature, and pressure, ensuring optimal system performance.  
+- Adhere to all safety protocols and regulations when working with HVAC systems and tools.  
+- Communicate effectively with clients regarding system performance, service recommendations, and safety practices.  
+- Maintain accurate records of service performed and parts used during maintenance and repairs.  
+- Collaborate with team members to improve safety and efficiency in service delivery.
 
-Notice Period: 2 Weeks
+Qualifications:  
+- Previous experience in HVAC installation and maintenance preferred.  
+- Strong understanding of safety protocols related to HVAC systems.  
+- Proficient in using HVAC meters and diagnostic tools.  
+- Excellent communication skills, with the ability to explain technical information to clients effectively.  
+- Ability to work independently and as part of a team.  
+- Relevant certifications in HVAC technology or a similar field are a plus.  
 
-Job Description:
-We are seeking a highly skilled Senior Structural Engineer to join our dynamic team in Missouri. The ideal candidate will have extensive experience in structural analysis, building codes, and advanced 3D modeling software. The successful applicant will work on various architectural projects and collaborate with architects and contractors to ensure that designs are structurally sound and comply with all applicable codes.
+Benefits:  
+- Competitive salary within the range of $40,000 - $50,000.  
+- Opportunities for professional development and training in the utilities sector.  
+- Supportive team environment that values safety and communication.  
+- Immediate start available for the right candidate.  
 
-Key Responsibilities:
-- Conduct thorough structural analysis for a variety of architectural projects.
-- Ensure compliance with local and national building codes.
-- Utilize 3D modeling software, including Revit and AutoCAD, to create and modify structural designs.
-- Collaborate effectively within a team environment, providing insights and support to project members.
-- Identify and resolve structural problems, proposing innovative solutions to complex engineering challenges.
-- Prepare detailed documentation and reports for project stakeholders.
-- Stay current with industry trends and technological advancements in structural engineering.
-
-Required Skills:
-- Proficient in Structural Analysis techniques and tools.
-- In-depth knowledge of Building Codes relevant to structural engineering.
-- Hands-on experience with 3D Modeling Software, specifically Revit and AutoCAD.
-- Strong Teamwork skills, fostering a collaborative work environment.
-- Excellent Problem-solving abilities, with a proven track record of resolving engineering issues effectively.
-
-Qualifications:
-- Bachelor’s degree in Civil or Structural Engineering.
-- Minimum of 5 years of experience in structural engineering within the architecture industry.
-- Professional Engineer (PE) license is preferred but not mandatory.
-- Strong communication and interpersonal skills.
-
-Why Join Us:
-We offer a competitive salary, comprehensive benefits, and opportunities for professional growth in a supportive and innovative work environment. If you are passionate about architecture and structural engineering, we want to hear from you!
+To Apply:  
+Interested candidates are invited to submit their resume and a cover letter detailing their relevant experience and qualifications to our HR department.
 --------------------------------------------------
 ### Cosine Distance
--0.6980
+0.3146

@@ -1,39 +1,49 @@
 ### Job Description
-Job Title: HR Specialist  
-Location: Veneto, Italy  
-Industry: Human Resources  
-Salary Range: $20,000 - $30,000  
-Notice Period: More than 3 months  
+Job Title: Real Estate Appraiser
 
-Job Summary:  
-We are seeking a dedicated and detail-oriented HR Specialist to join our dynamic team in Veneto, Italy. This role will be pivotal in managing employee relations, ensuring HR compliance, and supporting our recruitment processes through efficient use of applicant tracking systems.
+Location: Hunan, China
 
-Key Responsibilities:  
-- Manage and resolve employee relations issues, promoting a positive workplace culture.  
-- Ensure compliance with HR policies and labor regulations, conducting regular audits.  
-- Utilize Microsoft Office Suite to prepare reports, presentations, and other documentation.  
-- Oversee the applicant tracking systems to streamline recruitment processes and enhance candidate experience.  
-- Demonstrate empathy in interactions with employees, fostering trust and open communication.  
+Industry: Real Estate
 
-Required Skills:  
-- Proven experience in employee relations and conflict resolution.  
-- Strong knowledge of HR compliance regulations and best practices.  
-- Proficient in Microsoft Office, particularly Excel and PowerPoint.  
-- Experience with applicant tracking systems and recruitment software.  
-- Exceptional interpersonal skills with a high degree of empathy and understanding.  
+Salary Range: $60,000 - $70,000
 
-Qualifications:  
-- Bachelor’s degree in Human Resources, Business Administration, or related field.  
-- Minimum 2 years of experience in a human resources role.  
-- Fluent in Italian and English; additional languages are a plus.  
+Notice Period: 2 months
 
-Benefits:  
-- Competitive salary within the range of $20,000 - $30,000.  
-- Opportunities for professional development and career advancement.  
-- Supportive work environment with a focus on employee well-being.  
+Job Description:
+We are seeking a skilled and motivated Real Estate Appraiser to join our dynamic team in Hunan. The ideal candidate will possess a strong background in property appraisal, real estate law, and customer service, with a proven ability to navigate MLS systems and utilize various marketing tools to enhance property visibility and valuation.
 
-Application Process:  
-Interested candidates are invited to submit their resume and a cover letter outlining their relevant experience and skills. Please include "HR Specialist Application" in the subject line. Only shortlisted candidates will be contacted.
+Key Responsibilities:
+- Conduct thorough appraisals of residential and commercial properties to determine fair market value based on a variety of factors, including location, condition, and current market trends.
+- Stay updated on real estate laws and regulations to ensure compliance during the appraisal process.
+- Provide exceptional customer service by addressing client inquiries and offering professional advice regarding property valuation.
+- Utilize Microsoft Office suite for reporting, data management, and communication with clients and team members.
+- Leverage MLS systems to access and analyze property data, ensuring accurate appraisals.
+- Develop and implement marketing strategies to showcase appraised properties effectively.
+- Communicate appraisal findings clearly and professionally to clients through written reports and presentations.
+- Demonstrate strong problem-solving skills to address any challenges that arise during the appraisal process.
+
+Required Skills:
+- Customer Service
+- Appraisal
+- Real Estate Law
+- Microsoft Office
+- MLS Systems
+- Marketing Tools
+- Communication
+- Problem-solving
+
+Qualifications:
+- Bachelor’s degree in Real Estate, Finance, or a related field.
+- Valid appraisal license/certification in Hunan, China.
+- Minimum of 3 years of experience in real estate appraisal or related field.
+- Proficiency in Microsoft Office, particularly Excel and PowerPoint.
+- Familiarity with MLS systems and marketing tools.
+
+Why Join Us:
+At our company, we value professionalism, integrity, and teamwork. We offer a competitive salary, a supportive work environment, and opportunities for professional development. If you are looking to advance your career in real estate and make a difference in the community, we want to hear from you!
+
+How to Apply:
+Interested candidates are invited to submit their resume and cover letter outlining their qualifications and experience related to the position. Please include "Real Estate Appraiser Application" in the subject line of your email.
 --------------------------------------------------
 ### Cosine Distance
--0.6968
+0.3149

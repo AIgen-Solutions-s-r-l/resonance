@@ -1,47 +1,43 @@
 ### Job Description
-Job Title: Research and Development Technician
+Job Title: Software Engineer
 
-Location: North Carolina, USA
+Location: Veneto, Italy
 
-Industry: Research and Development
+Industry: Technology
 
-Salary Range: $30,000 - $40,000
+Salary Range: $50,000 - $60,000
 
-Notice Period: 2 weeks
+Notice Period: 1 Month
 
 Job Description:
-We are seeking a motivated and detail-oriented Research and Development Technician to join our innovative team in North Carolina. The ideal candidate will possess a strong background in laboratory techniques and experimental design, coupled with solid skills in statistical analysis. 
+We are seeking a talented Software Engineer to join our innovative team in Veneto. The ideal candidate will be responsible for developing high-quality software solutions and will be involved in all stages of the development lifecycle. You will work closely with cross-functional teams to design, implement, and maintain software applications that meet the needs of our clients.
 
-Key Responsibilities:
-- Conduct experiments and analyses using various laboratory techniques and equipment.
-- Design and implement experimental protocols to test hypotheses and gather data.
-- Utilize statistical software to analyze experimental data and interpret results.
-- Collaborate with team members to develop and manage project timelines and objectives.
-- Prepare technical reports and presentations to communicate findings effectively.
-- Troubleshoot experimental processes and equipment as needed to solve problems.
-- Maintain accurate records of experiments and ensure compliance with safety regulations.
+Responsibilities:
+- Design, develop, and implement software applications using Matlab, C++, Django, and Spring frameworks.
+- Collaborate with product management and other engineering teams to define software requirements and specifications.
+- Utilize Git for version control and collaboration on software projects.
+- Participate in code reviews and ensure adherence to best practices.
+- Troubleshoot and debug applications to enhance performance and user experience.
+- Communicate effectively with team members and stakeholders to convey technical information and project updates.
 
-Qualifications:
-- Bachelor’s degree in a relevant field (e.g., Biology, Chemistry, or Engineering) preferred.
-- Experience with laboratory techniques and laboratory equipment.
-- Proficiency in statistical analysis and familiarity with statistical software.
-- Strong project management skills and experience using project management tools.
-- Excellent communication skills, both written and verbal.
-- Ability to work collaboratively in a team-oriented environment.
-- Strong problem-solving skills and a proactive approach to challenges.
+Required Skills:
+- Proficiency in Matlab and C++ programming languages.
+- Experience with Django and Spring frameworks for web application development.
+- Familiarity with Git for version control and collaborative development.
+- Strong communication skills to facilitate teamwork and project collaboration.
+- Excellent teamwork abilities to work effectively in a dynamic environment.
 
-Skills:
-- Laboratory Techniques
-- Statistical Analysis
-- Experimental Design
-- Project Management Tools
-- Laboratory Equipment
-- Statistical Software
-- Communication
-- Problem-solving
-- Teamwork
+Preferred Qualifications:
+- Bachelor’s degree in Computer Science, Engineering, or a related field.
+- Previous experience in software development within the technology industry.
+- Knowledge of agile methodologies and software development best practices.
 
-If you are passionate about research and development and eager to contribute to exciting projects, we encourage you to apply for this position. Join us in our mission to innovate and improve outcomes in our field.
+Benefits:
+- Competitive salary within the specified range.
+- Opportunity to work in a collaborative and innovative environment.
+- Professional development opportunities and resources.
+
+Join us in shaping the future of technology in Veneto! If you are passionate about software development and possess the required skills, we would love to hear from you. Please submit your resume and cover letter for consideration.
 --------------------------------------------------
 ### Cosine Distance
--0.7337
+0.2531

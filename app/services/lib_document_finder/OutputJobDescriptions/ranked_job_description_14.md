@@ -1,51 +1,46 @@
 ### Job Description
-Job Title: Digital Marketing Specialist
+Job Title: Robotics Safety Specialist
 
-Company: Creative Edge Marketing
+Location: Maryland, USA
 
-Location: Michigan, USA
+Industry: Manufacturing
 
-Industry: Marketing and Advertising
+Salary Range: $50,000 - $60,000
 
-Salary Range: $40,000 - $50,000
-
-Notice Period: Immediate
+Notice Period: More than 3 months
 
 Job Description:
-Creative Edge Marketing is seeking a motivated and talented Digital Marketing Specialist to join our dynamic team. This is a fantastic opportunity for individuals looking to grow their careers in the marketing and advertising industry.
+We are seeking a detail-oriented Robotics Safety Specialist to join our dynamic team in the manufacturing sector. The ideal candidate will play a critical role in ensuring the safety and efficiency of robotic operations within our facility.
 
-Responsibilities:
-- Develop and implement social media strategies to enhance brand awareness and engagement across platforms.
-- Create engaging content for various channels including blogs, newsletters, and social media posts.
-- Utilize marketing automation tools to streamline and optimize marketing processes.
-- Collaborate with the SEO team to improve organic search rankings and drive web traffic.
-- Effectively manage time and prioritize tasks to meet deadlines and achieve marketing goals.
+Key Responsibilities:
+- Develop, implement, and monitor safety protocols to ensure compliance with industry standards and regulations.
+- Collaborate with engineering teams to enhance the functionality and safety of robotic systems.
+- Conduct regular safety audits and risk assessments to identify potential hazards and recommend corrective actions.
+- Lead training sessions for staff on safety procedures, robotic operation, and emergency response protocols.
+- Foster a culture of safety and teamwork within the organization by promoting open communication and collaboration among teams.
 
 Required Skills:
-- Proven experience in social media management with a strong understanding of various platforms.
-- Strong content creation skills with the ability to write compelling and engaging material.
-- Familiarity with marketing automation tools (e.g., HubSpot, Mailchimp) to improve workflow efficiency.
-- Proficiency in SEO tools (e.g., Google Analytics, SEMrush) to analyze web performance and optimize content.
-- Excellent time management skills with the ability to handle multiple projects simultaneously.
+- Proficient in Safety Protocols: Extensive knowledge of safety regulations and best practices in a manufacturing environment.
+- Expertise in Robotics: Familiarity with robotic systems, programming, and troubleshooting.
+- Strong Adaptability: Ability to adjust to new technologies, procedures, and challenges in a fast-paced environment.
+- Excellent Teamwork: Proven track record of working effectively with cross-functional teams to achieve common goals.
 
 Qualifications:
-- Bachelor’s degree in Marketing, Communications, or a related field preferred.
-- 2+ years of experience in digital marketing or a similar role.
-- Strong analytical skills and attention to detail.
-- Excellent written and verbal communication skills.
-- Ability to work collaboratively in a fast-paced environment.
+- Bachelor’s degree in Engineering, Robotics, Safety Management, or a related field.
+- Minimum of 3 years of experience in a safety role within the manufacturing or robotics industry.
+- Certifications in safety management and robotics preferred.
+- Demonstrated ability to communicate effectively at all levels of the organization.
 
 Benefits:
 - Competitive salary within the specified range.
-- Opportunities for professional development and advancement.
-- Flexible work hours and a supportive team culture.
 - Health, dental, and vision insurance.
-- Paid time off and holidays.
+- Retirement savings plan with company match.
+- Opportunities for professional development and continuous education.
 
 Application Process:
-Interested candidates are encouraged to submit their resume and a cover letter highlighting relevant experience to careers@creativeedgemarketing.com. Please include "Digital Marketing Specialist Application" in the subject line. 
+Interested candidates should submit their resume and a cover letter detailing their experience and qualifications related to robotics and safety in manufacturing. Applications will be accepted until the position is filled. 
 
-Join Creative Edge Marketing and be a part of a team that values creativity, innovation, and results!
+Join our team and contribute to creating a safe and innovative manufacturing environment!
 --------------------------------------------------
 ### Cosine Distance
--0.7180
+0.2946

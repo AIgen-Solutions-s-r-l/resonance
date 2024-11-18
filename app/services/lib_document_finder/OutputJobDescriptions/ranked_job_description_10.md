@@ -1,45 +1,39 @@
 ### Job Description
-Job Title: Drilling and Excavation Specialist
+Job Title: Creative Media Specialist
 
-Location: Australian Capital Territory, Australia
+Location: Lower Saxony, Germany
 
-Industry: Mining
+Industry: Media
 
 Salary Range: $20,000 - $30,000
 
-Notice Period: 1 Month
+Notice Period: More than 3 months
 
-Job Summary:
-We are seeking a dedicated Drilling and Excavation Specialist to join our dynamic team in the mining industry. The successful candidate will play a crucial role in ensuring the safe and efficient operation of drilling equipment and excavators while adhering to safety compliance regulations. This position requires a proactive approach to teamwork and collaboration with various departments.
+Job Description:
+We are seeking a talented and driven Creative Media Specialist to join our dynamic team in Lower Saxony. The ideal candidate will possess a unique blend of skills in content creation, social media management, photography, and WordPress. This role demands a high level of creativity and communication to effectively engage our audience and elevate our brand presence.
 
-Key Responsibilities:
-- Operate and maintain drilling equipment and excavators to ensure optimal performance and adherence to safety standards.
-- Conduct regular inspections and maintenance of machinery to prevent operational failures and ensure compliance with safety regulations.
-- Utilize GIS software to analyze site data and assist in planning drilling and excavation activities effectively.
-- Collaborate with team members to develop and implement best practices for safety and operational efficiency.
-- Prepare detailed reports on drilling progress and findings, and provide recommendations for improvement.
+Responsibilities:
+- Develop and create engaging content for various platforms, including blogs, websites, and social media channels.
+- Manage and grow our social media presence by curating content, posting regularly, and engaging with our audience.
+- Capture high-quality photographs that align with our brand messaging and marketing initiatives.
+- Utilize WordPress to manage website content, ensuring a seamless user experience and timely updates.
+- Collaborate with team members to brainstorm and implement innovative marketing strategies.
+- Communicate effectively with stakeholders to understand their needs and deliver creative solutions.
 
 Required Skills:
-- Strong knowledge of safety compliance regulations and best practices in the mining industry.
-- Proficiency in GIS software for site analysis and planning purposes.
-- Experience operating and maintaining drilling equipment and excavators.
-- Excellent teamwork skills with the ability to collaborate effectively in a fast-paced environment.
-- Strong problem-solving and decision-making abilities.
+- Proficiency in content creation with a strong portfolio showcasing written and visual work.
+- Experience in social media management, including analytics and engagement strategies.
+- Strong photography skills with the ability to edit and enhance images.
+- Knowledge of WordPress with experience in website management and content updates.
+- Excellent communication skills, both verbal and written.
+- A high level of creativity with the ability to think outside the box and bring fresh ideas to the table.
 
-Desired Qualifications:
-- A minimum of 3 years experience in a similar role within the mining or construction industry.
-- Certification in safety compliance and heavy machinery operation.
-- Familiarity with environmental regulations related to mining operations.
+Qualifications:
+- Bachelor’s degree in Media, Marketing, Communications, or a related field preferred.
+- Minimum of 2 years of experience in a similar role or industry.
+- A proactive approach to problem-solving and a passion for media and creativity.
 
-Benefits:
-- Competitive salary within the range of $20,000 - $30,000.
-- Opportunities for career development and advancement within the company.
-- Supportive work environment with a focus on safety and teamwork.
-
-Application Process:
-Interested candidates are encouraged to submit their resumes and cover letters outlining their relevant experience and skills. Please include references from previous employers. Applications will be accepted until [insert closing date]. 
-
-Join us in shaping the future of the mining industry with your expertise and commitment to safety and efficiency!
+We offer a collaborative work environment and opportunities for professional growth. If you are a creative individual looking to make an impact in the media industry, we would love to hear from you! Please submit your resume and a portfolio of your work for consideration.
 --------------------------------------------------
 ### Cosine Distance
--0.7217
+0.2928

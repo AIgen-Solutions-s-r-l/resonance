@@ -1,44 +1,52 @@
 ### Job Description
-Job Title: Retail Visual Merchandising Specialist
+**Job Title:** Culinary Events Coordinator
 
-Location: London, England, UK
+**Location:** Galicia, Spain
 
-Salary Range: $40,000 - $50,000 per annum
+**Industry:** Hospitality
 
-Industry: Retail
+**Salary Range:** $90,000 - $100,000
 
-Notice Period: Immediate
+**Notice Period:** 1 Month
 
-Job Description:
-We are seeking a dynamic and experienced Retail Visual Merchandising Specialist to join our innovative team. The successful candidate will be responsible for enhancing the aesthetic appeal of our retail environments and driving sales through strategic visual displays.
+**Job Summary:**
+We are seeking a dynamic Culinary Events Coordinator to join our prestigious hospitality team in Galicia. This role involves planning and executing exceptional culinary events while ensuring an unforgettable experience for our guests. The ideal candidate will possess a strong blend of culinary expertise, event planning experience, and proficiency in inventory and reservation software.
 
-Key Responsibilities:
-- Develop and implement creative visual merchandising strategies to maximize product visibility and sales.
-- Collaborate with the marketing team to ensure alignment of merchandising displays with promotional campaigns.
-- Conduct regular assessments of product placement and inventory levels to enhance customer experience.
-- Utilize inventory software to track product availability and report discrepancies in a timely manner.
-- Maintain up-to-date knowledge of industry trends, competitor activities, and customer preferences.
+**Key Responsibilities:**
+- Plan and coordinate culinary events, including tastings, weddings, corporate events, and private parties.
+- Collaborate with chefs to design menus that reflect the theme and requirements of each event.
+- Manage inventory and procurement of ingredients and supplies using inventory software.
+- Utilize reservation software to track guest bookings and ensure smooth event execution.
+- Communicate effectively with clients to understand their needs and provide exceptional customer service.
+- Oversee the setup and breakdown of events, ensuring all details are executed flawlessly.
+- Work with vendors and suppliers to source high-quality products and services.
+- Maintain a clean and organized workspace, adhering to health and safety standards.
 
-Required Skills:
-- Proven experience in visual merchandising within a retail environment.
-- Strong product knowledge to effectively communicate features and benefits to customers.
-- Proficiency in inventory software to manage stock levels and optimize displays.
-- Advanced skills in Microsoft Office, particularly Excel and PowerPoint for reporting and presentations.
-- Exceptional time management skills with the ability to prioritize tasks effectively.
+**Required Skills:**
+- Culinary Skills: Proven ability to create and execute diverse and high-quality culinary offerings.
+- Event Planning: Experience in planning and managing various types of events from conception to completion.
+- Inventory Software: Proficiency in using inventory management software to maintain stock levels and track orders.
+- Reservation Software: Familiarity with reservation systems to manage guest bookings and event logistics.
+- Communication: Excellent verbal and written communication skills; ability to build rapport with clients and team members.
+- Time Management: Strong organizational skills with the ability to prioritize tasks and meet deadlines effectively.
 
-Qualifications:
-- Bachelor's degree in Marketing, Retail Management, or a related field preferred.
-- Minimum of 3 years experience in a visual merchandising role.
-- Strong understanding of retail metrics and sales analysis.
+**Qualifications:**
+- Bachelor’s degree in Hospitality Management, Culinary Arts, or related field preferred.
+- Minimum of 3 years of experience in culinary event planning or a similar role.
+- Strong knowledge of culinary techniques and food presentation.
+- Ability to work flexible hours, including evenings and weekends, as required by event schedules.
+- Fluency in Spanish and English is preferred.
 
-Benefits:
-- Competitive salary with performance-based bonuses.
-- Opportunities for professional development and career advancement.
-- Employee discounts on products.
-- Health and wellness programs.
+**Benefits:**
+- Competitive salary within the range of $90,000 - $100,000.
+- Opportunities for professional development and training.
+- Employee discounts at our venue and partner establishments.
+- Flexible working hours and a supportive team environment.
 
-Application Process:
-Interested candidates should submit their CV and a cover letter outlining their relevant experience and skills. We are looking to fill this position immediately, so prompt applications are encouraged.
+**How to Apply:**
+Interested candidates are invited to submit their resume and cover letter outlining their relevant experience and passion for culinary events to careers@culinaryeventsgalicia.com. Please include "Culinary Events Coordinator Application" in the subject line. 
+
+Join us in delivering unforgettable culinary experiences in the heart of Galicia!
 --------------------------------------------------
 ### Cosine Distance
--0.6944
+0.3159

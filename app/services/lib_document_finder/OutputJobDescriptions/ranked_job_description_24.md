@@ -1,50 +1,41 @@
 ### Job Description
-Job Title: Quality Assurance Specialist
+Job Title: Senior Human Resources Manager
 
-Company: Southern BioPharma Innovations
+Location: Bihar, India
 
-Location: South Australia, Australia
+Industry: Human Resources
 
-Industry: Pharmaceuticals
+Salary Range: $60,000 - $70,000
 
-Salary Range: $40,000 - $50,000
-
-Notice Period: 2 weeks
+Notice Period: More than 3 months
 
 Job Description:
-Southern BioPharma Innovations is seeking a dedicated Quality Assurance Specialist to join our team. In this role, you will be responsible for ensuring that our pharmaceutical products meet the highest quality standards throughout the manufacturing process. The successful candidate will possess a strong background in quality assurance, laboratory skills, and pharmacology, with proficiency in statistical software.
+We are seeking an experienced Senior Human Resources Manager to join our dynamic team in Bihar. The ideal candidate will be responsible for enhancing employee relations, managing performance, and driving training and development initiatives within the organization. 
 
 Key Responsibilities:
-- Conduct quality assurance audits and inspections to ensure compliance with regulatory requirements.
-- Develop and implement quality control procedures for laboratory testing.
-- Analyze data using statistical software to identify trends and areas for improvement.
-- Collaborate with cross-functional teams to address quality-related issues.
-- Maintain detailed documentation and reports related to quality assurance activities.
-- Provide training to laboratory staff on quality standards and practices.
-- Participate in the development and review of Standard Operating Procedures (SOPs).
+- Develop and implement employee relations programs to enhance workplace culture and employee engagement.
+- Design and deliver training and development programs tailored to meet the needs of diverse employee groups.
+- Oversee performance management processes to ensure alignment with organizational goals and employee development plans.
+- Utilize Applicant Tracking Systems (ATS) to streamline recruitment processes and maintain a steady pipeline of talent.
+- Manage and maintain HRIS systems to ensure accurate employee data and reporting capabilities.
+- Collaborate with cross-functional teams to identify and resolve HR-related issues using effective problem-solving strategies.
+- Provide empathetic support to employees, addressing concerns and facilitating conflict resolution in a professional manner.
+- Maintain a high level of attention to detail in all HR processes, ensuring compliance with policies and regulations.
 
 Required Skills:
-- Quality Assurance
-- Laboratory Skills
-- Pharmacology
-- Statistical Software
-- Attention to Detail
-- Time Management
-- Analytical Thinking
+- Strong experience in Employee Relations and Performance Management.
+- Proven track record in Training and Development initiatives.
+- Proficiency in using Applicant Tracking Systems and HRIS Systems.
+- Excellent problem-solving abilities and a proactive approach to identifying and addressing HR challenges.
+- High level of empathy and interpersonal skills to engage with employees effectively.
+- Exceptional attention to detail and organizational skills.
 
 Qualifications:
-- Bachelor’s degree in a relevant field (e.g., Pharmacy, Life Sciences, Quality Management).
-- Minimum of 2 years of experience in quality assurance within the pharmaceuticals sector.
-- Familiarity with Regulatory Affairs and Good Manufacturing Practices (GMP).
-- Strong analytical skills and the ability to interpret complex data.
+- Bachelor's degree in Human Resources, Business Administration, or a related field.
+- Minimum of 5 years of relevant experience in a senior HR role.
+- HR certification (e.g., SHRM-CP, PHR) is preferred.
 
-Benefits:
-- Competitive salary within the range of $40,000 - $50,000.
-- Opportunities for professional development and career growth.
-- Supportive work environment with a focus on employee well-being.
-
-Application Process:
-Interested candidates should submit their resume and a cover letter outlining their relevant experience and qualifications. We look forward to reviewing your application!
+If you are a strategic thinker with a passion for human resources and a commitment to fostering a positive work environment, we invite you to apply for this exciting opportunity.
 --------------------------------------------------
 ### Cosine Distance
--0.7086
+0.3040

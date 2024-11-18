@@ -1,41 +1,40 @@
 ### Job Description
-Job Title: Registered Nurse - EMR Specialist
+Job Title: Aerospace Engineer
 
-Location: San Francisco, California, USA
+Location: Uttar Pradesh, India
 
-Industry: Healthcare
+Industry: Defense and Space
 
-Salary Range: $120,000 - $150,000
+Salary Range: $90,000 - $100,000
 
-Notice Period: 1 Month
+Notice Period: 1 month
 
 Job Description:
-We are seeking a dedicated and skilled Registered Nurse to join our dynamic healthcare team as an EMR Specialist. The ideal candidate will possess a strong background in electronic medical records (EMR) systems and demonstrate exceptional nursing skills. 
+We are seeking a highly motivated Aerospace Engineer to join our dynamic team in the Defense and Space industry. The ideal candidate will possess strong technical skills and a passion for innovation, contributing to the design, development, and testing of advanced aerospace systems.
 
-Key Responsibilities:
-- Utilize EMR systems to manage patient records, ensuring accuracy and confidentiality.
-- Provide high-quality patient care while demonstrating compassion and empathy toward patients and their families.
-- Collaborate with physicians, administrative staff, and other healthcare professionals to optimize patient outcomes.
-- Adapt to changing environments and patient needs, handling emergencies with professionalism and calmness.
-- Educate patients and families about treatment plans, medications, and health management.
-- Participate in training and development sessions to stay updated on the latest EMR technologies and best practices in nursing.
+Responsibilities:
+- Develop and design aerospace systems and components using CAD software.
+- Conduct testing of aerospace equipment and systems, utilizing state-of-the-art testing equipment.
+- Implement and manage encryption tools to ensure data security and integrity during all phases of project development.
+- Collaborate with multidisciplinary teams to solve complex engineering problems, demonstrating strong problem-solving skills.
+- Prepare technical documentation and reports, ensuring clear communication of project status and findings.
+- Maintain a high level of attention to detail throughout all phases of project work, from initial design to final testing and implementation.
+
+Skills Required:
+- Proficient in Aerospace Engineering principles and practices.
+- Experience with testing equipment relevant to aerospace systems.
+- Familiarity with encryption tools and data security measures.
+- Advanced skills in CAD software for designing aerospace components.
+- Excellent communication skills to effectively collaborate with team members and stakeholders.
+- Strong problem-solving abilities to address engineering challenges.
+- Keen attention to detail to ensure accuracy in designs and testing processes.
 
 Qualifications:
-- Active Registered Nurse (RN) license in the state of California.
-- Proven experience in utilizing EMR systems within a healthcare setting.
-- Strong interpersonal skills, with a focus on compassion and empathy in patient interactions.
-- Ability to adapt to fast-paced environments and manage multiple priorities efficiently.
-- Excellent communication skills, both verbal and written.
+- Bachelor’s degree in Aerospace Engineering or a related field.
+- Minimum of 5 years of experience in the aerospace or defense industry.
+- Proven track record of successful project management and execution.
 
-Benefits:
-- Competitive salary within the range of $120,000 - $150,000 per year.
-- Comprehensive health benefits including medical, dental, and vision insurance.
-- Retirement savings plan with employer matching.
-- Paid time off and flexible scheduling options.
-- Opportunities for professional growth and advancement.
-
-To Apply:
-Interested candidates should submit their resume and a cover letter outlining their experience and qualifications. We look forward to welcoming a compassionate and adaptable Registered Nurse to our team!
+Join our team and be part of a pioneering organization that is shaping the future of defense and space technology in Uttar Pradesh. Apply today to contribute your expertise and grow your career in an exciting and challenging environment.
 --------------------------------------------------
 ### Cosine Distance
--0.7051
+0.3086

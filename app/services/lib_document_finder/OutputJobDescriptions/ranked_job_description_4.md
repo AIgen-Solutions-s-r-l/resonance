@@ -1,54 +1,49 @@
 ### Job Description
-Job Title: Senior Geologist
+Job Title: IT Network Administrator
 
-Location: Madhya Pradesh, India
+Company: Sardinia Tech Solutions
 
-Industry: Mining
+Location: Sardinia, Italy
 
-Salary Range: $150,000+
+Industry: Information Technology Services
 
-Notice Period: Immediate
+Salary Range: $60,000 - $70,000
+
+Notice Period: 3 months
 
 Job Description:
-
-We are seeking a highly skilled and motivated Senior Geologist to join our team in the mining industry. The ideal candidate will have extensive experience in geology and environmental compliance, along with proficiency in using various surveying and drilling equipment. 
+Sardinia Tech Solutions is seeking a highly skilled IT Network Administrator to join our dynamic team. The ideal candidate will be responsible for managing and maintaining our network infrastructure, providing technical support, and ensuring the security of our systems. 
 
 Key Responsibilities:
-
-- Conduct geological assessments to inform mining operations and resource extraction.
-- Ensure adherence to environmental compliance standards and regulations throughout all phases of mining projects.
-- Utilize advanced surveying equipment to map and analyze geological features.
-- Operate and maintain drilling equipment to perform exploratory drilling and sampling.
-- Collaborate with cross-functional teams to develop and implement project plans and strategies.
-- Prepare reports and presentations detailing geological findings and compliance status.
-- Provide training and support to junior geologists and field staff.
-- Maintain a strong focus on safety and environmental stewardship.
+- Administer and maintain network hardware and software infrastructure.
+- Provide technical support to internal teams and clients, troubleshooting network issues.
+- Implement cybersecurity measures to protect against data breaches and cyber threats.
+- Configure and manage Cisco equipment including routers, switches, and firewalls.
+- Utilize AWS services for cloud infrastructure management and deployment.
+- Collaborate with cross-functional teams to achieve organizational goals.
+- Document network configurations, changes, and technical procedures with attention to detail.
 
 Required Skills:
-
-- Expertise in Geology, with a strong background in geological mapping and resource estimation.
-- In-depth knowledge of Environmental Compliance regulations related to mining operations.
-- Proficiency in operating and calibrating surveying equipment, including GPS and total stations.
-- Experience with drilling equipment and techniques, particularly in remote and challenging environments.
-- Strong physical stamina to perform fieldwork in varied terrains and weather conditions.
-- Excellent analytical and problem-solving skills, with a keen attention to detail.
-- Effective communication and interpersonal skills to work collaboratively with diverse teams.
+- Proficient in Network Administration and Technical Support.
+- Strong understanding of Cybersecurity best practices and protocols.
+- Solid experience with Cisco Equipment configuration and management.
+- Hands-on experience with AWS for cloud solutions.
+- Excellent teamwork and collaboration skills.
+- Strong communication skills, both verbal and written.
+- Exceptional attention to detail in all aspects of work.
 
 Qualifications:
-
-- Bachelor’s or Master’s degree in Geology, Earth Sciences, or a related field.
-- Minimum of 7 years of experience in the mining industry, with a focus on geology and environmental compliance.
-- Relevant certifications in surveying or drilling operations are preferred.
-- Proven track record of successful project management and team leadership.
+- Bachelor's degree in Information Technology, Computer Science, or a related field.
+- Minimum of 3 years experience in a similar role.
+- Relevant certifications (e.g., CCNA, AWS Certified Solutions Architect) are a plus.
 
 Benefits:
+- Competitive salary within the range of $60,000 - $70,000.
+- Opportunities for professional development and training.
+- Flexible working environment with a focus on work-life balance.
+- Collaborative and innovative team culture.
 
-- Competitive salary and performance-based bonuses.
-- Comprehensive health insurance and retirement plans.
-- Opportunities for professional development and continuous learning.
-- Dynamic work environment with a focus on innovation and sustainability. 
-
-If you are an experienced geologist with a passion for the mining industry and a commitment to environmental responsibility, we encourage you to apply for this exciting opportunity.
+To apply, please submit your resume and cover letter outlining your relevant experience and skills. We look forward to welcoming a new member to our team at Sardinia Tech Solutions!
 --------------------------------------------------
 ### Cosine Distance
--0.7309
+0.2692

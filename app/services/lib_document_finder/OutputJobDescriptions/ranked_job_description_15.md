@@ -1,47 +1,43 @@
 ### Job Description
-Job Title: Senior Supply Chain Analyst
+Job Title: Digital Media Coordinator
 
-Location: Prince Edward Island, Canada
+Location: Victoria, Australia
 
-Industry: Logistics and Supply Chain
+Industry: Media
 
-Salary: $150,000+ per annum
+Salary Range: $40,000 - $50,000
 
-Notice Period: Immediate
+Notice Period: 2 months
 
-Job Description:
-We are seeking a highly skilled Senior Supply Chain Analyst to join our dynamic logistics team. The ideal candidate will have extensive experience in warehouse operations and a strong background in supply chain optimization. This role is critical in enhancing our operational efficiency and ensuring seamless coordination across various departments.
+Job Summary:
+We are seeking a creative and driven Digital Media Coordinator to join our dynamic team in Victoria. The ideal candidate will have a strong background in social media management and photography, along with excellent communication skills. As a Digital Media Coordinator, you will be responsible for managing our brand's online presence, creating engaging content, and promoting our services across various social media platforms.
 
 Key Responsibilities:
-- Oversee and manage daily warehouse operations, ensuring optimal inventory levels and efficient throughput.
-- Utilize demand forecasting techniques to anticipate customer needs and adjust supply chain strategies accordingly.
-- Implement and maintain Transportation Management Systems (TMS) to improve logistics efficiency and cost-effectiveness.
-- Collaborate with cross-functional teams to identify areas for improvement in supply chain processes.
-- Analyze data and generate reports to present supply chain performance metrics to senior management.
-- Coordinate with suppliers and vendors to ensure timely delivery of goods and materials.
-- Lead training sessions for team members on best practices in warehouse operations and supply chain management.
+- Develop and execute social media strategies across platforms including Facebook, Instagram, Twitter, and LinkedIn to enhance brand visibility and engagement.
+- Capture high-quality photographs for use in social media campaigns, website content, and promotional materials.
+- Manage the organization’s WordPress website, ensuring content is up-to-date, visually appealing, and optimized for SEO.
+- Collaborate with team members to create compelling multimedia content that resonates with our target audience.
+- Monitor social media analytics to assess the performance of campaigns and adjust strategies accordingly.
+- Communicate effectively with team members, clients, and stakeholders to ensure alignment on project goals and deliverables.
+- Stay updated on industry trends and best practices in social media and digital marketing.
 
 Required Skills:
-- Proven expertise in Warehouse Operations and Supply Chain Optimization.
-- Strong proficiency in Demand Forecasting and Transportation Management Systems.
-- Advanced skills in Microsoft Office, particularly Excel for data analysis and reporting.
-- Excellent Communication skills, both verbal and written, with the ability to present complex information clearly.
-- Strong Attention to Detail to ensure accuracy in supply chain processes and documentation.
-- Ability to work effectively in a Team-oriented environment, fostering collaboration and positive relationships.
+- Proven experience in social media management and familiarity with various social media platforms.
+- Strong photography skills and proficiency in editing software.
+- Experience with WordPress for website content management.
+- Excellent verbal and written communication skills.
+- Ability to work collaboratively in a fast-paced environment and manage multiple projects.
 
-Qualifications:
-- Bachelor’s degree in Supply Chain Management, Logistics, Business Administration, or a related field.
-- Minimum of 5 years of experience in logistics and supply chain roles, with a focus on warehouse operations.
-- Certifications in Supply Chain Management (e.g., APICS, CSCP) are advantageous but not required.
+Preferred Qualifications:
+- Bachelor’s degree in Marketing, Communications, Media Studies, or a related field.
+- Experience with digital marketing tools and analytics platforms.
 
 Benefits:
-- Competitive salary starting at $150,000+ based on experience.
-- Comprehensive health and dental benefits.
-- Retirement savings plan with employer matching.
-- Opportunities for professional development and career advancement.
+- Competitive salary based on experience.
+- Opportunity for professional development and growth within the company.
+- Flexible working hours and a supportive team environment. 
 
-To Apply:
-Interested candidates are encouraged to submit their resume and a cover letter detailing their relevant experience to careers@logisticscompany.com. We thank all applicants for their interest; however, only those selected for an interview will be contacted.
+To apply, please submit your resume and a portfolio showcasing your photography and social media management work.
 --------------------------------------------------
 ### Cosine Distance
--0.7147
+0.2964

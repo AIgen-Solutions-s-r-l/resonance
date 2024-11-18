@@ -1,48 +1,42 @@
 ### Job Description
-Job Title: E-commerce Operations Manager
+Job Title: Senior Petroleum Engineer
 
-Location: Aragon, Spain
+Location: Murcia, Spain
 
-Industry: E-commerce
+Industry: Energy
 
-Salary Range: $90,000 - $100,000
+Salary Range: $90,000 - $100,000 per year
 
-Notice Period: 1 week
+Notice Period: 2 weeks
 
-Job Summary:
-We are seeking a dynamic E-commerce Operations Manager to oversee and optimize our supply chain processes, enhance our online presence through effective SEO strategies, and manage customer relationships via CRM software. The ideal candidate will possess strong analytical thinking skills to drive data-driven decisions and improve operational efficiency.
+Job Description:
+We are seeking a highly skilled and motivated Senior Petroleum Engineer to join our innovative team in the energy sector. The ideal candidate will have extensive experience in petroleum engineering and a passion for utilizing advanced technologies to optimize oil and gas production.
 
-Key Responsibilities:
-- Develop and implement supply chain strategies to improve overall efficiency and reduce costs.
-- Utilize SEO tools to enhance website visibility and drive organic traffic growth.
-- Oversee the integration and utilization of CRM software to enhance customer engagement and retention.
-- Analyze data and market trends to identify opportunities for improvement and growth in the e-commerce sector.
-- Collaborate with cross-functional teams to ensure smooth operations and alignment with business objectives.
-- Monitor key performance indicators (KPIs) and report on findings to senior management.
-- Manage vendor relationships and negotiate contracts to ensure the best terms for the company.
-- Stay updated on industry trends and best practices in e-commerce and supply chain management.
+Responsibilities:
+- Design and implement enhanced oil recovery techniques to maximize production efficiency.
+- Collaborate with cross-functional teams to develop and optimize SCADA systems for real-time monitoring of production operations.
+- Utilize AutoCAD for the design and modification of pipelines and drilling plans.
+- Conduct detailed analysis of production data to identify trends and implement improvement strategies.
+- Ensure compliance with safety and environmental regulations during all engineering activities.
 
-Qualifications:
-- Bachelor’s degree in Business Administration, Supply Chain Management, or a related field.
-- 5+ years of experience in e-commerce operations or supply chain management.
-- Proficiency in using SEO tools and CRM software.
-- Strong analytical thinking skills with the ability to interpret complex data sets.
-- Excellent communication and interpersonal skills.
-- Proven ability to manage multiple projects and meet deadlines in a fast-paced environment.
+Required Skills:
+- Bachelor's or Master's degree in Petroleum Engineering or a related field.
+- Proven experience in the energy sector with a strong knowledge of SCADA systems.
+- Proficient in AutoCAD for engineering design work.
+- Exceptional attention to detail and accuracy in all engineering tasks.
+- Strong teamwork skills with the ability to work collaboratively in a fast-paced environment.
 
-Skills Required:
-- Supply Chain Management
-- SEO Tools
-- CRM Software
-- Analytical Thinking
+Preferred Qualifications:
+- Previous experience in project management within the oil and gas industry.
+- Familiarity with industry-standard software and tools.
 
 Benefits:
-- Competitive salary within the specified range.
-- Health and wellness benefits.
-- Opportunities for professional development and growth.
-- Flexible working hours and remote work options.
+- Competitive salary and performance-based bonuses.
+- Comprehensive health insurance and retirement plans.
+- Opportunities for professional development and continuous learning.
+- A supportive work environment that fosters innovation and teamwork.
 
-To apply, please submit your resume and a cover letter detailing your relevant experience and skills. We look forward to your application!
+To apply, please submit your resume and a cover letter detailing your relevant experience and why you are a great fit for this role.
 --------------------------------------------------
 ### Cosine Distance
--0.7245
+0.2927
