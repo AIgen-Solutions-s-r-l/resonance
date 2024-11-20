@@ -3,15 +3,19 @@ import logging
 import psycopg
 from langchain.embeddings.openai import OpenAIEmbeddings
 from app.core.config import Settings
-from app.core.rabbitmq_client import AsyncRabbitMQClient as RabbitMQClient
+from app.core.rabbitmq_client import AsyncRabbitMQClient
 from app.core.database import AsyncSessionLocal as SessionLocal
 
 logging.basicConfig(level=logging.INFO)
 
 # Initialize settings and RabbitMQ client
 settings = Settings()
-rabbitmq_client = RabbitMQClient(settings.rabbitmq_url)
-rabbitmq_client.connect()
+async def initialize_rabbit():
+    rabbitmq_client = await AsyncRabbitMQClient(
+            rabbitmq_url=settings.rabbitmq_url,
+            queue=settings.job_to_apply_queue
+        )
+    rabbitmq_client.connect()
 # rabbitmq_client.start()
 
 # Initialize OpenAI embeddings
@@ -49,8 +53,8 @@ def process_job(resume: str):
     logging.info(f"Starting query db for jobs")
     # Step 6: Execute the SQL query to find the top job descriptions
     query = """
-    SELECT job_description, embedding <=> %s::vector AS distance
-    FROM job_descriptions
+    SELECT description, embedding <=> %s::vector AS distance
+    FROM Jobs
     ORDER BY distance
     LIMIT 50;
     """

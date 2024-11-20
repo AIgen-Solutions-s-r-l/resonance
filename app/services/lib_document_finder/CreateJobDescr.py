@@ -733,21 +733,21 @@ register_vector(conn)
 # Create a cursor for executing SQL commands
 cursor = conn.cursor()
 
-logging.info(f"Starting creating table for jobs")
-# Ensure the table exists. You can use the following SQL schema to create it:
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS job_descriptions (
-    id bigserial PRIMARY KEY,
-    job_description text,
-    embedding vector(1536)  -- Assuming OpenAI's embedding has dimension 1536
-);
-""")
-logging.info(f"Finished creating table for jobs")
+# logging.info(f"Starting creating table for jobs")
+# # Ensure the table exists. You can use the following SQL schema to create it:
+# cursor.execute("""
+# CREATE TABLE IF NOT EXISTS job_descriptions (
+#     id bigserial PRIMARY KEY,
+#     job_description text,
+#     embedding vector(1536)  -- Assuming OpenAI's embedding has dimension 1536
+# );
+# """)
+# logging.info(f"Finished creating table for jobs")
 
 logging.info(f"Starting inserting job descriptions with embedding into table")
 # Step 6: Insert the job descriptions and embeddings into the table
 insert_sql = """
-INSERT INTO job_descriptions (job_description, embedding)
+INSERT INTO job_descriptions (description, embedding)
 VALUES (%s, %s);
 """
 
