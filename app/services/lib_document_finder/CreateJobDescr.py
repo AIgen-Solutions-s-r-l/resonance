@@ -4,7 +4,7 @@ import random
 import logging
 from openai import OpenAI
 from pgvector.psycopg import register_vector
-from langchain import OpenAI
+# from langchain import OpenAI
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.prompts import ChatPromptTemplate
@@ -693,7 +693,7 @@ prompt = ChatPromptTemplate.from_template(prompt_template)
 chain = prompt | llm | StrOutputParser()
 
 # Generate and save the curricula
-num_curriculum = 10
+num_curriculum = 5
 curricula = []
 # Ottieni il percorso della cartella corrente
 cartella = os.path.dirname(os.path.abspath(__file__))

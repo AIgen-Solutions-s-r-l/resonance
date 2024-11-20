@@ -39,7 +39,7 @@ def process_job(resume: str):
     """
     logging.info(f"Start process job")
     
-    cv_text = resume
+    cv_text = str(resume)
     logging.info(f"Starting embedding of cv...")
     # Step 5: Create the embedding for the CV
     cv_embedding = embedding_model.embed_documents([cv_text])[0]
