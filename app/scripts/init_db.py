@@ -1,69 +1,150 @@
 # app/scripts/init_db.py
+
 import asyncio
-import sys
 import logging
+import sys
 from pathlib import Path
 
-# Set up logging
+# Add the project root directory to Python path
+project_root = str(Path(__file__).parents[2])
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+from app.core.database import database_url
+# Import the Base and models from job.py instead
+from app.core.base import Base
+from app.models.job import Company, Location, Job
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import text
+import asyncpg
+
+# Set up logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Add the project root to the Python path
-project_root = str(Path(__file__).parent.parent.parent)
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
 
-# Import Base and engine
-from app.core.base import Base
-from app.core.database import engine
-from app.models.user import User  # Import User model explicitly
-from sqlalchemy import text
-
-
-async def init_test_db():
+async def create_database_if_not_exists() -> None:
     """
-    Initialize the test database by creating all tables defined in the models.
+    Create the database if it doesn't exist.
     """
+    # Parse the database URL to get database name and connection details
+    db_url = database_url.replace('+asyncpg', '')  # Remove the asyncpg prefix if present
+    db_name = db_url.split('/')[-1]  # Get database name
+    postgres_url = db_url.rsplit('/', 1)[0] + '/postgres'  # Create URL for postgres database
+
     try:
-        # Log tables before creation
-        logger.info("Tables before creation: %s", Base.metadata.tables.keys())
+        # Connect to the default postgres database
+        conn = await asyncpg.connect(postgres_url)
 
-        async with engine.begin() as conn:
-            # Drop all tables (optional, only if you want a fresh start)
-            await conn.run_sync(Base.metadata.drop_all)
+        # Check if our database exists
+        result = await conn.fetch(
+            "SELECT 1 FROM pg_database WHERE datname = $1",
+            db_name
+        )
 
-            # Create all tables based on the models defined in Base
-            await conn.run_sync(Base.metadata.create_all)
+        if not result:
+            logger.info(f"Creating database {db_name}")
+            # Create database if it doesn't exist
+            await conn.execute(f'CREATE DATABASE "{db_name}"')
+            logger.info(f"Database {db_name} created successfully")
+        else:
+            logger.info(f"Database {db_name} already exists")
 
-            # Verify table creation
-            query = text("""
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = 'public'
-            """)
-            result = await conn.execute(query)
-            tables = result.fetchall()
-            logger.info("Created tables in database: %s", tables)
-
-            logger.info("Test database initialized successfully.")
+        await conn.close()
 
     except Exception as e:
-        logger.error(f"Error initializing database: {str(e)}")
+        logger.error(f"Error while creating database: {str(e)}")
         raise
 
 
-def main():
+async def init_database() -> None:
     """
-    Main function to run the database initialization
+    Initialize the database and create all tables asynchronously.
     """
     try:
-        asyncio.run(init_test_db())
-    except KeyboardInterrupt:
-        logger.info("Database initialization interrupted")
+        logger.info("Starting database initialization...")
+
+        # First ensure database exists
+        await create_database_if_not_exists()
+
+        # Create async engine
+        engine = create_async_engine(database_url, echo=False)
+
+        # Create all tables
+        async with engine.begin() as conn:
+            logger.info("Dropping all existing tables...")
+            await conn.run_sync(Base.metadata.drop_all)
+            logger.info("Creating all tables...")
+            await conn.run_sync(Base.metadata.create_all)
+
+        logger.info("Database initialized successfully.")
+
     except Exception as e:
-        logger.error(f"Failed to initialize database: {str(e)}")
-        sys.exit(1)
+        logger.error(f"An error occurred while initializing the database: {str(e)}")
+        raise
+    finally:
+        await engine.dispose()
 
 
-if __name__ == "__main__":
-    main()
+async def verify_database() -> None:
+    """
+    Verify database connection and basic functionality.
+    """
+    engine = create_async_engine(database_url, echo=False)
+    try:
+        logger.info("Verifying database connection...")
+        async with engine.connect() as conn:
+            # Check connection
+            result = await conn.execute(text("SELECT current_database(), current_timestamp"))
+            db_info = result.first()
+            logger.info(f"Successfully connected to database: {db_info[0]}")
+            logger.info(f"Current server time: {db_info[1]}")
+
+            # Check if tables exist
+            result = await conn.execute(
+                text("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public'
+                    ORDER BY table_name;
+                """)
+            )
+            tables = result.fetchall()
+            if tables:
+                logger.info("Verified tables in database:")
+                for table in tables:
+                    # Get column information for each table
+                    columns_result = await conn.execute(
+                        text(f"""
+                            SELECT column_name, data_type, is_nullable
+                            FROM information_schema.columns
+                            WHERE table_name = '{table[0]}'
+                            ORDER BY ordinal_position;
+                        """)
+                    )
+                    columns = columns_result.fetchall()
+
+                    logger.info(f"\n  Table: {table[0]}")
+                    for column in columns:
+                        nullable = "NULL" if column[2] == "YES" else "NOT NULL"
+                        logger.info(f"    - {column[0]}: {column[1]} {nullable}")
+            else:
+                logger.warning("No tables found in the database")
+
+        logger.info("Database verification completed successfully.")
+    except Exception as e:
+        logger.error(f"Database verification failed: {str(e)}")
+        raise
+    finally:
+        await engine.dispose()
+
+
+async def main():
+    logger.info("=== Starting Database Setup ===")
+    await init_database()
+    await verify_database()
+    logger.info("=== Database Setup Completed ===")
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

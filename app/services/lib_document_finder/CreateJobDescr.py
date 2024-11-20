@@ -1,7 +1,16 @@
 import os
 import psycopg
+import random
+import logging
+import string
+import datetime
 from openai import OpenAI
 from pgvector.psycopg import register_vector
+# from langchain import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 # Step 1: Set up OpenAI API Key
 openai_api_key = "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"
@@ -9,22 +18,8 @@ os.environ["OPENAI_API_KEY"] = openai_api_key
 
 # Step 2: Initialize OpenAI client
 client = OpenAI()
+logging.basicConfig(level=logging.INFO)
 
-
-
-import os
-import requests
-from langchain import OpenAI
-from langchain.docstore.document import Document
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-from langchain_openai import ChatOpenAI
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate
-from langchain.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-import random
 
 # Replace with your actual OpenAI API key
 openai_api_key = "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"
@@ -700,7 +695,7 @@ prompt = ChatPromptTemplate.from_template(prompt_template)
 chain = prompt | llm | StrOutputParser()
 
 # Generate and save the curricula
-num_curriculum = 50
+num_curriculum = 1
 curricula = []
 # Ottieni il percorso della cartella corrente
 cartella = os.path.dirname(os.path.abspath(__file__))
@@ -709,6 +704,8 @@ cartella = os.path.dirname(os.path.abspath(__file__))
 cartella_jobs = os.path.join(cartella, "jobs_descriptions")
 os.makedirs(cartella_jobs, exist_ok=True)
 
+
+logging.info(f"Starting generation of {num_curriculum} jobs")
 job_descriptions = []
 # Genera e salva i file curriculum
 for i in range(num_curriculum):
@@ -721,15 +718,16 @@ for i in range(num_curriculum):
     job_descriptions.append(curriculum)
     curricula.append(curriculum)
     # print(f"Created {file_path}")
+logging.info(f"Finished generating jobs")
 
-
-
+logging.info(f"Starting computing embedding for jobs")
 # Step 4: Embed the job descriptions using OpenAI
 response = client.embeddings.create(input=job_descriptions, model='text-embedding-ada-002')
 embeddings = [v.embedding for v in response.data]
+logging.info(f"Finished computing embedding for jobs")
 
 # Step 5: Connect to PostgreSQL and insert data
-conn = psycopg.connect(dbname="hawk", user="user", password="pass", host="127.0.0.1", port="5432", autocommit=True)
+conn = psycopg.connect(dbname="matching", user="testuser", password="testpassword", host="127.0.0.1", port="5432", autocommit=True)
 
 # Register the pgvector extension
 register_vector(conn)
@@ -737,23 +735,76 @@ register_vector(conn)
 # Create a cursor for executing SQL commands
 cursor = conn.cursor()
 
-# Ensure the table exists. You can use the following SQL schema to create it:
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS job_descriptions (
-    id bigserial PRIMARY KEY,
-    job_description text,
-    embedding vector(1536)  -- Assuming OpenAI's embedding has dimension 1536
-);
-""")
+# logging.info(f"Starting creating table for jobs")
+# # Ensure the table exists. You can use the following SQL schema to create it:
+# cursor.execute("""
+# CREATE TABLE IF NOT EXISTS job_descriptions (
+#     id bigserial PRIMARY KEY,
+#     job_description text,
+#     embedding vector(1536)  -- Assuming OpenAI's embedding has dimension 1536
+# );
+# """)
+# logging.info(f"Finished creating table for jobs")
+
+# Helper functions to generate random values
+def random_string(length=10):
+    """Generate a random string of given length"""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def random_boolean():
+    """Generate a random boolean value"""
+    return random.choice([True, False])
+
+def random_workplace_type():
+    """Randomly select a workplace type"""
+    return random.choice(["On-site", "Hybrid", "Remote"])
+
+def random_job_state():
+    """Randomly select a job state"""
+    return random.choice(["Open", "Closed", "Pending"])
+
+def random_apply_link():
+    """Generate a random apply link"""
+    return f"https://example.com/{random_string(8)}"
+
+def random_date(start_year=2023, end_year=2024):
+    """Generate a random date between two years"""
+    start_date = datetime.date(start_year, 1, 1)
+    end_date = datetime.date(end_year, 12, 31)
+    time_delta = end_date - start_date
+    random_days = random.randint(0, time_delta.days)
+    return start_date + datetime.timedelta(days=random_days)
+
+def random_int(min_value=1, max_value=1000):
+    """Generate a random integer within a range"""
+    return random.randint(min_value, max_value)
+
+
+logging.info(f"Starting inserting job descriptions with embedding into table")
+
 
 # Step 6: Insert the job descriptions and embeddings into the table
 insert_sql = """
-INSERT INTO job_descriptions (job_description, embedding)
-VALUES (%s, %s);
+INSERT INTO "Jobs" (job_id, title, is_remote, workplace_type, posted_date, job_state, description, apply_link, embedding, company_id, location_id)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
 for job_desc, embedding in zip(job_descriptions, embeddings):
-    cursor.execute(insert_sql, (job_desc, embedding))
+    cursor.execute(insert_sql, (
+        random_int(),  # Let PostgreSQL auto-increment job_id
+        random_string(20),  # Random job title
+        random_boolean(),  # Random is_remote
+        random_workplace_type(),  # Random workplace type
+        random_date(),  # Random posted_date
+        random_job_state(),  # Random job_state
+        job_desc,  # Job description from list
+        random_apply_link(),  # Random apply link
+        embedding,  # The embedding (vector)
+        random_int(),  # Random company_id
+        random_int()  # Random location_id
+    ))
+
+logging.info(f"Finished inserting job descriptions with embedding into table")
 
 # Close the cursor and the connection
 cursor.close()

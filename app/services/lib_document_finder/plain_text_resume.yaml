@@ -8,90 +8,92 @@ personal_information:
   phone_prefix: "+39"
   phone: "3401234567"
   email: "marco.rossi@example.com"
-  github: "https://github.com/marco-rossi/ProjectExample"
   linkedin: "https://www.linkedin.com/in/marco-rossi"
 
 education_details:
-  - education_level: "Master's Degree"
-    institution: "Politecnico di Milano"
-    field_of_study: "Software Engineering"
-    final_evaluation_grade: "3.8/4"
-    start_date: "2018"
-    year_of_completion: "2024"
-    exam:
-      Data Structures: "3.9"
-      Web Technologies: "3.8"
-      Mobile Development: "4.0"
-      Database Management: "3.7"
-      Machine Learning: "4.0"
-      Cloud Computing: "3.8"
+  - education_level: "High School Diploma"
+    institution: "Technical Institute for Construction and Building Engineering, Milan"
+    field_of_study: "Civil Engineering & Construction"
+    graduation_year: "2013"
+    key_courses:
+      - "Structural Design"
+      - "Building Materials"
+      - "Construction Safety"
+      - "Surveying and Site Planning"
+      - "Blueprint Reading"
+      
+  - certification:
+      name: "Construction Safety Training"
+      provider: "Institute for Construction Training, Milan"
+      year_of_completion: "2018"
+      details: "Training on OSHA standards, site safety, and heavy machinery operation."
+
+  - certification:
+      name: "Forklift Operation Certification"
+      provider: "Milan Construction Training Center"
+      year_of_completion: "2017"
+      details: "Certified in operating forklifts and heavy lifting equipment on construction sites."
 
 experience_details:
-  - position: "Software Engineer"
-    company: "Tech Innovations"
-    employment_period: "06/2020 - Present"
-    location: "Italy"
-    industry: "Technology"
+  - position: "Construction Worker"
+    company: "Building Solutions S.p.A., Milan"
+    employment_period: "06/2018 - Present"
+    location: "Milan, Italy"
+    industry: "Construction"
     key_responsibilities:
-      - responsibility_1: "Developed scalable web applications using modern frameworks"
-      - responsibility_2: "Collaborated with cross-functional teams to define project requirements"
-      - responsibility_3: "Implemented RESTful APIs for mobile and web applications"
-      - responsibility_4: "Conducted code reviews and mentored junior developers"
-      - responsibility_5: "Participated in Agile ceremonies and continuous improvement initiatives"
-    skills_acquired:
-      - "JavaScript"
-      - "React"
-      - "Node.js"
-      - "Agile Methodologies"
-      - "REST APIs"
-      - "Cloud Services"
-      - "DevOps Practices"
-      - "Database Management"
-      - "Team Collaboration"
-      - "Technical Documentation"
+      - "Assisted in the construction of residential and commercial buildings, focusing on masonry, concrete pouring, and framing."
+      - "Operated heavy machinery, including forklifts, excavators, and cranes, for construction tasks."
+      - "Collaborated with the project manager and foreman to maintain the schedule and quality standards."
+      - "Ensured safety protocols were followed by all site workers and assisted in site organization and cleanup."
+      - "Assisted with reading blueprints and plans, ensuring all measurements and layouts were accurate."
+      - "Performed tasks such as drywall installation, carpentry, and basic plumbing."
 
-projects:
-  - name: "Portfolio Website"
-    description: "Created a personal portfolio website to showcase my projects and skills"
-    link: "https://github.com/marco-rossi/portfolio-website"
-  - name: "E-commerce Platform"
-    description: "Developed a full-stack e-commerce application with payment integration and user authentication"
-    link: "https://github.com/marco-rossi/ecommerce-platform"
-
-achievements:
-  - name: "Top Performer"
-    description: "Recognized as a top performer in the software engineering team for three consecutive quarters"
-  - name: "Hackathon Winner"
-    description: "Won first place in a regional hackathon for developing an innovative mobile app"
-  - name: "Publication"
-    description: "Published an article on Medium about best practices in web development"
+  - position: "Apprentice Construction Worker"
+    company: "Construction Pros, Milan"
+    employment_period: "01/2016 - 05/2018"
+    location: "Milan, Italy"
+    industry: "Construction"
+    key_responsibilities:
+      - "Assisted skilled workers with tasks such as bricklaying, concrete mixing, and framing."
+      - "Worked on the construction of residential homes, ensuring materials were delivered and properly stored."
+      - "Participated in training and hands-on learning with a focus on construction techniques and safety standards."
+      - "Maintained tools, equipment, and inventory for the construction site."
 
 certifications:
-  - name: "AWS Certified Solutions Architect"
-    description: "Certification demonstrating proficiency in designing distributed applications and systems on AWS"
+  - name: "Forklift Operation Certification"
+    provider: "Milan Construction Training Center"
+    completion_year: "2017"
+
+  - name: "Heavy Machinery Operator Certification"
+    provider: "Milan Construction Training Center"
+    completion_year: "2018"
+  
+  - name: "Construction Safety Training"
+    provider: "Institute for Construction Training"
+    completion_year: "2018"
+
+  - name: "First Aid and CPR Certification"
+    provider: "Red Cross Italy"
+    completion_year: "2019"
 
 languages:
   - language: "Italian"
     proficiency: "Native"
   - language: "English"
-    proficiency: "Fluent"
-  - language: "Spanish"
     proficiency: "Intermediate"
 
 interests:
-  - "Artificial Intelligence"
-  - "Blockchain Technology"
-  - "Open Source Development"
-  - "Cybersecurity"
-  - "Game Development"
-  - "Robotics"
-  - "Virtual Reality"
+  - "Building and Construction Techniques"
+  - "Heavy Machinery Operation"
+  - "Construction Site Safety"
+  - "DIY Projects"
+  - "Sustainable Construction"
 
 availability:
   notice_period: "2 weeks"
 
 salary_expectations:
-  salary_range_usd: "80000"
+  salary_range_eur: "22000 - 30000"
 
 self_identification:
   gender: "Male"
@@ -102,24 +104,11 @@ self_identification:
 
 legal_authorization:
   eu_work_authorization: "Yes"
-  us_work_authorization: "No"
-  requires_us_visa: "Yes"
-  requires_us_sponsorship: "Yes"
-  requires_eu_visa: "No"
+  requires_visa: "No"
   legally_allowed_to_work_in_eu: "Yes"
-  legally_allowed_to_work_in_us: "No"
-  requires_eu_sponsorship: "No"
-  canada_work_authorization: "Yes"
-  requires_canada_visa: "Yes"
-  legally_allowed_to_work_in_canada: "Yes"
-  requires_canada_sponsorship: "No"
-  uk_work_authorization: "Yes"
-  requires_uk_visa: "No"
-  legally_allowed_to_work_in_uk: "Yes"
-  requires_uk_sponsorship: "No"
 
 work_preferences:
-  remote_work: "Yes"
+  remote_work: "No"
   in_person_work: "Yes"
   open_to_relocation: "Yes"
   willing_to_complete_assessments: "Yes"

@@ -4,11 +4,11 @@ services:
     image: pgvector/pgvector:pg17  # Using a PostGIS image, as it includes pgvector support.
     container_name: postgres_pgvector
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: hawk
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: matching
     ports:
-      - "5432:5432"  # Maps PostgreSQL port 5432 inside the container to 5432 on localhost
+      - "5555:5432"  # Maps PostgreSQL port 5432 inside the container to 5432 on localhost
     # volumes:
     #   - pgdata:/var/lib/postgresql/data
       # - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Runs the SQL on initialization
