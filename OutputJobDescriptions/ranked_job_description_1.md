@@ -1,5 +1,5 @@
 ### Job Description
-Emerging ability to lead and influence a team's technical direction.Hands-on experience with database and cloud technologies.Emerging ability to design resilient software components within a distributed system.Core stack includes:Python (migrating from system software in C and legacy PHP).Cloud technologies: Kubernetes, AWS (EKS, Lambda, RDS, Aurora, Dynamo).  ThanksParkavi GokulRecruitment Manager Parkavi@method-hub.com
+Our client, a technology solutions provider, needs a Sr. Python/Tableau Developer for a full-time role. The Sr. Python/Tableau Developer will work remotely and be responsible for generating Tableau and Business Intelligence reports.  Required Skills  7+ years of developing Tableau driven dashboards and analytics 5+ years of Python development experience 4+ years of Excel (macros, pivot tables, etc) Bachelor’s Degree Previous experience working in Azure environment.   Desired Skills  Previous experience working with an investment firm SQL experience
 --------------------------------------------------
 ### Cosine Distance
-0.2363
+0.6853
