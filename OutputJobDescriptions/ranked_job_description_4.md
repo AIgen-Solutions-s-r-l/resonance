@@ -1,0 +1,5 @@
+### Job Description
+Required Skills & Experience Experience developing and deploying web application backends in NodeJS and JavaScript to support a RESTful microservices architectureNestJS experience- Deep level of proficiency with Docker, JavaScript/TypeScript, and server-side NodeJS- Strong experience building REST APIs and integrating them with frontend technologies- Experience migrating APIs from application gateways to self-hosted solutions- Ability to modify and/or support enterprise applications and data- Experience with document-based NoSQL databases like MongoDB- Great communication skills -- must have desire/comfortability training more junior developers! Nice to Have Skills & Experience Certification in a technology specific domain (Cloud Architecture, Security, etc.)- Experience with implementing backend APIs in Java / Spring Boot- Previous experience working with insurance related applications- Bachelors or master's degree in computer science or related field of study- Hands-on experience with Axway application gatewayhas context menu
+--------------------------------------------------
+### Cosine Distance
+0.2417

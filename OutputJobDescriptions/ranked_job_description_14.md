@@ -1,0 +1,5 @@
+### Job Description
+Bachelor’s Degree in Computer Science, Information Systems, Engineering or other related scientific or technical discipline 10+ years of experience designing and developing Information Architecture for web sites and/or applications using HTML, CSS, and JavaScript Some experience with JavaScript backend framework Node.js Strong database development experience with SQL, MySQL, PostGres etc. Understanding of Continuous Integration & Continuous Delivery (CI/CD) in the software engineering processes Experience with source control, Git, and/or SVN, and an interest to move projects from SVN to GIT Strong problem-solving skills with an investigative mentality and a capacity for strategic and associative thinking Experience with: Optimizing our user experience Template development and revision Security and Compliance Documentation 508 Compliance and Accessibility Content Revision SEO research and updates Gathering and refining customer website requirements Experience with: USWDS, website development and content management/Information Architecture
+--------------------------------------------------
+### Cosine Distance
+0.2490

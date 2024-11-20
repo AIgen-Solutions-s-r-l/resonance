@@ -2,6 +2,8 @@ import os
 import psycopg
 import random
 import logging
+import string
+import datetime
 from openai import OpenAI
 from pgvector.psycopg import register_vector
 # from langchain import OpenAI
@@ -693,7 +695,7 @@ prompt = ChatPromptTemplate.from_template(prompt_template)
 chain = prompt | llm | StrOutputParser()
 
 # Generate and save the curricula
-num_curriculum = 5
+num_curriculum = 1
 curricula = []
 # Ottieni il percorso della cartella corrente
 cartella = os.path.dirname(os.path.abspath(__file__))
@@ -744,15 +746,64 @@ cursor = conn.cursor()
 # """)
 # logging.info(f"Finished creating table for jobs")
 
+# Helper functions to generate random values
+def random_string(length=10):
+    """Generate a random string of given length"""
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def random_boolean():
+    """Generate a random boolean value"""
+    return random.choice([True, False])
+
+def random_workplace_type():
+    """Randomly select a workplace type"""
+    return random.choice(["On-site", "Hybrid", "Remote"])
+
+def random_job_state():
+    """Randomly select a job state"""
+    return random.choice(["Open", "Closed", "Pending"])
+
+def random_apply_link():
+    """Generate a random apply link"""
+    return f"https://example.com/{random_string(8)}"
+
+def random_date(start_year=2023, end_year=2024):
+    """Generate a random date between two years"""
+    start_date = datetime.date(start_year, 1, 1)
+    end_date = datetime.date(end_year, 12, 31)
+    time_delta = end_date - start_date
+    random_days = random.randint(0, time_delta.days)
+    return start_date + datetime.timedelta(days=random_days)
+
+def random_int(min_value=1, max_value=1000):
+    """Generate a random integer within a range"""
+    return random.randint(min_value, max_value)
+
+
 logging.info(f"Starting inserting job descriptions with embedding into table")
+
+
 # Step 6: Insert the job descriptions and embeddings into the table
 insert_sql = """
-INSERT INTO job_descriptions (description, embedding)
-VALUES (%s, %s);
+INSERT INTO "Jobs" (job_id, title, is_remote, workplace_type, posted_date, job_state, description, apply_link, embedding, company_id, location_id)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
 for job_desc, embedding in zip(job_descriptions, embeddings):
-    cursor.execute(insert_sql, (job_desc, embedding))
+    cursor.execute(insert_sql, (
+        random_int(),  # Let PostgreSQL auto-increment job_id
+        random_string(20),  # Random job title
+        random_boolean(),  # Random is_remote
+        random_workplace_type(),  # Random workplace type
+        random_date(),  # Random posted_date
+        random_job_state(),  # Random job_state
+        job_desc,  # Job description from list
+        random_apply_link(),  # Random apply link
+        embedding,  # The embedding (vector)
+        random_int(),  # Random company_id
+        random_int()  # Random location_id
+    ))
+
 logging.info(f"Finished inserting job descriptions with embedding into table")
 
 # Close the cursor and the connection

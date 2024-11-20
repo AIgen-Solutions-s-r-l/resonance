@@ -1,0 +1,5 @@
+### Job Description
+Ovise has partnered on this search with an Insurance Risk Management firm! This is a contract-to-hire role; initial 3-6 months on a contract before the option of full-time permanent hire. We are looking for a Software Engineer (OutSystems/Python Developer) to build and maintain scalable applications. Experience with relational databases is required, while knowledge of OutSystems, Databricks, and Azure is a bonus. Key Responsibilities:Develop, test, and optimize Python applications.Work with relational databases for efficient data management.Collaborate with teams to deliver high-quality solutions.Leverage Databricks, OutSystems, and Azure where applicable. Qualifications:3+ years in Software Development with proficiency in Python and relational databases (e.g., MySQL, PostgreSQL).Bachelor's degree in Computer Science/ STEMStrong problem-solving and debugging abilities.Familiarity with APIs and integration patterns. Bonus Skills:Experience with OutSystems, Databricks, or Azure services.
+--------------------------------------------------
+### Cosine Distance
+0.2506

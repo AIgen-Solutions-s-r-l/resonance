@@ -1,0 +1,5 @@
+### Job Description
+A leading SaaS Fintech company, backed by over $5 million in recent investments, is seeking a skilled Staff Back End/Platform Engineer proficient in Python, Django, and AWS. This remote role, open to candidates across the United States, offers a competitive salary of up to $200k along with equity and comprehensive benefits.  Responsibilities  Build backend features and integrations (Python and DjangoBuild and maintain CI/CD pipelinesPerformance testingImprove monitoring systemsMaintain Kubernetes ClustersProvide rotational on-call support  Qualifications  ﻿8+ years of solid experience in Python and Django — Core back-end engineering will comprise 70-80% of the role, making these skills essential.DevOps and Containerization experience — Proficiency with AWS, Docker, Kubernetes, and related technologies.Flexibility to work as both a Back-End Engineer and a Platform/SRE/DevOps team member — As a start-up, they need someone adaptable to take on various responsibilities.  Skills: python, ci/cd, aws, django, kubernetes, monitoring systems, performance testing, docker
+--------------------------------------------------
+### Cosine Distance
+0.2557

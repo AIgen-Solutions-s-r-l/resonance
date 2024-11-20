@@ -1,0 +1,5 @@
+### Job Description
+Full Stack Application Developer (React/Python/MySQL) REMOTE This position will require international travel multiple times per year. Optomi is hiring an eager and ambitious Full Stack Software Developer to step up and lead an Application Platform project from start to finish. We are looking for individuals with exceptional communication skills, strong technical knowledge, and a passion for creating new applications! Experience of the right candidate:In-depth background in software development, spanning 7-10 years.Experience designing and leading architecture-based discussions with cross-functional teams!Experience working in a variety of platforms and cloud technologies!Designing robust Rest and SOAP API(s) Hard requirements for potential candidates:Exceptional ability with the following; React, Python, and MySQL.Willingness to travel internationally.Designing applications for logistical and supply chain industries.
+--------------------------------------------------
+### Cosine Distance
+0.2428

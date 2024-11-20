@@ -1,0 +1,5 @@
+### Job Description
+Qualifications:Experience: Minimum 5+ years in a security engineering role, with a focus on large-scale infrastructure and experience in open-source projects, development, and tooling.Technical Skills:Strong experience with Kubernetes and container orchestration.Proficient in Linux system administration.Extensive knowledge of databases (both relational and NoSQL) with experience in elastic databases.Advanced knowledge of Splunk for monitoring, incident response, and integration with SOC processes.Strong in Python for development, scripting and automation.Demonstrated experience in developing and integrating open-source security tools.Proven experience with SOC automation and streamlining incident response processes.Networking: Strong understanding of networking protocols and how to secure them.Certifications (preferred): CISSP, CKA, or relevant security and cloud certifications.   ThanksParkavi GokulRecruitment Manager Parkavi@method-hub.com
+--------------------------------------------------
+### Cosine Distance
+0.2471

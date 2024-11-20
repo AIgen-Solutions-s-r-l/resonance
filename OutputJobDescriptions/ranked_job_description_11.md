@@ -1,0 +1,5 @@
+### Job Description
+My client is the leading provider of software solutions across Signals Intelligence and Special Communications products and services for the Intelligence Community. They are seeking the highest calibre of intellectuals and engineers who are not only experts in their space but who strive to collaborate and work to the highest skill level in their discipline. You are naturally an over achiever and place a high value on academia and producing code and delivering products to their maximum potential. They have incredible benefits such as:   25% 401k contribution, 8 weeks annual leave 100% reimbursement for higher education (BS/MS/PHD) Essential Requirements -Top Secret Clearance or higherJava 8+LinuxDeveloping software in a cloud-based environmentDeploying software into a containerized applicationDockerSpring/Hibernate/JPA frameworks Beneficial -KubernetesJavaScript (React pref) /Vue/AngularRESTful web servicesKafka or RabbitMQAgileMySQL, PostgreSQL & Elasticsearch   
+--------------------------------------------------
+### Cosine Distance
+0.2474

@@ -1,11 +1,11 @@
 import os
 import logging
 import psycopg
-from langchain.embeddings.openai import OpenAIEmbeddings
 from app.core.config import Settings
+from langchain.embeddings.openai import OpenAIEmbeddings
 from app.core.rabbitmq_client import AsyncRabbitMQClient
-from app.core.database import AsyncSessionLocal as SessionLocal
 
+# Initialize logging config
 logging.basicConfig(level=logging.INFO)
 
 # Initialize settings and RabbitMQ client
@@ -16,7 +16,6 @@ async def initialize_rabbit():
             queue=settings.job_to_apply_queue
         )
     rabbitmq_client.connect()
-# rabbitmq_client.start()
 
 # Initialize OpenAI embeddings
 openai_api_key = "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA"
@@ -47,18 +46,19 @@ def process_job(resume: str):
     logging.info(f"Starting embedding of cv...")
     # Step 5: Create the embedding for the CV
     cv_embedding = embedding_model.embed_documents([cv_text])[0]
-    cv_embedding_str = "[" + ",".join(map(str, cv_embedding)) + "]"
-    logging.info(f"Finished embedding of cv: {cv_embedding_str}")
+    # cv_embedding_str = "[" + ",".join(map(str, cv_embedding)) + "]"
+    logging.info(f"Finished embedding of cv")
 
     logging.info(f"Starting query db for jobs")
+    print(cv_embedding)
     # Step 6: Execute the SQL query to find the top job descriptions
     query = """
     SELECT description, embedding <=> %s::vector AS distance
-    FROM Jobs
+    FROM "Jobs"
     ORDER BY distance
     LIMIT 50;
     """
-    cursor.execute(query, (cv_embedding_str,))
+    cursor.execute(query, (cv_embedding,))
     top_job_descriptions = cursor.fetchall()
     type(top_job_descriptions)
     logging.info(f"Finished query db for jobs")
@@ -71,17 +71,17 @@ def process_job(resume: str):
     descriptions = []
     for idx, (job_desc_text, distance) in enumerate(top_job_descriptions):
         descriptions.append(job_desc_text)
-        # output_filename = f"ranked_job_description_{idx + 1}.md"
-        # output_filepath = os.path.join(output_directory, output_filename)
+        output_filename = f"ranked_job_description_{idx + 1}.md"
+        output_filepath = os.path.join(output_directory, output_filename)
 
-        # with open(output_filepath, "w", encoding="utf-8") as output_file:
-        #     output_file.write("### Job Description\n")
-        #     output_file.write(job_desc_text)
-        #     output_file.write("\n")
-        #     output_file.write("-" * 50 + "\n")
-        #     output_file.write("### Cosine Distance\n")
-        #     output_file.write(f"{distance:.4f}\n")
-        #     print(f"Created {output_filename} with distance {distance:.4f}")
+        with open(output_filepath, "w", encoding="utf-8") as output_file:
+            output_file.write("### Job Description\n")
+            output_file.write(job_desc_text)
+            output_file.write("\n")
+            output_file.write("-" * 50 + "\n")
+            output_file.write("### Cosine Distance\n")
+            output_file.write(f"{distance:.4f}\n")
+            print(f"Created {output_filename} with distance {distance:.4f}")
             
     logging.info(f"Finished creating message with jobs descriptions: {descriptions}")
     return descriptions
