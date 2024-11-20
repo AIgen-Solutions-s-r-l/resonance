@@ -18,7 +18,7 @@ async def process_resume_callback(message):
     # jobs_to_apply = ["job1", "job2", "job3"]
     jobs_to_apply = match_cv.process_job(resume)
     await rabbitmq_client.send_message(queue=settings.job_to_apply_queue, message=jobs_to_apply)
-    logging.info(f"Jobs to apply sent to job_to_apply_queue {jobs_to_apply}")
+    # logging.info(f"Jobs to apply sent to job_to_apply_queue {jobs_to_apply}")
 
 async def consume_task():
     await rabbitmq_client.consume_messages(queue=settings.apply_to_job_queue, callback=process_resume_callback)

@@ -31,7 +31,6 @@ conn = psycopg.connect(
     port="5432",
     autocommit=True
 )
-cursor = conn.cursor()
 
 def process_job(resume: str):
     """
@@ -40,48 +39,49 @@ def process_job(resume: str):
     Args:
         job_data (dict): Data received from the RabbitMQ message.
     """
-    logging.info(f"Start process job")
-    
-    cv_text = str(resume)
-    logging.info(f"Starting embedding of cv...")
-    # Step 5: Create the embedding for the CV
-    cv_embedding = embedding_model.embed_documents([cv_text])[0]
-    # cv_embedding_str = "[" + ",".join(map(str, cv_embedding)) + "]"
-    logging.info(f"Finished embedding of cv")
+    try:
+        logging.info(f"Start process job")
+        cv_text = resume
+        logging.info(f"Starting embedding of cv...")
+        with conn.cursor() as cursor:
+            # Step 5: Create the embedding for the CV
+            cv_embedding = embedding_model.embed_documents([cv_text])[0]
+            # cv_embedding_str = "[" + ",".join(map(str, cv_embedding)) + "]"
+            logging.info(f"Finished embedding of cv")
 
-    logging.info(f"Starting query db for jobs")
-    print(cv_embedding)
-    # Step 6: Execute the SQL query to find the top job descriptions
-    query = """
-    SELECT description, embedding <=> %s::vector AS distance
-    FROM "Jobs"
-    ORDER BY distance
-    LIMIT 50;
-    """
-    cursor.execute(query, (cv_embedding,))
-    top_job_descriptions = cursor.fetchall()
-    type(top_job_descriptions)
-    logging.info(f"Finished query db for jobs")
-    
-    # Step 7: Write the ranked job descriptions to output files
-    output_directory = os.path.join(os.getcwd(), "OutputJobDescriptions")
-    os.makedirs(output_directory, exist_ok=True)
-    logging.info(f"Creating message with jobs")
-
-    descriptions = []
-    for idx, (job_desc_text, distance) in enumerate(top_job_descriptions):
-        descriptions.append(job_desc_text)
-        output_filename = f"ranked_job_description_{idx + 1}.md"
-        output_filepath = os.path.join(output_directory, output_filename)
-
-        with open(output_filepath, "w", encoding="utf-8") as output_file:
-            output_file.write("### Job Description\n")
-            output_file.write(job_desc_text)
-            output_file.write("\n")
-            output_file.write("-" * 50 + "\n")
-            output_file.write("### Cosine Distance\n")
-            output_file.write(f"{distance:.4f}\n")
-            print(f"Created {output_filename} with distance {distance:.4f}")
+            logging.info(f"Starting query db for jobs")
+            # Step 6: Execute the SQL query to find the top job descriptions
+            query = """
+            SELECT description, 1 - (embedding <=> %s::vector) AS distance
+            FROM "Jobs"
+            ORDER BY distance
+            LIMIT 50;
+            """
+            cursor.execute(query, (cv_embedding,))
+            top_job_descriptions = cursor.fetchall()
+            logging.info(f"Finished query db for jobs")
             
-    logging.info(f"Finished creating message with jobs descriptions: {descriptions}")
-    return descriptions
+            # Step 7: Write the ranked job descriptions to output files
+            output_directory = os.path.join(os.getcwd(), "OutputJobDescriptions")
+            os.makedirs(output_directory, exist_ok=True)
+            logging.info(f"Creating message with jobs")
+
+            descriptions = []
+            for idx, (job_desc_text, distance) in enumerate(top_job_descriptions):
+                descriptions.append(job_desc_text)
+                output_filename = f"ranked_job_description_{idx + 1}.md"
+                output_filepath = os.path.join(output_directory, output_filename)
+
+                with open(output_filepath, "w", encoding="utf-8") as output_file:
+                    output_file.write("### Job Description\n")
+                    output_file.write(job_desc_text)
+                    output_file.write("\n")
+                    output_file.write("-" * 50 + "\n")
+                    output_file.write("### Cosine Distance\n")
+                    output_file.write(f"{distance:.4f}\n")
+                    # print(f"Created {output_filename} with distance {distance:.4f}")
+                    
+            logging.info(f"Finished creating message with jobs descriptions: {descriptions}")
+            return descriptions
+    except Exception as e:
+        raise Exception(f"Error processing job: {e}")
