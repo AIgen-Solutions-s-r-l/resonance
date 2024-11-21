@@ -1,6 +1,7 @@
-import aio_pika
 import json
 import logging
+
+import aio_pika
 
 logging.basicConfig(level=logging.INFO)
 
@@ -10,6 +11,7 @@ class AsyncRabbitMQClient:
         self.rabbitmq_url = rabbitmq_url
         self.connection = None
         self.channel = None
+        self.logger = logging.getLogger(__name__)
 
     async def connect(self) -> None:
         """Establish an asynchronous connection to RabbitMQ using aio_pika."""
@@ -44,3 +46,20 @@ class AsyncRabbitMQClient:
                 async with message.process():
                     await callback(message)
                     logging.info("Message processed")
+
+    async def close_connection(self) -> None:
+        """
+        Gracefully close the connection to RabbitMQ.
+        """
+        try:
+            if self.channel:
+                await self.channel.close()
+                self.logger.info("RabbitMQ channel closed.")
+            if self.connection:
+                await self.connection.close()
+                self.logger.info("RabbitMQ connection closed.")
+        except Exception as e:
+            self.logger.error(f"Error closing RabbitMQ connection: {e}")
+        finally:
+            self.channel = None
+            self.connection = None
