@@ -1,123 +1,204 @@
-# CoreService
 
-CoreService is a Python application that acts as a core service, utilizing RabbitMQ for messaging and providing various endpoints for interaction.
+# Matching Service
+
+The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It integrates with RabbitMQ for messaging, MongoDB for database operations, and provides APIs for seamless interaction.
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Application Workflow](#application-workflow)
 - [Running the Application](#running-the-application)
-- [Running Tests](#running-tests)
+- [Testing](#testing)
 - [Folder Structure](#folder-structure)
 - [Contributing](#contributing)
 - [License](#license)
+
+---
+
+## Overview
+
+The Matching Service facilitates matching of resumes to job descriptions by:
+1. **Ranking Job Descriptions**: Based on relevance to the resume content.
+2. **Providing APIs**: For interaction with external systems.
+3. **Messaging**: Using RabbitMQ for processing job matching requests and responses.
+
+---
 
 ## Requirements
 
 - Python 3.12.7
 - RabbitMQ server
+- MongoDB server
 - Virtualenv
+- Docker (optional for containerized deployment)
+
+---
 
 ## Installation
 
-1. **Clone the repository:**
+1. **Clone the Repository**:
 
-    ```sh
-    git clone https://github.com/yourusername/coreService.git
-    cd coreService
+    ```bash
+    git clone https://github.com/yourusername/matching-service.git
+    cd matching-service
     ```
 
-2. **Create a virtual environment:**
+2. **Create a Virtual Environment**:
 
-    ```sh
+    ```bash
     python -m venv venv
     ```
 
-3. **Activate the virtual environment:**
+3. **Activate the Virtual Environment**:
 
     - On Windows:
 
-        ```sh
+        ```bash
         venv\Scripts\activate
         ```
 
     - On macOS/Linux:
 
-        ```sh
+        ```bash
         source venv/bin/activate
         ```
 
-4. **Install the dependencies:**
+4. **Install Dependencies**:
 
-    ```sh
+    ```bash
     pip install -r requirements.txt
     ```
 
+---
+
 ## Configuration
 
-1. **Environment Variables:**
+### Environment Variables
 
-    Create a `.env` file in the project root directory with the following content:
+Create a `.env` file in the project root directory with the following configuration:
 
-    ```env
-    RABBITMQ_URL=amqp://guest:guest@localhost:5672/
-    SERVICE_NAME=coreService
-    ```
+```env
+RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+MONGODB_URL=mongodb://localhost:27017/
+SERVICE_NAME=matchingService
+```
 
-    Adjust the values as needed.
+### Database Setup
 
-2. **Settings Configuration:**
+Run the SQL scripts to initialize the database:
 
-    The application settings are managed using `pydantic-settings`. Here is an example configuration class:
+1. Use `init.sql` for creating tables.
+2. Use `dump_file.sql` to seed the database with sample data.
 
-    ```python
-    import os
-    from pydantic_settings import BaseSettings, SettingsConfigDict
+---
 
-    class Settings(BaseSettings):
-        rabbitmq_url: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
-        service_name: str = "coreService"
+## Application Workflow
 
-        model_config = SettingsConfigDict(env_file=".env")
-    ```
+1. **RabbitMQ Messaging**:
+   - **Producer**:
+     - Sends resumes and job descriptions to the queue.
+   - **Consumer**:
+     - Processes matching requests and responds with ranked job descriptions.
+
+2. **Matching Logic**:
+   - Analyzes and ranks resumes and job descriptions using `metric_analyzer.py`.
+
+3. **API Interaction**:
+   - Exposes endpoints for uploading resumes, retrieving job matches, and accessing logs.
+
+---
 
 ## Running the Application
 
-To run the application, execute the following command:
+### Using Python
 
-```sh
-python main.py
+Run the application with:
+
+```bash
+python app/main.py
 ```
 
-Ensure RabbitMQ server is running and accessible via the URL specified in your `.env` file.
+### Using Docker
 
-## Running Tests
+Build and run the containerized application:
 
-To run the test suite, use the following command:
+```bash
+docker-compose up --build
+```
 
-```sh
+Ensure RabbitMQ and MongoDB are running and accessible.
+
+---
+
+## Testing
+
+Run the test suite using:
+
+```bash
 pytest
 ```
 
-The tests are located in the `tests` directory and are written using the `pytest` framework.
+### Test Coverage
+
+- **Matching Logic**:
+  - Validates ranking and metric analysis (`app/tests/test_matcher.py`).
+
+---
 
 ## Folder Structure
 
-- `app/`: Contains the main application code.
-    - `main.py`: Entry point of the application.
-    - `config.py`: Application configuration.
-- `tests/`: Contains unit and integration tests.
+```plaintext
+matching_service/
+│
+├── app/
+│   ├── core/               # Core configurations (RabbitMQ, MongoDB)
+│   ├── models/             # Data models (e.g., job.py)
+│   ├── routers/            # API endpoints
+│   ├── scripts/            # Database initialization scripts
+│   ├── services/           # Matching logic and messaging handlers
+│   ├── tests/              # Unit and integration tests
+│   └── main.py             # Entry point of the application
+│
+├── OutputJobDescriptions/  # Ranked job descriptions
+├── OutputResumes/          # Ranked resumes
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Docker setup
+├── docker-compose.yaml     # Docker Compose configuration
+└── README.md               # Documentation
+```
+
+---
 
 ## Contributing
 
 1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Make your changes.
-4. Commit your changes (`git commit -am 'Add new feature'`)
-5. Push to the branch (`git push origin feature-branch`)
-6. Create a new Pull Request.
+2. Create a feature branch:
+
+    ```bash
+    git checkout -b feature-branch
+    ```
+
+3. Commit your changes:
+
+    ```bash
+    git commit -am 'Add new feature'
+    ```
+
+4. Push your branch:
+
+    ```bash
+    git push origin feature-branch
+    ```
+
+5. Create a Pull Request.
+
+---
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+---
