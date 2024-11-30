@@ -1,4 +1,5 @@
 # app/core/config.py
+
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -50,6 +51,14 @@ class Settings(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://testuser:testpassword@localhost:5432/matching")
     test_database_url: str = os.getenv("TEST_DATABASE_URL",
                                        "postgresql+asyncpg://testuser:testpassword@localhost:5432/test_matching")
-
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA")
+    db_name: str = os.getenv("DBNAME", "matching")
+    db_user: str = os.getenv("DBUSER", "testuser")
+    db_password: str = os.getenv("DBPASSWORD", "testpassword")
+    db_host: str = os.getenv("DBHOST", "localhost")
+    db_port: str = os.getenv("DBPORT", "5432")
 
     model_config = SettingsConfigDict(env_file=".env")
+
+
+    __all__ = ["Settings"]
