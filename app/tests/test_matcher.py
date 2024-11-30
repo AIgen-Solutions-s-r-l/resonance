@@ -2,7 +2,7 @@ import psycopg
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.main import process_resume_callback
-from app.services.lib_document_finder.match_cv import process_job
+from app.libs.document_finder.match_cv import process_job
 import json
 
 # Test: Process Resume Callback - Success Case
@@ -12,7 +12,7 @@ async def test_process_resume_callback_success():
     matched_jobs = ["Job Description 1", "Job Description 2"]
 
     with patch("app.main.rabbitmq_client.send_message", new_callable=AsyncMock) as mock_send_message, \
-         patch("app.services.lib_document_finder.match_cv.process_job", return_value=matched_jobs):
+         patch("app.services.document_finder.match_cv.process_job", return_value=matched_jobs):
         
         message = AsyncMock()
         message.body.decode = MagicMock(return_value=json.dumps(resume_data))
@@ -27,7 +27,7 @@ async def test_process_resume_callback_no_matches():
     resume_data = {"user_id": "123", "experience": "Unknown Tech"}
 
     with patch("app.main.rabbitmq_client.send_message", new_callable=AsyncMock) as mock_send_message, \
-         patch("app.services.lib_document_finder.match_cv.process_job", return_value=[]):
+         patch("app.services.document_finder.match_cv.process_job", return_value=[]):
         
         message = AsyncMock()
         message.body.decode = MagicMock(return_value=json.dumps(resume_data))
@@ -52,8 +52,8 @@ async def test_process_resume_callback_invalid_message():
 def test_process_job_database_error():
     resume_data = {"user_id": "123", "experience": "Python Developer"}
 
-    with patch("app.services.lib_document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.lib_document_finder.match_cv.embedding_model") as MockEmbeddings:
+    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
+         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
 
         # Mock a database connection error
         mock_cursor.return_value.__enter__.side_effect = psycopg.ProgrammingError("cannot adapt type 'MagicMock' using placeholder '%s' (format: AUTO)")
@@ -76,8 +76,8 @@ def test_process_job_success():
     expected_jobs = ["Job Description 1", "Job Description 2"]
 
     # Mock the database and embedding model
-    with patch("app.services.lib_document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.lib_document_finder.match_cv.embedding_model") as MockEmbeddings:
+    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
+         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
 
         # Mock embeddings
         mock_embedding = [0.1] * 1536
@@ -101,8 +101,8 @@ def test_process_job_no_matches():
     expected_jobs = []
 
     # Mock the database and embedding model
-    with patch("app.services.lib_document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.lib_document_finder.match_cv.embedding_model") as MockEmbeddings:
+    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
+         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
 
         # Mock embeddings
         mock_embedding = [0.1] * 1536

@@ -1,3 +1,5 @@
+# app/core/rabbitmq_client.py
+
 import json
 import logging
 
