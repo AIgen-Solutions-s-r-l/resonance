@@ -61,9 +61,9 @@ class Settings(BaseSettings):
     db_port: str = os.getenv("DBPORT", "5432")
     # Logging settings
     log_level: str = "INFO"
-    logstash_host: Optional[str] = None
-    logstash_port: Optional[int] = None
-    enable_logstash: bool = False
+    logstash_host: Optional[str] = 'localhost'
+    logstash_port: Optional[int] = 5141
+    enable_logstash: bool = True
     environment: str = "development"
 
     model_config = SettingsConfigDict(env_file=".env")
