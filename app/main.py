@@ -10,7 +10,7 @@ from loguru import logger
 
 from app.core.config import Settings
 from app.core.rabbitmq_client import AsyncRabbitMQClient
-from app.libs import job_matcher
+from app.libs.job_matcher import JobMatcher
 from app.core.logging_config import setup_logging, get_logger_context
 
 # Initialize logging
@@ -41,7 +41,8 @@ async def process_resume_callback(message: Any) -> None:
 		resume = json.loads(message.body.decode('utf-8'))
 		logger.info("Processing resume", context)
 
-		jobs_to_apply = await match_cv.job_matcher.process_job(resume)
+		matcher = JobMatcher(settings)
+		jobs_to_apply = await matcher.process_job(resume)
 		if jobs_to_apply:
 			await rabbitmq_client.send_message(
 				queue=settings.job_to_apply_queue,
