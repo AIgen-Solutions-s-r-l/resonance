@@ -82,6 +82,7 @@ class AsyncRabbitMQClient:
             queue: Queue name to send message to
             message: Message content as dictionary
         """
+
 		try:
 			if not self.channel:
 				await self.connect()
