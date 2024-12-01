@@ -1,4 +1,4 @@
-# app/libs/document_finder/match_cv.py
+# app/libs/document_finder/job_matcher.py
 
 import os
 from dataclasses import dataclass

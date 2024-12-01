@@ -2,7 +2,7 @@
 
 import asyncio
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -10,7 +10,7 @@ from loguru import logger
 
 from app.core.config import Settings
 from app.core.rabbitmq_client import AsyncRabbitMQClient
-from app.libs.document_finder import match_cv
+from app.libs import job_matcher
 from app.core.logging_config import setup_logging, get_logger_context
 
 # Initialize logging

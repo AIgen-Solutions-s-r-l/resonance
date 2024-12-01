@@ -2,7 +2,7 @@ import psycopg
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.main import process_resume_callback
-from app.libs.document_finder.match_cv import process_job
+from app.libs.job_matcher import process_job
 import json
 
 # Test: Process Resume Callback - Success Case
