@@ -2,19 +2,16 @@
 
 import asyncio
 import json
-from typing import Dict, Any
 from contextlib import asynccontextmanager
+from typing import Dict, Any
 
 from fastapi import FastAPI, HTTPException
 from loguru import logger
 
 from app.core.config import Settings
+from app.core.logging_config import setup_logging, get_logger_context, LoggingConfig, test_logstash_connection
 from app.core.rabbitmq_client import AsyncRabbitMQClient
 from app.libs.job_matcher import JobMatcher
-from app.core.logging_config import setup_logging, get_logger_context
-
-# Initialize logging
-setup_logging()
 
 # Initialize settings and clients
 try:
@@ -23,6 +20,30 @@ try:
 except Exception as e:
 	logger.error(f"Failed to initialize service settings: {str(e)}")
 	raise
+
+settings = Settings()
+
+# Configure logging
+logging_config = LoggingConfig(
+	service_name=settings.service_name,
+	log_level=settings.log_level,
+	logstash_host=settings.logstash_host,
+	logstash_port=settings.logstash_port,
+	enable_file_logging=True,
+	enable_console_logging=True,
+	enable_logstash=settings.enable_logstash,
+	environment=settings.environment
+)
+
+# Initialize logging
+setup_logging(logging_config)
+
+# Test Logstash connection if enabled
+if settings.enable_logstash:
+	if test_logstash_connection(settings.logstash_host, settings.logstash_port):
+		logger.info("Logstash connection successful")
+	else:
+		logger.warning("Logstash connection failed, continuing with local logging only")
 
 
 async def process_resume_callback(message: Any) -> None:

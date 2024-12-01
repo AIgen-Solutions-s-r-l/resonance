@@ -1,6 +1,8 @@
 # app/core/config.py
 
 import os
+from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -57,6 +59,12 @@ class Settings(BaseSettings):
     db_password: str = os.getenv("DBPASSWORD", "testpassword")
     db_host: str = os.getenv("DBHOST", "localhost")
     db_port: str = os.getenv("DBPORT", "5432")
+    # Logging settings
+    log_level: str = "INFO"
+    logstash_host: Optional[str] = None
+    logstash_port: Optional[int] = None
+    enable_logstash: bool = False
+    environment: str = "development"
 
     model_config = SettingsConfigDict(env_file=".env")
 
