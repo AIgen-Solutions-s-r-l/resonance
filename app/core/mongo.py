@@ -1,32 +1,154 @@
 # app/core/mongodb.py
-from motor.motor_asyncio import AsyncIOMotorClient
-import logging
+
+from typing import Optional, Any
+from dataclasses import dataclass
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase, AsyncIOMotorCollection
+from loguru import logger
+
 from app.core.config import Settings
+from app.core.logging_config import get_logger_context
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-settings = Settings()
+@dataclass
+class MongoConfig:
+	"""Configuration for MongoDB connection."""
+	uri: str
+	database: str
+	timeout_ms: int = 5000
 
-try:
-    logger.info(f"MongoDB URL: {settings.mongodb_uri}")
-    # Create MongoDB client with authentication
-    client = AsyncIOMotorClient(
-        settings.mongodb_uri,
-        serverSelectionTimeoutMS=5000  # Added timeout for better error handling
-    )
 
-    # Access the specific database
-    database = client[settings.mongodb_database]
+class MongoDBError(Exception):
+	"""Base exception for MongoDB-related errors."""
 
-    # Get the collection
-    collection_name = database.get_collection("resumes")
+	def __init__(self, message: str, context: dict[str, Any]) -> None:
+		self.context = context
+		super().__init__(message)
 
-    # Verify connection
-    client.admin.command('ping')
-    logger.info(f"Successfully connected to MongoDB at {settings.mongodb_host}")
 
-except Exception as e:
-    logger.error(f"Error connecting to MongoDB: {str(e)}")
-    raise
+class MongoDBConnectionError(MongoDBError):
+	"""Raised when MongoDB connection fails."""
+	pass
+
+
+class MongoDBClientWrapper:
+	"""Wrapper for MongoDB client with async support."""
+
+	def __init__(self, config: MongoConfig) -> None:
+		"""
+        Initialize MongoDB client wrapper.
+
+        Args:
+            config: MongoDB connection configuration
+        """
+		self.config = config
+		self._client: Optional[AsyncIOMotorClient] = None
+		self._db: Optional[AsyncIOMotorDatabase] = None
+		self._collection: Optional[AsyncIOMotorCollection] = None
+
+	async def initialize(self) -> None:
+		"""
+        Initialize MongoDB connection and verify it's working.
+
+        Raises:
+            MongoDBConnectionError: If connection fails
+        """
+		try:
+			context = get_logger_context(
+				action="mongodb_connect",
+				host=self.config.uri.split("@")[-1],  # Safe way to log URI without credentials
+				database=self.config.database
+			)
+			logger.info("Connecting to MongoDB", context)
+
+			self._client = AsyncIOMotorClient(
+				self.config.uri,
+				serverSelectionTimeoutMS=self.config.timeout_ms
+			)
+
+			# Access the database
+			self._db = self._client[self.config.database]
+
+			# Get the collection
+			self._collection = self._db.get_collection("resumes")
+
+			# Verify connection
+			await self._client.admin.command('ping')
+
+			context["status"] = "connected"
+			logger.success("Successfully connected to MongoDB", context)
+
+		except Exception as e:
+			context = get_logger_context(
+				action="mongodb_connect",
+				error=str(e),
+				error_type=type(e).__name__
+			)
+			logger.error("Failed to connect to MongoDB", context)
+			raise MongoDBConnectionError("Failed to connect to MongoDB", context) from e
+
+	@property
+	def client(self) -> AsyncIOMotorClient:
+		"""Get MongoDB client instance."""
+		if not self._client:
+			raise MongoDBError(
+				"MongoDB client not initialized",
+				{"action": "get_client"}
+			)
+		return self._client
+
+	@property
+	def db(self) -> AsyncIOMotorDatabase:
+		"""Get MongoDB database instance."""
+		if not self._db:
+			raise MongoDBError(
+				"MongoDB database not initialized",
+				{"action": "get_database"}
+			)
+		return self._db
+
+	@property
+	def collection(self) -> AsyncIOMotorCollection:
+		"""Get MongoDB collection instance."""
+		if not self._collection:
+			raise MongoDBError(
+				"MongoDB collection not initialized",
+				{"action": "get_collection"}
+			)
+		return self._collection
+
+	async def close(self) -> None:
+		"""Close MongoDB connection."""
+		if self._client:
+			context = get_logger_context(action="mongodb_close")
+			try:
+				self._client.close()
+				logger.info("MongoDB connection closed", context)
+			except Exception as e:
+				context["error"] = str(e)
+				logger.error("Error closing MongoDB connection", context)
+
+
+# Create singleton instance
+def create_mongodb_client() -> MongoDBClientWrapper:
+	"""
+    Create MongoDB client instance with settings.
+
+    Returns:
+        Configured MongoDB client wrapper
+    """
+	settings = Settings()
+	config = MongoConfig(
+		uri=settings.mongodb_uri,
+		database=settings.mongodb_database
+	)
+	return MongoDBClientWrapper(config)
+
+
+mongodb = create_mongodb_client()
+
+# Example usage:
+# async def startup():
+#     await mongodb.initialize()
+#
+# async def shutdown():
+#     await mongodb.close()
