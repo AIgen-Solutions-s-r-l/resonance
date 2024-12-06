@@ -1,7 +1,3 @@
-Here is the full README, updated to include the requirement for `information` in the resume and meaningful API examples.
-
----
-
 # Matching Service
 
 The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It integrates with MongoDB for database operations and provides APIs for seamless interaction.
