@@ -1,7 +1,6 @@
-
 # Matching Service
 
-The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It integrates with RabbitMQ for messaging, MongoDB for database operations, and provides APIs for seamless interaction.
+The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It integrates with MongoDB for database operations and provides APIs for seamless interaction.
 
 ## Table of Contents
 
@@ -10,6 +9,7 @@ The **Matching Service** is a Python-based application that matches resumes with
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Application Workflow](#application-workflow)
+- [API Endpoints](#api-endpoints)
 - [Running the Application](#running-the-application)
 - [Testing](#testing)
 - [Folder Structure](#folder-structure)
@@ -20,17 +20,15 @@ The **Matching Service** is a Python-based application that matches resumes with
 
 ## Overview
 
-The Matching Service facilitates matching of resumes to job descriptions by:
+The Matching Service facilitates the matching of resumes to job descriptions by:
 1. **Ranking Job Descriptions**: Based on relevance to the resume content.
-2. **Providing APIs**: For interaction with external systems.
-3. **Messaging**: Using RabbitMQ for processing job matching requests and responses.
+2. **Providing APIs**: For uploading resumes, retrieving job matches, and accessing logs.
 
 ---
 
 ## Requirements
 
 - Python 3.12.7
-- RabbitMQ server
 - MongoDB server
 - Virtualenv
 - Docker (optional for containerized deployment)
@@ -81,7 +79,6 @@ The Matching Service facilitates matching of resumes to job descriptions by:
 Create a `.env` file in the project root directory with the following configuration:
 
 ```env
-RABBITMQ_URL=amqp://guest:guest@localhost:5672/
 MONGODB_URL=mongodb://localhost:27017/
 SERVICE_NAME=matchingService
 ```
@@ -97,17 +94,65 @@ Run the SQL scripts to initialize the database:
 
 ## Application Workflow
 
-1. **RabbitMQ Messaging**:
-   - **Producer**:
-     - Sends resumes and job descriptions to the queue.
-   - **Consumer**:
-     - Processes matching requests and responds with ranked job descriptions.
+1. **API Interaction**:
+   - Upload a resume using the API endpoint.
+   - The service processes the resume and matches it with job descriptions stored in the database.
+   - Retrieve the ranked job matches via the API.
 
 2. **Matching Logic**:
    - Analyzes and ranks resumes and job descriptions using `metric_analyzer.py`.
 
-3. **API Interaction**:
-   - Exposes endpoints for uploading resumes, retrieving job matches, and accessing logs.
+---
+
+## API Endpoints
+
+### 1. Upload Resume and Get Job Matches
+
+**Endpoint**:  
+`POST /jobs/match`
+
+**Description**:  
+Uploads a resume and returns ranked job descriptions based on the resume content.
+
+**Request Headers**:
+- `Content-Type: application/json`
+
+**Request Body**:
+```json
+{
+  "resume": "This is the plain text of the resume."
+}
+```
+
+**Example cURL**:
+```bash
+curl -X POST http://localhost:9006/jobs/match \
+-H "Content-Type: application/json" \
+-d '{
+  "resume": "This is the plain text of the resume."
+}'
+```
+
+---
+
+### 2. Get Matching Jobs for a Resume
+
+**Endpoint**:  
+`GET /jobs/match`
+
+**Description**:  
+Retrieves the most recent job matches for the authenticated user.
+
+**Request Headers**:
+- `accept: application/json`
+- `Authorization: Bearer <JWT_TOKEN>`
+
+**Example cURL**:
+```bash
+curl -X GET http://localhost:9006/jobs/match \
+-H "accept: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzMzNTA5MDA1fQ.p1LAffYlQM0RcBsaHO8ujdqoTSXGPQKgotAqbG032ew"
+```
 
 ---
 
@@ -129,7 +174,7 @@ Build and run the containerized application:
 docker-compose up --build
 ```
 
-Ensure RabbitMQ and MongoDB are running and accessible.
+Ensure MongoDB is running and accessible.
 
 ---
 
@@ -154,16 +199,16 @@ pytest
 matching_service/
 │
 ├── app/
-│   ├── core/               # Core configurations (RabbitMQ, MongoDB)
+│   ├── core/               # Core configurations (MongoDB setup)
 │   ├── models/             # Data models (e.g., job.py)
 │   ├── routers/            # API endpoints
+│   ├── schemas/            # Data validation schemas
 │   ├── scripts/            # Database initialization scripts
-│   ├── services/           # Matching logic and messaging handlers
+│   ├── services/           # Matching logic
 │   ├── tests/              # Unit and integration tests
 │   └── main.py             # Entry point of the application
 │
 ├── OutputJobDescriptions/  # Ranked job descriptions
-├── OutputResumes/          # Ranked resumes
 ├── requirements.txt        # Python dependencies
 ├── Dockerfile              # Docker setup
 ├── docker-compose.yaml     # Docker Compose configuration
@@ -194,11 +239,3 @@ matching_service/
     ```
 
 5. Create a Pull Request.
-
----
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
----
