@@ -1,3 +1,7 @@
+Here is the full README, updated to include the requirement for `information` in the resume and meaningful API examples.
+
+---
+
 # Matching Service
 
 The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It integrates with MongoDB for database operations and provides APIs for seamless interaction.
@@ -38,37 +42,30 @@ The Matching Service facilitates the matching of resumes to job descriptions by:
 ## Installation
 
 1. **Clone the Repository**:
-
-    ```bash
-    git clone https://github.com/yourusername/matching-service.git
-    cd matching-service
-    ```
+   ```bash
+   git clone https://github.com/yourusername/matching-service.git
+   cd matching-service
+   ```
 
 2. **Create a Virtual Environment**:
-
-    ```bash
-    python -m venv venv
-    ```
+   ```bash
+   python -m venv venv
+   ```
 
 3. **Activate the Virtual Environment**:
-
-    - On Windows:
-
-        ```bash
-        venv\Scripts\activate
-        ```
-
-    - On macOS/Linux:
-
-        ```bash
-        source venv/bin/activate
-        ```
+   - On Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - On macOS/Linux:
+     ```bash
+     source venv/bin/activate
+     ```
 
 4. **Install Dependencies**:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ---
 
@@ -86,7 +83,6 @@ SERVICE_NAME=matchingService
 ### Database Setup
 
 Run the SQL scripts to initialize the database:
-
 1. Use `init.sql` for creating tables.
 2. Use `dump_file.sql` to seed the database with sample data.
 
@@ -100,7 +96,7 @@ Run the SQL scripts to initialize the database:
    - Retrieve the ranked job matches via the API.
 
 2. **Matching Logic**:
-   - Analyzes and ranks resumes and job descriptions using `metric_analyzer.py`.
+   - Analyzes and ranks resumes and job descriptions using `app/services/matching_service.py`.
 
 ---
 
@@ -120,7 +116,12 @@ Uploads a resume and returns ranked job descriptions based on the resume content
 **Request Body**:
 ```json
 {
-  "resume": "This is the plain text of the resume."
+  "information": {
+    "name": "Marco Rossi",
+    "email": "marco.rossi@example.com",
+    "phone": "+393401234567"
+  },
+  "resume": "Developed scalable web applications using modern frameworks. Collaborated with cross-functional teams to define project requirements."
 }
 ```
 
@@ -129,19 +130,43 @@ Uploads a resume and returns ranked job descriptions based on the resume content
 curl -X POST http://localhost:9006/jobs/match \
 -H "Content-Type: application/json" \
 -d '{
-  "resume": "This is the plain text of the resume."
+  "information": {
+    "name": "Marco Rossi",
+    "email": "marco.rossi@example.com",
+    "phone": "+393401234567"
+  },
+  "resume": "Developed scalable web applications using modern frameworks. Collaborated with cross-functional teams to define project requirements."
 }'
+```
+
+**Response Example**:
+```json
+[
+  {
+    "id": 1,
+    "title": "Software Engineer",
+    "is_remote": true,
+    "workplace_type": "Hybrid",
+    "posted_date": "2024-12-01T09:30:00",
+    "job_state": "Active",
+    "description": "Develop scalable web applications, collaborate with cross-functional teams, and contribute to technical design discussions.",
+    "apply_link": "https://company.jobs/apply/123",
+    "company": "Tech Innovations",
+    "location": "Milan, Italy",
+    "portal": "Company Portal"
+  }
+]
 ```
 
 ---
 
-### 2. Get Matching Jobs for a Resume
+### 2. Get Recent Job Matches
 
 **Endpoint**:  
 `GET /jobs/match`
 
 **Description**:  
-Retrieves the most recent job matches for the authenticated user.
+Fetches the most recent job matches for the authenticated user.
 
 **Request Headers**:
 - `accept: application/json`
@@ -151,7 +176,26 @@ Retrieves the most recent job matches for the authenticated user.
 ```bash
 curl -X GET http://localhost:9006/jobs/match \
 -H "accept: application/json" \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzMzNTA5MDA1fQ.p1LAffYlQM0RcBsaHO8ujdqoTSXGPQKgotAqbG032ew"
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+**Response Example**:
+```json
+[
+  {
+    "id": 5,
+    "title": "Backend Developer",
+    "is_remote": false,
+    "workplace_type": "On-site",
+    "posted_date": "2024-12-03T10:00:00",
+    "job_state": "Active",
+    "description": "Develop and optimize backend APIs, ensure robust database management.",
+    "apply_link": "https://backend.jobs/apply/789",
+    "company": "Backend Gurus",
+    "location": "Turin, Italy",
+    "portal": "Indeed"
+  }
+]
 ```
 
 ---
@@ -221,21 +265,17 @@ matching_service/
 
 1. Fork the repository.
 2. Create a feature branch:
-
-    ```bash
-    git checkout -b feature-branch
-    ```
-
+   ```bash
+   git checkout -b feature-branch
+   ```
 3. Commit your changes:
-
-    ```bash
-    git commit -am 'Add new feature'
-    ```
-
+   ```bash
+   git commit -am 'Add new feature'
+   ```
 4. Push your branch:
-
-    ```bash
-    git push origin feature-branch
-    ```
-
+   ```bash
+   git push origin feature-branch
+   ```
 5. Create a Pull Request.
+
+--- 
