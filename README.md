@@ -87,7 +87,6 @@ Run the SQL scripts to initialize the database:
 ## Application Workflow
 
 1. **API Interaction**:
-   - Upload a resume using the API endpoint.
    - The service processes the resume and matches it with job descriptions stored in the database.
    - Retrieve the ranked job matches via the API.
 
