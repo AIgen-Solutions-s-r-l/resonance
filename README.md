@@ -109,30 +109,13 @@ Uploads a resume and returns ranked job descriptions based on the resume content
 **Request Headers**:
 - `Content-Type: application/json`
 
-**Request Body**:
-```json
-{
-  "information": {
-    "name": "Marco Rossi",
-    "email": "marco.rossi@example.com",
-    "phone": "+393401234567"
-  },
-  "resume": "Developed scalable web applications using modern frameworks. Collaborated with cross-functional teams to define project requirements."
-}
-```
+
 
 **Example cURL**:
 ```bash
 curl -X POST http://localhost:9006/jobs/match \
 -H "Content-Type: application/json" \
--d '{
-  "information": {
-    "name": "Marco Rossi",
-    "email": "marco.rossi@example.com",
-    "phone": "+393401234567"
-  },
-  "resume": "Developed scalable web applications using modern frameworks. Collaborated with cross-functional teams to define project requirements."
-}'
+
 ```
 
 **Response Example**:
