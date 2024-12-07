@@ -100,42 +100,7 @@ Run the SQL scripts to initialize the database:
 
 ### 1. Upload Resume and Get Job Matches
 
-**Endpoint**:  
-`POST /jobs/match`
-
-**Description**:  
-Uploads a resume and returns ranked job descriptions based on the resume content.
-
-**Request Headers**:
-- `Content-Type: application/json`
-
-
-
-**Example cURL**:
-```bash
-curl -X POST http://localhost:9006/jobs/match \
--H "Content-Type: application/json" \
-
-```
-
-**Response Example**:
-```json
-[
-  {
-    "id": 1,
-    "title": "Software Engineer",
-    "is_remote": true,
-    "workplace_type": "Hybrid",
-    "posted_date": "2024-12-01T09:30:00",
-    "job_state": "Active",
-    "description": "Develop scalable web applications, collaborate with cross-functional teams, and contribute to technical design discussions.",
-    "apply_link": "https://company.jobs/apply/123",
-    "company": "Tech Innovations",
-    "location": "Milan, Italy",
-    "portal": "Company Portal"
-  }
-]
-```
+https://github.com/AIHawk-Startup/resume_service/blob/main/README.md
 
 ---
 
