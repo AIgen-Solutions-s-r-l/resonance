@@ -98,13 +98,7 @@ Run the SQL scripts to initialize the database:
 
 ## API Endpoints
 
-### 1. Upload Resume and Get Job Matches
-
-https://github.com/AIHawk-Startup/resume_service/blob/main/README.md
-
----
-
-### 2. Get Recent Job Matches
+### 1. Get Recent Job Matches
 
 **Endpoint**:  
 `GET /jobs/match`
