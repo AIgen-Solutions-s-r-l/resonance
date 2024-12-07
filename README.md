@@ -147,15 +147,6 @@ Run the application with:
 python app/main.py
 ```
 
-### Using Docker
-
-Build and run the containerized application:
-
-```bash
-docker-compose up --build
-```
-
-Ensure MongoDB is running and accessible.
 
 ---
 
