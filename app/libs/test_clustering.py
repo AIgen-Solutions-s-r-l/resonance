@@ -4,6 +4,8 @@ import psycopg
 import plotly.express as px
 import pandas as pd
 from job_clustering import JobClustering, ClusteringConfig
+from loguru import logger
+import numpy as np
 
 
 def visualize_clusters(job_ids, embeddings, cluster_labels):
@@ -30,6 +32,7 @@ def visualize_clusters(job_ids, embeddings, cluster_labels):
 
 
 def main():
+    conn = None
     try:
         # Connect to database
         conn = psycopg.connect(
@@ -52,19 +55,32 @@ def main():
         clustering = JobClustering(conn, config)
 
         # Get data and perform clustering
+        logger.info("Fetching embeddings...")
         job_ids, embeddings = clustering.get_embeddings_for_clustering()
-        cluster_labels = clustering.perform_clustering(embeddings)
+        logger.info(f"Retrieved {len(job_ids)} job embeddings")
 
-        # Visualize the results
-        visualize_clusters(job_ids, embeddings, cluster_labels)
+        logger.info("Performing clustering...")
+        cluster_labels = clustering.perform_clustering(embeddings)
+        logger.info(f"Clustering complete. Unique clusters: {
+                    np.unique(cluster_labels)}")
 
         # Save clusters to database
+        logger.info("Saving clusters to database...")
         clustering.save_clusters(job_ids, cluster_labels)
 
+        # Visualize the results
+        logger.info("Generating visualization...")
+        visualize_clusters(job_ids, embeddings, cluster_labels)
+
     except Exception as e:
-        print(f"Error during clustering: {str(e)}")
+        logger.error(f"Error during clustering: {str(e)}")
+        if conn:
+            conn.rollback()
+        raise
     finally:
-        conn.close()
+        if conn:
+            conn.close()
+            logger.info("Database connection closed")
 
 
 if __name__ == "__main__":
