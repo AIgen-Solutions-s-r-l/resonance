@@ -151,3 +151,28 @@ class JobClustering:
         except Exception as e:
             logger.error(f"Clustering pipeline failed: {str(e)}")
             raise
+
+    def save_clustering_model(self, model_path: str) -> None:
+        """
+        Save both UMAP and HDBSCAN models to disk using joblib.
+
+        Args:
+            model_path (str): Base path where models will be saved
+                            (without extension)
+        """
+        from joblib import dump
+
+        try:
+            # Save UMAP model
+            umap_path = f"{model_path}_umap.joblib"
+            dump(self.umap_reducer, umap_path)
+
+            # Save HDBSCAN model
+            hdbscan_path = f"{model_path}_hdbscan.joblib"
+            dump(self.clusterer, hdbscan_path)
+
+            logger.info(f"Models saved successfully to {model_path}")
+
+        except Exception as e:
+            logger.error(f"Failed to save models: {str(e)}")
+            raise
