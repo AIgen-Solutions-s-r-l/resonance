@@ -4,7 +4,7 @@ from umap import UMAP
 from hdbscan import HDBSCAN
 from psycopg import Connection
 from psycopg.rows import Row
-from psycopg.sql import SQL
+from psycopg.sql import SQL, Identifier
 from typing import List, Tuple
 from loguru import logger
 
@@ -91,30 +91,56 @@ class JobClustering:
 
     def save_clusters(self, job_ids: List[str], cluster_labels: np.ndarray) -> None:
         """Save cluster assignments back to database."""
-        with self.conn.cursor() as cursor:
-            create_column_query = SQL("""
-                DO $$ 
-                BEGIN 
-                    IF NOT EXISTS (
-                        SELECT 1 
-                        FROM information_schema.columns 
-                        WHERE table_name='Jobs' AND column_name='cluster_id'
-                    ) THEN 
-                        ALTER TABLE "Jobs" ADD COLUMN cluster_id INTEGER;
-                    END IF;
-                END $$;
+        try:
+            cursor = self.conn.cursor()
+
+            # Convert job_ids to integers since they're stored as integers in the database
+            job_ids_int = [int(job_id) for job_id in job_ids]
+
+            # Convert cluster_labels to integers
+            cluster_labels_int = [int(label) if not np.isnan(
+                label) else -1 for label in cluster_labels]
+
+            update_query = SQL("""
+                WITH updates AS (
+                    UPDATE "Jobs" AS j
+                    SET cluster_id = c.cluster_id
+                    FROM (
+                        SELECT UNNEST(%s::integer[]) as job_id,
+                               UNNEST(%s::integer[]) as cluster_id
+                    ) AS c
+                    WHERE j.job_id = c.job_id
+                    RETURNING j.job_id
+                )
+                SELECT COUNT(*) FROM updates;
             """)
-            cursor.execute(create_column_query)
 
-            for job_id, cluster_label in zip(job_ids, cluster_labels):
-                update_query = SQL("""
-                    UPDATE "Jobs"
-                    SET cluster_id = %s
-                    WHERE job_id = %s;
-                """)
-                cursor.execute(update_query, (int(cluster_label), job_id))
+            cursor.execute(update_query, (job_ids_int, cluster_labels_int))
+            updated_count = cursor.fetchone()[0]
 
-            logger.info("Successfully saved cluster assignments to database")
+            # Verify the update
+            verify_query = SQL("""
+                SELECT COUNT(*) 
+                FROM "Jobs" 
+                WHERE cluster_id IS NOT NULL;
+            """)
+            cursor.execute(verify_query)
+            total_clusters = cursor.fetchone()[0]
+
+            logger.info(f"Updated {updated_count} rows out of {
+                        len(job_ids)} jobs")
+            logger.info(f"Total rows with cluster_id: {total_clusters}")
+
+            self.conn.commit()
+            logger.info(
+                "Successfully committed cluster assignments to database")
+
+        except Exception as e:
+            self.conn.rollback()
+            logger.error(f"Failed to save clusters: {str(e)}")
+            raise
+        finally:
+            cursor.close()
 
     def run_clustering(self) -> None:
         """Execute complete clustering pipeline."""
@@ -124,4 +150,29 @@ class JobClustering:
             self.save_clusters(job_ids, cluster_labels)
         except Exception as e:
             logger.error(f"Clustering pipeline failed: {str(e)}")
+            raise
+
+    def save_clustering_model(self, model_path: str) -> None:
+        """
+        Save both UMAP and HDBSCAN models to disk using joblib.
+
+        Args:
+            model_path (str): Base path where models will be saved
+                            (without extension)
+        """
+        from joblib import dump
+
+        try:
+            # Save UMAP model
+            umap_path = f"{model_path}_umap.joblib"
+            dump(self.umap_reducer, umap_path)
+
+            # Save HDBSCAN model
+            hdbscan_path = f"{model_path}_hdbscan.joblib"
+            dump(self.clusterer, hdbscan_path)
+
+            logger.info(f"Models saved successfully to {model_path}")
+
+        except Exception as e:
+            logger.error(f"Failed to save models: {str(e)}")
             raise
