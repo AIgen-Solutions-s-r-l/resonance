@@ -2,9 +2,9 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
-
 class JobSchema(BaseModel):
     id: int
+    job_id: int
     title: str
     is_remote: Optional[bool] = None
     workplace_type: Optional[str] = None
