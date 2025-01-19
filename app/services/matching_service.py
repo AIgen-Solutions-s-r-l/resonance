@@ -12,6 +12,7 @@ import loguru
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
 
+
 async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> Dict[str, Any]:
     try:
         query = {"user_id": user_id}
@@ -45,12 +46,10 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
             "error_details": str(e)
         })
         return {"error": f"Error retrieving resume: {str(e)}"}
-    
-    
+
 
 async def match_jobs_with_resume(resume, settings) -> List[Job]:
     try:
-        # Utilizza JobMatcher per elaborare il curriculum e trovare i lavori corrispondenti
         matcher = JobMatcher(settings)
         matched_jobs = await matcher.process_job(resume)
         return matched_jobs

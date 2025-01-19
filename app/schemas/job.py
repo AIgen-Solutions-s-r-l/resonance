@@ -5,7 +5,7 @@ from datetime import datetime
 
 class JobSchema(BaseModel):
     id: str
-    job_id: int
+    job_id: str
     title: str
     is_remote: Optional[bool] = None
     workplace_type: Optional[str] = None
