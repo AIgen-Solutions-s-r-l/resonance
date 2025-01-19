@@ -79,3 +79,7 @@ logs/
 
 *.pyc
 app/__pycache__/*
+__pycache__/*
+*.cpython-312.pyc
+*.cpython-311.pyc
+*.cpython-310.pyc
