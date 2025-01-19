@@ -1,11 +1,6 @@
-# app/libs/document_finder/job_matcher.py
-
-import os
 from dataclasses import dataclass
 from typing import List
-
 import psycopg
-from langchain_openai import OpenAIEmbeddings  # Updated import
 from loguru import logger
 from psycopg.rows import Row
 from psycopg.sql import SQL
@@ -18,6 +13,7 @@ from app.core.logging_config import get_logger_context
 class JobMatch:
     """Data class for job matching results."""
     id: str
+    job_id: str
     title: str
     description: str
     portal: str
@@ -30,26 +26,7 @@ class JobMatcher:
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
-        self._initialize_openai()
         self._initialize_database()
-
-    def _initialize_openai(self) -> None:
-        try:
-            if not self.settings.openai_api_key:
-                raise ValueError("OpenAI API key not found in settings")
-
-            os.environ["OPENAI_API_KEY"] = self.settings.openai_api_key
-            self.embedding_model = OpenAIEmbeddings(
-                model="text-embedding-ada-002")
-
-            context = get_logger_context(action="initialize_openai")
-            logger.info(
-                "OpenAI embeddings model initialized successfully", context)
-        except Exception as e:
-            context = get_logger_context(
-                action="initialize_openai", error=str(e))
-            logger.error("Failed to initialize OpenAI embeddings", context)
-            raise
 
     def _initialize_database(self) -> None:
         try:
@@ -137,11 +114,12 @@ class JobMatcher:
 
             job_matches = [
                 JobMatch(
+                    id=str(row[2]),
+                    job_id=str(row[2]),
                     title=row[0],
                     description=row[1],
-                    id=row[2],
                     company=row[3],
-                    portal="test_portal",  # Fixed value for portal
+                    portal="test_portal",
                     score=float(row[4])
                 )
                 for row in results
@@ -164,7 +142,7 @@ class JobMatcher:
             logger.error("Database query failed", context)
             raise
 
-    async def process_job(self, resume: str) -> dict[str, list[dict[str, str | float]]]:
+    async def process_job(self, resume: dict) -> dict[str, list[dict[str, str | float]]]:
         """
         Process a CV and find matching jobs.
 
@@ -184,25 +162,21 @@ class JobMatcher:
             )
             logger.info("Starting job processing", context)
 
-            cv_text = str(resume)
+            cv_embedding = resume["vector"]
             with self.conn.cursor() as cursor:
-                cv_embedding = self.embedding_model.embed_documents([cv_text])[
-                    0]
-
                 job_matches = self.get_top_jobs_by_multiple_metrics(
                     cursor, cv_embedding)
 
-                # Convert JobMatch objects to dictionaries for serialization
                 job_results = {
                     "jobs":
                     [
-                        {
+                        {"id": str(match.id),
+                            "job_id": str(match.job_id),
                             "description": match.description,
                             "company": match.company,
                             "portal": match.portal,
-                            "id": match.id,
                             "title": match.title
-                        }
+                         }
                         for match in job_matches
                     ]
                 }
@@ -225,6 +199,5 @@ class JobMatcher:
             raise
 
 
-# Initialize the job matcher
 settings = Settings()
 job_matcher = JobMatcher(settings)
