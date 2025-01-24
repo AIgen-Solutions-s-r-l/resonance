@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import psycopg
 from loguru import logger
 from psycopg.rows import Row
 from psycopg.sql import SQL
+
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger_context
@@ -178,6 +179,161 @@ class JobMatcher:
                 error=str(e)
             )
             logger.error("Database query failed", context)
+            raise
+
+    def get_top_jobs_with_advanced_location(
+        self,
+        cursor: psycopg.Cursor[Row],
+        cv_embedding: List[float],
+        user_location: Optional[Tuple[float, float, str]] = None,  # (lat, lng, city)
+        keywords: Optional[List[str]] = None,
+        radius_km: float = 50.0,
+        limit: int = 50
+    ) -> List[JobMatch]:
+        """
+        EXPERIMENTAL: Get top matching jobs using advanced location handling.
+        
+        This implementation assumes the following schema changes:
+        - Locations table has columns: city, state, country, latitude, longitude, is_remote, metro_area
+        - PostGIS extension is installed
+        
+        Args:
+            cursor: Database cursor for executing queries
+            cv_embedding: The embedding vector of the CV
+            user_location: Optional tuple of (latitude, longitude, city)
+            keywords: Optional keywords for filtering
+            radius_km: Search radius in kilometers
+            limit: Maximum number of results to return
+
+        Returns:
+            List of JobMatch objects
+        """
+        try:
+            where_clauses = []
+            params = [cv_embedding, cv_embedding, cv_embedding]
+
+            # Advanced location handling
+            if user_location:
+                lat, lng, city = user_location
+                location_score_sql = f"""
+                    CASE 
+                        WHEN l.is_remote THEN 1.0
+                        WHEN l.city = %s THEN 1.0
+                        WHEN l.metro_area = (SELECT metro_area FROM "Locations" WHERE city = %s LIMIT 1) THEN 0.9
+                        ELSE GREATEST(
+                            0.1,
+                            1 - (
+                                ST_Distance(
+                                    ST_MakePoint(l.longitude, l.latitude)::geography,
+                                    ST_MakePoint(%s, %s)::geography
+                                ) / (%s * 1000)  -- Convert km to meters
+                            )
+                        )
+                    END * 0.2  -- Location weight in final score
+                """
+                params.extend([city, city, lng, lat, radius_km])
+                
+                # Location filter - include remote jobs or jobs within radius
+                where_clauses.append("""
+                    (
+                        l.is_remote = true 
+                        OR ST_DWithin(
+                            ST_MakePoint(l.longitude, l.latitude)::geography,
+                            ST_MakePoint(%s, %s)::geography,
+                            %s * 1000
+                        )
+                    )
+                """)
+                params.extend([lng, lat, radius_km])
+
+            # Keywords handling (same as original)
+            if keywords and len(keywords) > 0:
+                or_clauses = []
+                for kw in keywords:
+                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
+                    params.extend([f"%{kw}%", f"%{kw}%"])
+                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
+
+            where_sql = ""
+            if where_clauses:
+                where_sql = "WHERE " + " AND ".join(where_clauses)
+
+            # Modified query to include location score
+            location_score = location_score_sql if user_location else "1.0 * 0.2"
+            
+            query = SQL(f"""
+                WITH combined_scores AS (
+                    SELECT
+                        j.title, 
+                        j.description,
+                        j.job_id,
+                        j.company_id,
+                        c.company_name,
+                        embedding <-> %s::vector as l2_distance,
+                        embedding <=> %s::vector as cosine_distance,
+                        -(embedding <#> %s::vector) as inner_product,
+                        {location_score} as location_score
+                    FROM "Jobs" j
+                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    {where_sql}
+                ),
+                normalized_scores AS (
+                    SELECT 
+                        title,
+                        description,
+                        job_id,
+                        company_name,
+                        (
+                            (1 - (l2_distance - MIN(l2_distance) OVER()) / 
+                              NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.3
+                          + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
+                              NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.3
+                          + (
+                              (inner_product - MIN(inner_product) OVER()) / 
+                              NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
+                            ) * 0.2
+                          + location_score
+                        ) as combined_score
+                    FROM combined_scores
+                )
+                SELECT 
+                    title,
+                    description,
+                    job_id,
+                    company_name,
+                    combined_score
+                FROM normalized_scores
+                ORDER BY combined_score DESC
+                LIMIT %s;
+            """)
+
+            params.append(limit)
+            cursor.execute(query, params)
+            results = cursor.fetchall()
+
+            job_matches = [
+                JobMatch(
+                    id=str(row[2]),
+                    job_id=str(row[2]),
+                    title=row[0],
+                    description=row[1],
+                    company=row[3],
+                    portal="test_portal",
+                    score=float(row[4])
+                )
+                for row in results
+            ]
+
+            return job_matches
+
+        except psycopg.Error as e:
+            context = get_logger_context(
+                action="get_top_jobs_advanced",
+                status="error",
+                error=str(e)
+            )
+            logger.error("Advanced location query failed", context)
             raise
 
     async def process_job(
