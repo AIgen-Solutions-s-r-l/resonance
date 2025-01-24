@@ -77,7 +77,8 @@ class JobMatcher:
                 # e.g. ( j.title ILIKE %s OR j.description ILIKE %s ) OR ...
                 where_clauses.append("(" + " OR ".join(or_clauses) + ")")
 
-            # Combine all WHERE conditions into a single string
+            # TODO & NOTE: Maybe here full-text search or pg_trgm (here was a mock pattern matching)
+
             where_sql = ""
             if where_clauses:
                 where_sql = "WHERE " + " AND ".join(where_clauses)
