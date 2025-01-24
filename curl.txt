@@ -2,6 +2,6 @@ curl -X POST https://auth.neuraltrading.group/auth/login -H "Content-Type: appli
 
 curl -X GET "http://localhost:9006/jobs/match" -H "accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzMzNTA5MDA1fQ.p1LAffYlQM0RcBsaHO8ujdqoTSXGPQKgotAqbG032ew"
 
-curl -X GET "http://localhost:9006/jobs/match?location=Berlin&keywords=python&keywords=fastapi" \
+curl -X GET "http://localhost:8012/jobs/match?location=Berlin&keywords=python&keywords=fastapi" \
   -H "accept: application/json" \
-  -H "Authorization: Bearer <>"
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzM3NzMxNDI2fQ.gAr7y9YoPjdmS1xjZoKTsIvVZ98Km0wHktqUtnGWmho"

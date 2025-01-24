@@ -29,8 +29,23 @@ class JobMatcher:
         self._initialize_database()
 
     def _initialize_database(self) -> None:
-        # ... existing database connection logic ...
-        pass
+        try:
+            self.conn = psycopg.connect(
+                dbname=self.settings.db_name,
+                user=self.settings.db_user,
+                password=self.settings.db_password,
+                host=self.settings.db_host,
+                port=self.settings.db_port,
+                autocommit=True
+            )
+            context = get_logger_context(action="initialize_database")
+            logger.info(
+                "Database connection established successfully", context)
+        except psycopg.Error as e:
+            context = get_logger_context(
+                action="initialize_database", error=str(e))
+            logger.error("Database connection failed", context)
+            raise
 
     def get_top_jobs_by_multiple_metrics(
         self,
