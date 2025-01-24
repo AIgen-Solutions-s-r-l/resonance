@@ -51,11 +51,17 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
 async def match_jobs_with_resume(
     resume: Dict[str, Any],
     settings: Settings,
-    location: Optional[str] = None
+    location: Optional[str] = None,
+    keywords: Optional[List[str]] = None
 ) -> List[Job]:
     try:
         matcher = JobMatcher(settings)
-        matched_jobs = await matcher.process_job(resume, location=location)
+        
+        matched_jobs = await matcher.process_job(
+            resume, 
+            location=location, 
+            keywords=keywords
+        )
         return matched_jobs
     except Exception as e:
         raise Exception("Failed to match jobs with resume.") from e

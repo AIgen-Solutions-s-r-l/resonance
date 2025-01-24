@@ -29,7 +29,7 @@ class JobMatcher:
         self._initialize_database()
 
     def _initialize_database(self) -> None:
-        # ... existing code unchanged ...
+        # ... existing database connection logic ...
         pass
 
     def get_top_jobs_by_multiple_metrics(
@@ -37,6 +37,7 @@ class JobMatcher:
         cursor: psycopg.Cursor[Row],
         cv_embedding: List[float],
         location: Optional[str] = None,
+        keywords: Optional[List[str]] = None,
         limit: int = 50
     ) -> List[JobMatch]:
         """
@@ -45,20 +46,41 @@ class JobMatcher:
         Args:
             cursor: Database cursor for executing queries
             cv_embedding: The embedding vector of the CV
-            location: Optional. Filter by job location if provided.
+            location: Optional. Filter by job location if provided
+            keywords: Optional. Filter by presence of ANY of the given keywords 
+                      in the job title or description
             limit: Maximum number of results to return
 
         Returns:
             List of JobMatch objects
         """
         try:
-            # We’ll build a dynamic WHERE clause if location is provided:
+            # A list to store individual "WHERE" components
             where_clauses = []
+            # The first 3 parameters are for the embedding
             params = [cv_embedding, cv_embedding, cv_embedding]
 
+            # Location filter
             if location:
                 where_clauses.append("j.location = %s")
                 params.append(location)
+
+            # Keywords filter (title or description must contain ANY of the keywords)
+            # If you want to match ALL keywords, you'd need to adjust the logic
+            if keywords and len(keywords) > 0:
+                # We'll build a sub-list of OR clauses for each keyword
+                or_clauses = []
+                for kw in keywords:
+                    # We use ILIKE for case-insensitive match
+                    # Searching in both 'title' and 'description'
+                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
+                    # We add two parameters for each keyword
+                    # e.g. "%python%" for title, "%python%" for description
+                    params.extend([f"%{kw}%", f"%{kw}%"])
+                
+                # Combine them with OR in a single group
+                # e.g. ( j.title ILIKE %s OR j.description ILIKE %s ) OR ...
+                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
 
             # Combine all WHERE conditions into a single string
             where_sql = ""
@@ -109,9 +131,10 @@ class JobMatcher:
                 LIMIT %s;
             """)
 
-            # The limit is always appended last
+            # The last parameter is the limit
             params.append(limit)
 
+            # Execute the query with all accumulated parameters
             cursor.execute(query, params)
             results = cursor.fetchall()
 
@@ -122,7 +145,7 @@ class JobMatcher:
                     title=row[0],
                     description=row[1],
                     company=row[3],
-                    portal="test_portal",   # Or wherever this comes from
+                    portal="test_portal",
                     score=float(row[4])
                 )
                 for row in results
@@ -148,17 +171,20 @@ class JobMatcher:
     async def process_job(
         self,
         resume: dict,
-        location: Optional[str] = None
+        location: Optional[str] = None,
+        keywords: Optional[List[str]] = None
     ) -> dict[str, list[dict[str, str | float]]]:
         """
         Process a CV and find matching jobs.
 
         Args:
-            resume: The resume object from MongoDB, including 'vector'
-            location: Optional. Filter by job location.
+            resume: The resume data, including 'vector'
+            location: Optional. Filter by job location
+            keywords: Optional. Filter by job title/description that contains 
+                      any of these keywords
 
         Returns:
-            A dict with a "jobs" key containing a list of matched job dicts
+            A dict with a "jobs" list containing matched job info
         """
         try:
             context = get_logger_context(
@@ -170,11 +196,11 @@ class JobMatcher:
             cv_embedding = resume["vector"]
 
             with self.conn.cursor() as cursor:
-                # Pass location to the retrieval method
                 job_matches = self.get_top_jobs_by_multiple_metrics(
                     cursor,
                     cv_embedding,
-                    location=location
+                    location=location,
+                    keywords=keywords
                 )
 
                 job_results = {
@@ -207,6 +233,3 @@ class JobMatcher:
             )
             logger.error(f"Failed to process job: {e}", context)
             raise
-
-settings = Settings()
-job_matcher = JobMatcher(settings)

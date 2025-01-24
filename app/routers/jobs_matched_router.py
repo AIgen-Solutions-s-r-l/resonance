@@ -1,5 +1,5 @@
 from typing import List, Any, Optional
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Query
 from app.core.auth import get_current_user
 from app.core.config import Settings
 from app.schemas.job import JobSchema
@@ -13,6 +13,7 @@ import loguru
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
 settings = Settings()
+
 router = APIRouter(
     prefix="/jobs",
     tags=["jobs"],
@@ -31,18 +32,26 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 async def get_matched_jobs(
-    location: Optional[str] = None,
+    location: Optional[str] = Query(None, description="Filter jobs by location"),
+    keywords: Optional[List[str]] = Query(
+        None, 
+        description="Filter jobs containing any of these keywords in the title or description"
+    ),
     current_user: Any = Depends(get_current_user),
 ):
     """
     Endpoint to retrieve all jobs matched with the authenticated user's resume.
 
     - location: Optional. Only return jobs for the specified location.
+    - keywords: Optional. A list of keywords. Jobs must match at least one of these in the title or description.
     - current_user: The authenticated user making the request.
-    - Returns: A list of jobs that match the user's resume and location preference.
+    - Returns: A list of jobs that match the user's resume, location, and keyword preference.
     """
     try:
-        logger.info(f"User {current_user} is requesting matched jobs. Location filter: {location}")
+        logger.info(
+            f"User {current_user} is requesting matched jobs. "
+            f"Location filter: {location}, Keywords: {keywords}"
+        )
 
         resume = await get_resume_by_user_id(current_user)
         if not resume or "error" in resume:
@@ -52,8 +61,13 @@ async def get_matched_jobs(
                 detail="Resume not found for the current user."
             )
 
-        # Forward the `location` parameter to the matching service
-        matched_jobs = await match_jobs_with_resume(resume, settings, location=location)
+        # Forward the parameters to the matching service
+        matched_jobs = await match_jobs_with_resume(
+            resume, 
+            settings, 
+            location=location, 
+            keywords=keywords
+        )
 
         if isinstance(matched_jobs, list):
             job_list = matched_jobs
