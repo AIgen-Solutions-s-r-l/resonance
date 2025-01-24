@@ -75,7 +75,7 @@ class JobMatcher:
 
             # Location filter
             if location:
-                where_clauses.append("j.location = %s")
+                where_clauses.append("l.location = %s")
                 params.append(location)
 
             # Keywords filter (title or description must contain ANY of the keywords)
