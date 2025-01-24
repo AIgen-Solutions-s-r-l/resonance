@@ -55,9 +55,7 @@ class JobMatcher:
             List of JobMatch objects
         """
         try:
-            # A list to store individual "WHERE" components
             where_clauses = []
-            # The first 3 parameters are for the embedding
             params = [cv_embedding, cv_embedding, cv_embedding]
 
             # Location filter
@@ -66,16 +64,13 @@ class JobMatcher:
                 params.append(location)
 
             # Keywords filter (title or description must contain ANY of the keywords)
-            # If you want to match ALL keywords, you'd need to adjust the logic
             if keywords and len(keywords) > 0:
                 # We'll build a sub-list of OR clauses for each keyword
                 or_clauses = []
                 for kw in keywords:
-                    # We use ILIKE for case-insensitive match
-                    # Searching in both 'title' and 'description'
+                    # ILIKE for case-insensitive match
                     or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
-                    # We add two parameters for each keyword
-                    # e.g. "%python%" for title, "%python%" for description
+                    # two parameters for each keyword: "%python%" for title, "%python%" for description
                     params.extend([f"%{kw}%", f"%{kw}%"])
                 
                 # Combine them with OR in a single group

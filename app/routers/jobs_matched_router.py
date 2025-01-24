@@ -61,7 +61,6 @@ async def get_matched_jobs(
                 detail="Resume not found for the current user."
             )
 
-        # Forward the parameters to the matching service
         matched_jobs = await match_jobs_with_resume(
             resume, 
             settings, 
