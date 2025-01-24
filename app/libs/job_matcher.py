@@ -111,6 +111,7 @@ class JobMatcher:
                         -(embedding <#> %s::vector) as inner_product
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
                     {where_sql}
                 ),
                 normalized_scores AS (
