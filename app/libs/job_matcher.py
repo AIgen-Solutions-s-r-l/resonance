@@ -20,6 +20,7 @@ class JobMatch:
     description: str
     portal: str
     company: str
+    location_strict: bool
     score: float
 
 
@@ -179,7 +180,8 @@ class JobMatcher:
                     description=row[1],
                     company=row[3],
                     portal="test_portal",
-                    score=float(row[4])
+                    location_strict=(float(row[4]) > 0),
+                    score=float(row[5])
                 )
                 for row in results
             ]
@@ -340,6 +342,7 @@ class JobMatcher:
                     description=row[1],
                     company=row[3],
                     portal="test_portal",
+                    location_strict=True,
                     score=float(row[4])
                 )
                 for row in results
@@ -361,7 +364,7 @@ class JobMatcher:
         resume: dict,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None
-    ) -> dict[str, list[dict[str, str | float]]]:
+    ) -> dict[str, list[dict[str, str | float | bool]]]:
         """
         Process a CV and find matching jobs.
 
@@ -399,6 +402,7 @@ class JobMatcher:
                             "description": match.description,
                             "company": match.company,
                             "portal": match.portal,
+                            "location_strict": match.location_strict,
                             "title": match.title,
                         }
                         for match in job_matches

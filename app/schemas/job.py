@@ -8,6 +8,7 @@ class JobSchema(BaseModel):
     job_id: str
     title: str
     is_remote: Optional[bool] = None
+    location_strict: Optional[bool] = None
     workplace_type: Optional[str] = None
     posted_date: Optional[datetime] = None
     job_state: Optional[str] = None
