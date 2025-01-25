@@ -9,6 +9,8 @@ from pymongo import ReturnDocument
 from app.core.logging_config import get_logger_context
 import loguru
 
+from app.schemas.location import LocationFilter
+
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
 
@@ -51,7 +53,7 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
 async def match_jobs_with_resume(
     resume: Dict[str, Any],
     settings: Settings,
-    location: Optional[str] = None,
+    location: Optional[LocationFilter] = None,
     keywords: Optional[List[str]] = None
 ) -> List[Job]:
     try:

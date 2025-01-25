@@ -8,6 +8,7 @@ from psycopg.sql import SQL
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger_context
+from app.schemas.location import LocationFilter
 
 
 @dataclass
@@ -52,17 +53,20 @@ class JobMatcher:
         self,
         cursor: psycopg.Cursor[Row],
         cv_embedding: List[float],
-        location: Optional[str] = None,
+        location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         limit: int = 50
     ) -> List[JobMatch]:
         """
         Get top matching jobs using multiple similarity metrics.
+
+        This implementation assumes the following schema changes:
+        - Locations table has columns: city, country (country is FK to table Countries and has column NAME)
         
         Args:
             cursor: Database cursor for executing queries
             cv_embedding: The embedding vector of the CV
-            location: Optional. Filter by job location if provided
+            location: Optional. Filter by job location if provided (Country, City)
             keywords: Optional. Filter by presence of ANY of the given keywords 
                       in the job title or description
             limit: Maximum number of results to return
@@ -74,11 +78,23 @@ class JobMatcher:
             where_clauses = []
             params = [cv_embedding, cv_embedding, cv_embedding]
 
-            # Location filter
-            if location:
-                where_clauses.append("l.location = %s")
-                params.append(location)
+            location_score_sql: str
+            if location and location.city:
+                location_score_sql = f"""
+                    CASE 
+                        WHEN l.city = %s THEN 1.0
+                        ELSE 0.0
+                    END
+                """
+                params.append(location.city)
+            else:
+                location_score_sql = "1.0"
 
+            # Location filter (Country is an hard filter)
+            if location and location.country:
+                where_clauses.append("(co.country_name = %s OR l.is_remote)")
+                params.append(location.country)
+                
             # Keywords filter (title or description must contain ANY of the keywords)
             if keywords and len(keywords) > 0:
                 # We'll build a sub-list of OR clauses for each keyword
@@ -109,10 +125,12 @@ class JobMatcher:
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
                         embedding <=> %s::vector as cosine_distance,
-                        -(embedding <#> %s::vector) as inner_product
+                        -(embedding <#> %s::vector) as inner_product,
+                        {location_score_sql} as location_strict
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
                     LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    LEFT JOIN "Countries" co ON l.country = co.country_id
                     {where_sql}
                 ),
                 normalized_scores AS (
@@ -121,6 +139,7 @@ class JobMatcher:
                         description,
                         job_id,
                         company_name,
+                        location_strict,
                         (
                             (1 - (l2_distance - MIN(l2_distance) OVER()) / 
                               NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
@@ -132,15 +151,16 @@ class JobMatcher:
                             ) * 0.2
                         ) as combined_score
                     FROM combined_scores
-                )
+                ),
                 SELECT 
                     title,
                     description,
                     job_id,
                     company_name,
+                    location_strict
                     combined_score
                 FROM normalized_scores
-                ORDER BY combined_score DESC
+                ORDER BY location_strict DESC, combined_score DESC
                 LIMIT %s;
             """)
 
@@ -339,7 +359,7 @@ class JobMatcher:
     async def process_job(
         self,
         resume: dict,
-        location: Optional[str] = None,
+        location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None
     ) -> dict[str, list[dict[str, str | float]]]:
         """

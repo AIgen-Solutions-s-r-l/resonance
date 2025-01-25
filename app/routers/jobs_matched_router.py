@@ -32,7 +32,8 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 async def get_matched_jobs(
-    location: Optional[str] = Query(None, description="Filter jobs by location"),
+    country: Optional[str] = Query(None, description="Filter jobs by country (hard filter)"),
+    city: Optional[str] = Query(None, description="Filter jobs by city (soft filter)"),
     keywords: Optional[List[str]] = Query(
         None, 
         description="Filter jobs containing any of these keywords in the title or description"
@@ -48,9 +49,11 @@ async def get_matched_jobs(
     - Returns: A list of jobs that match the user's resume, location, and keyword preference.
     """
     try:
+        locationFilter = locationFilter(country = country, city = city)
+
         logger.info(
             f"User {current_user} is requesting matched jobs. "
-            f"Location filter: {location}, Keywords: {keywords}"
+            f"Location filter: {locationFilter}, Keywords: {keywords}"
         )
 
         resume = await get_resume_by_user_id(current_user)
@@ -64,7 +67,7 @@ async def get_matched_jobs(
         matched_jobs = await match_jobs_with_resume(
             resume, 
             settings, 
-            location=location, 
+            location=locationFilter, 
             keywords=keywords
         )
 
