@@ -203,7 +203,8 @@ class JobMatcher:
             logger.error("Database query failed", context)
             raise
 
-    def get_top_jobs_with_advanced_location(
+    # HARD EXPERIMENTAL by Ale
+    '''def get_top_jobs_with_advanced_location(
         self,
         cursor: psycopg.Cursor[Row],
         cv_embedding: List[float],
@@ -357,7 +358,7 @@ class JobMatcher:
                 error=str(e)
             )
             logger.error("Advanced location query failed", context)
-            raise
+            raise'''
 
     async def process_job(
         self,
