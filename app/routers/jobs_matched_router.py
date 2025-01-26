@@ -9,6 +9,7 @@ from app.services.matching_service import (
 )
 from app.core.logging_config import get_logger_context
 import loguru
+from app.schemas.location import LocationFilter
 
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
@@ -49,7 +50,7 @@ async def get_matched_jobs(
     - Returns: A list of jobs that match the user's resume, location, and keyword preference.
     """
     try:
-        locationFilter = locationFilter(country = country, city = city)
+        locationFilter = LocationFilter(country = country, city = city)
 
         logger.info(
             f"User {current_user} is requesting matched jobs. "

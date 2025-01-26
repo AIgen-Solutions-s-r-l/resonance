@@ -93,7 +93,7 @@ class JobMatcher:
 
             # Location filter (Country is an hard filter)
             if location and location.country:
-                where_clauses.append("(co.country_name = %s OR l.is_remote)")
+                where_clauses.append("(co.country_name = %s OR j.is_remote)")
                 params.append(location.country)
                 
             # Keywords filter (title or description must contain ANY of the keywords)
@@ -152,13 +152,13 @@ class JobMatcher:
                             ) * 0.2
                         ) as combined_score
                     FROM combined_scores
-                ),
+                )
                 SELECT 
                     title,
                     description,
                     job_id,
                     company_name,
-                    location_strict
+                    location_strict,
                     combined_score
                 FROM normalized_scores
                 ORDER BY location_strict DESC, combined_score DESC
