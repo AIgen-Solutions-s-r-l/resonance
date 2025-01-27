@@ -141,7 +141,7 @@ class JobMatcher:
                         co.country_name,
                         l.city,
                         c.company_name,
-                        FALSE AS location_strict,   -- or check if city == ...
+                        FALSE AS location_strict,
                         1.0 AS combined_score
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
@@ -170,8 +170,8 @@ class JobMatcher:
                         city=row[10],
                         company=row[11],
                         portal="test_portal",
-                        location_strict=bool(row[4]),
-                        score=float(row[5])
+                        location_strict=bool(row[12]),
+                        score=float(row[13])
                     )
                     for row in results
                 ]
@@ -224,6 +224,14 @@ class JobMatcher:
                         title,
                         description,
                         id,
+                        workplace_type,
+                        is_remote,
+                        short_description,
+                        field,
+                        experience,
+                        skills_required,
+                        country_name,
+                        city,
                         company_name,
                         location_strict,
                         (
@@ -277,8 +285,8 @@ class JobMatcher:
                     city=row[10],
                     company=row[11],
                     portal="test_portal",
-                    location_strict=bool(row[4]),
-                    score=float(row[5])
+                    location_strict=bool(row[12]),
+                    score=float(row[13])
                 )
                 for row in results
             ]
