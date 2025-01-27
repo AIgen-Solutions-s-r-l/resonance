@@ -1,86 +1,87 @@
-# app/core/config.py
-
 import os
 from typing import Optional
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 class Settings(BaseSettings):
     """
     Configuration class for environment variables and service settings.
-
-    This class defines the settings for the application, including connections
-    to external services like RabbitMQ and PostgreSQL. The settings are primarily
-    loaded from environment variables, with default values provided for local development
-    or testing environments.
-
-    Attributes:
-        rabbitmq_url (str): The connection URL for RabbitMQ.
-            Default: "amqp://guest:guest@localhost:5672/"
-            Example: "amqp://user:password@hostname:port/vhost"
-
-        service_name (str): The name of the service.
-            Default: "authService"
-            Used for logging, monitoring, and other service identification purposes.
-
-        database_url (str): The connection URL for the main PostgreSQL database.
-            Default: "postgresql+asyncpg://user:password@localhost:5432/main_db"
-            Example: "postgresql+asyncpg://username:password@hostname:port/dbname"
-
-        test_database_url (str): The connection URL for the test PostgreSQL database.
-            Default: "postgresql+asyncpg://user:password@localhost:5432/test_db"
-            Used for testing purposes to isolate data changes and run tests against a dedicated
-            test database. Automatically used when tests are run.
-
-    Usage:
-        The settings can be overridden by creating a `.env` file in the root directory
-        with the necessary environment variables. Alternatively, environment variables
-        can be set directly in the operating system.
-
-        Example:
-            .env file content:
-            RABBITMQ_URL="amqp://guest:guest@localhost:5672/"
-            DATABASE_URL="postgresql+asyncpg://user:password@localhost:5432/main_db"
-            TEST_DATABASE_URL="postgresql+asyncpg://user:password@localhost:5432/test_db"
     """
 
-    service_name: str = "matching_service"
-        # MongoDB settings
-    mongodb_host: str = "localhost"
-    mongodb_port: int = 27017
-    mongodb_username: str = "appUser"
-    mongodb_password: str = "password123"
-    mongodb_database: str = "resumes"
-    mongodb_auth_source: str = "main_db"
+    # Service settings
+    service_name: str = os.getenv("SERVICE_NAME", "matching_service")
+    environment: str = os.getenv("ENVIRONMENT", "development")
+    debug: bool = os.getenv("DEBUG", "True").lower() == "true"
 
-    # Authentication settings
-    secret_key: str = "your-secret-key-here"
-    algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    # Logging settings
+    log_level: str = os.getenv("LOG_LEVEL", "DEBUG")
+    syslog_host: str = os.getenv("SYSLOG_HOST", "172.17.0.1")
+    syslog_port: int = int(os.getenv("SYSLOG_PORT", "5141"))
+    json_logs: bool = os.getenv("JSON_LOGS", "True").lower() == "true"
+    log_retention: str = os.getenv("LOG_RETENTION", "7 days")
+    enable_logstash: bool = os.getenv("ENABLE_LOGSTASH", "True").lower() == "true"
 
-    # Construct MongoDB URI with auth source
-    @property
-    def mongodb_uri(self) -> str:
-        return f"mongodb://{self.mongodb_username}:{self.mongodb_password}@{self.mongodb_host}:{self.mongodb_port}/{self.mongodb_database}?authSource={self.mongodb_auth_source}"
-
-    database_url: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://testuser:testpassword@localhost:5432/matching")
-    test_database_url: str = os.getenv("TEST_DATABASE_URL",
-                                       "postgresql+asyncpg://testuser:testpassword@localhost:5432/test_matching")
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA")
+    # MongoDB settings
+    mongodb_host: str = os.getenv("MONGODB_HOST", "localhost")
+    mongodb_port: int = int(os.getenv("MONGODB_PORT", 27017))
+    mongodb_username: str = os.getenv("MONGODB_USERNAME", "appUser")
+    mongodb_password: str = os.getenv("MONGODB_PASSWORD", "password123")
+    mongodb_database: str = os.getenv("MONGODB_DATABASE", "resumes")
+    mongodb_auth_source: str = os.getenv("MONGODB_AUTH_SOURCE", "main_db")
+    
     db_name: str = os.getenv("DBNAME", "matching")
     db_user: str = os.getenv("DBUSER", "testuser")
     db_password: str = os.getenv("DBPASSWORD", "testpassword")
     db_host: str = os.getenv("DBHOST", "localhost")
     db_port: str = os.getenv("DBPORT", "5432")
-    # Logging settings
-    log_level: str = "DEBUG"
-    logstash_host: Optional[str] = 'localhost'
-    logstash_port: Optional[int] = 5141
-    enable_logstash: bool = True
-    environment: str = "development"
+
+    @property
+    def mongodb_uri(self) -> str:
+        return f"mongodb://{self.mongodb_username}:{self.mongodb_password}@{self.mongodb_host}:{self.mongodb_port}/{self.mongodb_database}?authSource={self.mongodb_auth_source}"
+
+    # Redis settings
+    redis_port: int = int(os.getenv("REDIS_PORT", 6379))
+
+    # RabbitMQ settings
+    rabbitmq_url: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
+    job_to_apply_queue: str = os.getenv("MATCHING_QUEUE", "job_to_apply_queue")
+
+    # PostgreSQL settings
+    database_url: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://testuser:testpassword@localhost:5432/matching")
+    test_database_url: str = os.getenv("TEST_DATABASE_URL", "postgresql+asyncpg://testuser:testpassword@localhost:5432/test_matching")
+
+    # Authentication settings
+    secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-here")
+    algorithm: str = os.getenv("ALGORITHM", "HS256")
+    access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+
+    # OpenAI API key
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA")
+
+    # Environment-specific logging configuration
+    @property
+    def logging_config(self) -> dict:
+        """
+        Returns logging configuration based on environment.
+        """
+        base_config = {
+            "app_name": self.service_name,
+            "log_level": self.log_level,
+            "syslog_host": self.syslog_host if self.enable_logstash else None,
+            "syslog_port": self.syslog_port if self.enable_logstash else None,
+            "json_logs": self.json_logs,
+            "enable_logstash": self.enable_logstash,
+        }
+
+        if self.environment == "development":
+            base_config.update({
+                "json_logs": False,
+                "log_level": "DEBUG" if self.debug else "INFO"
+            })
+
+        return base_config
 
     model_config = SettingsConfigDict(env_file=".env")
 
+settings = Settings()
 
-    __all__ = ["Settings"]
+__all__ = ["Settings"]
