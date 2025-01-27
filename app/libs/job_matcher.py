@@ -20,6 +20,15 @@ class JobMatch:
     job_id: str
     title: str
     description: str
+    workplace: str
+    is_remote: bool
+    short_description: str
+    field: str
+    experience: str
+    skills: str
+    country: str
+    city: str
+    company: str
     portal: str
     company: str
     location_strict: bool
@@ -123,6 +132,14 @@ class JobMatcher:
                         j.title,
                         j.description,
                         j.id,
+                        j.workplace_type,
+                        j.is_remote,
+                        j.short_description,
+                        j.field,
+                        j.experience,
+                        j.skills_required,
+                        co.country_name,
+                        l.city,
                         c.company_name,
                         FALSE AS location_strict,   -- or check if city == ...
                         1.0 AS combined_score
@@ -143,7 +160,15 @@ class JobMatcher:
                         job_id=str(row[2]),
                         title=row[0],
                         description=row[1],
-                        company=row[3],
+                        workplace=row[3],
+                        is_remote=bool(row[4]),
+                        short_description=row[5],
+                        field=row[6],
+                        experience=row[7],
+                        skills=row[8],
+                        country=row[9],
+                        city=row[10],
+                        company=row[11],
                         portal="test_portal",
                         location_strict=bool(row[4]),
                         score=float(row[5])
@@ -172,10 +197,17 @@ class JobMatcher:
             query = SQL(f"""
                 WITH combined_scores AS (
                     SELECT
-                        j.title, 
+                        j.title,
                         j.description,
                         j.id,
-                        j.company_id,
+                        j.workplace_type,
+                        j.is_remote,
+                        j.short_description,
+                        j.field,
+                        j.experience,
+                        j.skills_required,
+                        co.country_name,
+                        l.city,
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
                         embedding <=> %s::vector as cosine_distance,
@@ -210,6 +242,14 @@ class JobMatcher:
                     title,
                     description,
                     id,
+                    workplace_type,
+                    is_remote,
+                    short_description,
+                    field,
+                    experience,
+                    skills_required,
+                    country_name,
+                    city,
                     company_name,
                     location_strict,
                     combined_score
@@ -227,9 +267,17 @@ class JobMatcher:
                     job_id=str(row[2]),
                     title=row[0],
                     description=row[1],
-                    company=row[3],
+                    workplace=row[3],
+                    is_remote=bool(row[4]),
+                    short_description=row[5],
+                    field=row[6],
+                    experience=row[7],
+                    skills=row[8],
+                    country=row[9],
+                    city=row[10],
+                    company=row[11],
                     portal="test_portal",
-                    location_strict=(float(row[4]) > 0),
+                    location_strict=bool(row[4]),
                     score=float(row[5])
                 )
                 for row in results
@@ -500,6 +548,14 @@ class JobMatcher:
                             "id": str(match.id),
                             "job_id": str(match.job_id),
                             "description": match.description,
+                            "workplace_type": match.workplace,
+                            "is_remote": match.is_remote,
+                            "short_description": match.short_description,
+                            "field": match.field,
+                            "experience": match.experience,
+                            "skills_required": match.skills,
+                            "country": match.country,
+                            "city": match.city,
                             "company": match.company,
                             "portal": match.portal,
                             "location_strict": match.location_strict,

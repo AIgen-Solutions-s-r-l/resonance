@@ -16,6 +16,8 @@ class JobSchema(BaseModel):
     apply_link: Optional[str] = None
     company: Optional[str] = None
     location: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
     portal: Optional[str] = None
     company_id: Optional[int] = None
     location_id: Optional[int] = None
