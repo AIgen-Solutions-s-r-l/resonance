@@ -93,7 +93,7 @@ class JobMatcher:
 
             # Location filter (Country is an hard filter)
             if location and location.country:
-                where_clauses.append("(co.country_name = %s OR j.is_remote)")
+                where_clauses.append("(co.country_name ILIKE %s OR j.is_remote)")
                 params.append(location.country)
                 
             # Keywords filter (title or description must contain ANY of the keywords)
@@ -121,7 +121,7 @@ class JobMatcher:
                     SELECT
                         j.title, 
                         j.description,
-                        j.job_id,
+                        j.id,
                         j.company_id,
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
@@ -138,7 +138,7 @@ class JobMatcher:
                     SELECT 
                         title,
                         description,
-                        job_id,
+                        id,
                         company_name,
                         location_strict,
                         (
@@ -156,7 +156,7 @@ class JobMatcher:
                 SELECT 
                     title,
                     description,
-                    job_id,
+                    id,
                     company_name,
                     location_strict,
                     combined_score
@@ -289,7 +289,7 @@ class JobMatcher:
                     SELECT
                         j.title, 
                         j.description,
-                        j.job_id,
+                        j.id,
                         j.company_id,
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
@@ -305,7 +305,7 @@ class JobMatcher:
                     SELECT 
                         title,
                         description,
-                        job_id,
+                        id,
                         company_name,
                         (
                             (1 - (l2_distance - MIN(l2_distance) OVER()) / 
@@ -323,7 +323,7 @@ class JobMatcher:
                 SELECT 
                     title,
                     description,
-                    job_id,
+                    id as job_id,
                     company_name,
                     combined_score
                 FROM normalized_scores
