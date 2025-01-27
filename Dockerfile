@@ -1,20 +1,29 @@
-# Start from an official Python image
-FROM python:3.9
+FROM python:3.11-slim
 
-# Set the working directory in the container
+LABEL org.opencontainers.image.source=https://github.com/AIHawk-Startup/matching_service
+
+# Install poetry
+RUN pip install poetry
+
+# Copy the Poetry configuration files
+COPY pyproject.toml /app/
+
+# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file
-COPY requirements.txt .
+# Installs the project dependencies
+# Configures Poetry to not create a virtual environment for the project,
+# ensuring that dependencies are installed directly in the system environment.
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root --only main
 
-# Install any dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the application code
+COPY ./app /app/app
 
-# Copy the current directory contents into the container
-COPY . .
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8004
 
-# Set the environment variable for FastAPI
-ENV PYTHONPATH=/app
-
-# Command to run the FastAPI application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+# Command to run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
