@@ -4,6 +4,8 @@ import psycopg
 from loguru import logger
 from psycopg.rows import Row
 from psycopg.sql import SQL
+import json
+import datetime
 
 
 from app.core.config import Settings
@@ -402,11 +404,66 @@ class JobMatcher:
             logger.error("Advanced location query failed", context)
             raise'''
 
+    async def save_matches(
+        self,
+        job_results: dict,
+        resume_id: str,
+        save_to_mongodb: bool = False
+    ) -> None:
+        """
+        Save job matches to JSON file and optionally to MongoDB.
+        
+        Args:
+            job_results: Dictionary containing matched jobs
+            resume_id: ID of the resume used for matching
+            save_to_mongodb: Whether to save to MongoDB (default: False)
+        """
+        try:
+            # Save to JSON
+            filename = f"job_matches_{resume_id}.json"
+            with open(filename, 'w') as f:
+                json.dump(job_results, f, indent=2)
+            
+            context = get_logger_context(
+                action="save_matches",
+                status="success",
+                file=filename
+            )
+            logger.info("Successfully saved matches to JSON", context)
+            
+            # Save to MongoDB if flag is True
+            if save_to_mongodb:
+                from app.core.mongodb import database
+                matches_collection = database.get_collection("job_matches")
+                
+                # Add metadata to job results
+                job_results["resume_id"] = resume_id
+                job_results["timestamp"] = datetime.datetime.utcnow()
+                
+                await matches_collection.insert_one(job_results)
+                
+                context = get_logger_context(
+                    action="save_matches",
+                    status="success",
+                    destination="mongodb"
+                )
+                logger.info("Successfully saved matches to MongoDB", context)
+                
+        except Exception as e:
+            context = get_logger_context(
+                action="save_matches",
+                status="error",
+                error=str(e)
+            )
+            logger.error("Failed to save matches", context)
+            raise
+
     async def process_job(
         self,
         resume: dict,
         location: Optional[LocationFilter] = None,
-        keywords: Optional[List[str]] = None
+        keywords: Optional[List[str]] = None,
+        save_to_mongodb: bool = False
     ) -> dict[str, list[dict[str, str | float | bool]]]:
         """
         Process a CV and find matching jobs.
@@ -447,16 +504,22 @@ class JobMatcher:
                             "portal": match.portal,
                             "location_strict": match.location_strict,
                             "title": match.title,
+                            "score": match.score
                         }
                         for match in job_matches
                     ]
                 }
+
+                # Save matches to JSON and optionally MongoDB
+                resume_id = str(resume.get("_id", "unknown"))
+                await self.save_matches(job_results, resume_id, save_to_mongodb)
 
                 context = get_logger_context(
                     action="process_job",
                     status="success",
                     matches_found=len(job_results["jobs"])
                 )
+                
                 logger.success("Successfully processed job", context)
                 return job_results
 

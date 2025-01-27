@@ -54,15 +54,17 @@ async def match_jobs_with_resume(
     resume: Dict[str, Any],
     settings: Settings,
     location: Optional[LocationFilter] = None,
-    keywords: Optional[List[str]] = None
+    keywords: Optional[List[str]] = None,
+    save_to_mongodb: bool = False
 ) -> List[Job]:
     try:
         matcher = JobMatcher(settings)
         
         matched_jobs = await matcher.process_job(
-            resume, 
-            location=location, 
-            keywords=keywords
+            resume,
+            location=location,
+            keywords=keywords,
+            save_to_mongodb=save_to_mongodb
         )
         return matched_jobs
     except Exception as e:
