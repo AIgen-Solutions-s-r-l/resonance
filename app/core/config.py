@@ -14,8 +14,8 @@ class Settings(BaseSettings):
 
     # Logging settings
     log_level: str = os.getenv("LOG_LEVEL", "DEBUG")
-    syslog_host: str = os.getenv("SYSLOG_HOST", "172.17.0.1")
-    syslog_port: int = int(os.getenv("SYSLOG_PORT", "5141"))
+    logstash_host: str = os.getenv("SYSLOG_HOST", "localhost")
+    logstash_port: int = int(os.getenv("SYSLOG_PORT", "5141"))
     json_logs: bool = os.getenv("JSON_LOGS", "True").lower() == "true"
     log_retention: str = os.getenv("LOG_RETENTION", "7 days")
     enable_logstash: bool = os.getenv("ENABLE_LOGSTASH", "True").lower() == "true"
@@ -66,8 +66,8 @@ class Settings(BaseSettings):
         base_config = {
             "app_name": self.service_name,
             "log_level": self.log_level,
-            "syslog_host": self.syslog_host if self.enable_logstash else None,
-            "syslog_port": self.syslog_port if self.enable_logstash else None,
+            "syslog_host": self.logstash_host if self.enable_logstash else None,
+            "syslog_port": self.logstash_port if self.enable_logstash else None,
             "json_logs": self.json_logs,
             "enable_logstash": self.enable_logstash,
         }
