@@ -76,10 +76,84 @@ class JobMatcher:
             List of JobMatch objects
         """
         try:
-            where_clauses = []
-            params = [cv_embedding, cv_embedding, cv_embedding]
 
-            location_score_sql: str
+            where_clauses = []
+            count_params = []  # used for the COUNT & simpler fallback
+            # embeddings_params will be the same as count_params, but we'll add embeddings later
+
+            # Location filter (hard filter by country, or is_remote)
+            if location and location.country:
+                where_clauses.append("(co.country_name ILIKE %s OR j.is_remote)")
+                count_params.append(location.country)
+
+            #if location and location.city:
+                #where_clauses.append("(l.city = %s)")
+                #count_params.append(location.city)
+
+            # Keywords filter (title or description must contain ANY of the keywords)
+            if keywords and len(keywords) > 0:
+                or_clauses = []
+                for kw in keywords:
+                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
+                    count_params.extend([f"%{kw}%", f"%{kw}%"])
+
+                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
+
+            where_sql = ""
+            if where_clauses:
+                where_sql = "WHERE " + " AND ".join(where_clauses)
+
+            count_query = SQL(f"""
+                SELECT COUNT(*) AS total_count
+                FROM "Jobs" j
+                LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                LEFT JOIN "Countries" co ON l.country = co.country_id
+                {where_sql}
+            """)
+
+            cursor.execute(count_query, count_params)
+            row_count = cursor.fetchone()[0]
+
+            if row_count <= 5:
+                simple_query = SQL(f"""
+                    SELECT
+                        j.title,
+                        j.description,
+                        j.id,
+                        c.company_name,
+                        FALSE AS location_strict,   -- or check if city == ...
+                        1.0 AS combined_score
+                    FROM "Jobs" j
+                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    LEFT JOIN "Countries" co ON l.country = co.country_id
+                    {where_sql}
+                    LIMIT 5
+                """)
+
+                cursor.execute(simple_query, count_params)
+                results = cursor.fetchall()
+
+                job_matches = [
+                    JobMatch(
+                        id=str(row[2]),
+                        job_id=str(row[2]),
+                        title=row[0],
+                        description=row[1],
+                        company=row[3],
+                        portal="test_portal",
+                        location_strict=bool(row[4]),
+                        score=float(row[5])
+                    )
+                    for row in results
+                ]
+
+                return job_matches
+
+
+            params = [cv_embedding, cv_embedding, cv_embedding]  # embeddings
+
             if location and location.city:
                 location_score_sql = f"""
                     CASE 
@@ -91,30 +165,7 @@ class JobMatcher:
             else:
                 location_score_sql = "1.0"
 
-            # Location filter (Country is an hard filter)
-            if location and location.country:
-                where_clauses.append("(co.country_name ILIKE %s OR j.is_remote)")
-                params.append(location.country)
-                
-            # Keywords filter (title or description must contain ANY of the keywords)
-            if keywords and len(keywords) > 0:
-                # We'll build a sub-list of OR clauses for each keyword
-                or_clauses = []
-                for kw in keywords:
-                    # ILIKE for case-insensitive match
-                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
-                    # two parameters for each keyword: "%python%" for title, "%python%" for description
-                    params.extend([f"%{kw}%", f"%{kw}%"])
-                
-                # Combine them with OR in a single group
-                # e.g. ( j.title ILIKE %s OR j.description ILIKE %s ) OR ...
-                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
-
-            # TODO & NOTE: Maybe here full-text search or pg_trgm (here was a mock pattern matching)
-
-            where_sql = ""
-            if where_clauses:
-                where_sql = "WHERE " + " AND ".join(where_clauses)
+            embeddings_params = params + count_params + [limit]
 
             query = SQL(f"""
                 WITH combined_scores AS (
@@ -143,12 +194,12 @@ class JobMatcher:
                         location_strict,
                         (
                             (1 - (l2_distance - MIN(l2_distance) OVER()) / 
-                              NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
-                          + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
-                              NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.4
-                          + (
-                              (inner_product - MIN(inner_product) OVER()) / 
-                              NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
+                            NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
+                        + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
+                            NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.4
+                        + (
+                            (inner_product - MIN(inner_product) OVER()) / 
+                            NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
                             ) * 0.2
                         ) as combined_score
                     FROM combined_scores
@@ -165,11 +216,7 @@ class JobMatcher:
                 LIMIT %s;
             """)
 
-            # The last parameter is the limit
-            params.append(limit)
-
-            # Execute the query with all accumulated parameters
-            cursor.execute(query, params)
+            cursor.execute(query, embeddings_params)
             results = cursor.fetchall()
 
             job_matches = [
@@ -186,15 +233,10 @@ class JobMatcher:
                 for row in results
             ]
 
-            context = get_logger_context(
-                action="get_top_jobs",
-                status="success",
-                matches_found=len(job_matches)
-            )
-            logger.info("Successfully retrieved matching jobs", context)
             return job_matches
 
         except psycopg.Error as e:
+            # Handle/log error as you normally do
             context = get_logger_context(
                 action="get_top_jobs",
                 status="error",
