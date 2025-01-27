@@ -34,7 +34,10 @@ router = APIRouter(
 )
 async def get_matched_jobs(
     country: Optional[str] = Query(None, description="Filter jobs by country (hard filter)"),
-    city: Optional[str] = Query(None, description="Filter jobs by city (soft filter)"),
+    city: Optional[str] = Query(None, description="Filter jobs by city (hard filter)"),
+    latitude: Optional[float] = Query(None, description="Filter jobs by latitude (soft filter)"),
+    longitude: Optional[float] = Query(None, description="Filter jobs by longitude (soft filter)"),
+    radius_km: Optional[float] = Query(None, description="Filter jobs within the radius"),
     keywords: Optional[List[str]] = Query(
         None, 
         description="Filter jobs containing any of these keywords in the title or description"
@@ -50,7 +53,13 @@ async def get_matched_jobs(
     - Returns: A list of jobs that match the user's resume, location, and keyword preference.
     """
     try:
-        locationFilter = LocationFilter(country = country, city = city)
+        locationFilter = LocationFilter(
+            country = country, 
+            city = city, 
+            latitude = latitude, 
+            longitude = longitude,
+            radius_km = radius_km if not radius_km is None else 20.0
+        )
 
         logger.info(
             f"User {current_user} is requesting matched jobs. "
