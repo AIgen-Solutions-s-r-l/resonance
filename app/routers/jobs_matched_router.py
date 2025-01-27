@@ -1,5 +1,5 @@
-from typing import List, Any
-from fastapi import APIRouter, HTTPException, Depends, status
+from typing import List, Any, Optional
+from fastapi import APIRouter, HTTPException, Depends, status, Query
 from app.core.auth import get_current_user
 from app.core.config import Settings
 from app.schemas.job import JobSchema
@@ -9,10 +9,12 @@ from app.services.matching_service import (
 )
 from app.core.logging_config import get_logger_context
 import loguru
+from app.schemas.location import LocationFilter
 
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
 settings = Settings()
+
 router = APIRouter(
     prefix="/jobs",
     tags=["jobs"],
@@ -23,7 +25,6 @@ router = APIRouter(
     },
 )
 
-
 @router.get(
     "/match",
     response_model=List[JobSchema],
@@ -32,26 +33,44 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 async def get_matched_jobs(
+    country: Optional[str] = Query(None, description="Filter jobs by country (hard filter)"),
+    city: Optional[str] = Query(None, description="Filter jobs by city (soft filter)"),
+    keywords: Optional[List[str]] = Query(
+        None, 
+        description="Filter jobs containing any of these keywords in the title or description"
+    ),
     current_user: Any = Depends(get_current_user),
 ):
     """
     Endpoint to retrieve all jobs matched with the authenticated user's resume.
 
+    - location: Optional. Only return jobs for the specified location.
+    - keywords: Optional. A list of keywords. Jobs must match at least one of these in the title or description.
     - current_user: The authenticated user making the request.
-    - Returns: A list of jobs that match the user's resume.
+    - Returns: A list of jobs that match the user's resume, location, and keyword preference.
     """
     try:
-        logger.info(f"User {current_user} is requesting matched jobs.")
+        locationFilter = LocationFilter(country = country, city = city)
+
+        logger.info(
+            f"User {current_user} is requesting matched jobs. "
+            f"Location filter: {locationFilter}, Keywords: {keywords}"
+        )
 
         resume = await get_resume_by_user_id(current_user)
-        if not resume:
+        if not resume or "error" in resume:
             logger.error(f"Resume not found for user {current_user}.")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Resume not found for the current user."
             )
 
-        matched_jobs = await match_jobs_with_resume(resume, settings)
+        matched_jobs = await match_jobs_with_resume(
+            resume, 
+            settings, 
+            location=locationFilter, 
+            keywords=keywords
+        )
 
         if isinstance(matched_jobs, list):
             job_list = matched_jobs
@@ -71,7 +90,7 @@ async def get_matched_jobs(
 
         return job_pydantic_list
 
-    except HTTPException as e:
+    except HTTPException:
         raise
     except ValueError as e:
         logger.warning(f"Validation error for user {current_user}: {str(e)}")

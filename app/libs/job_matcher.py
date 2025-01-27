@@ -1,12 +1,16 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional, Tuple
 import psycopg
 from loguru import logger
 from psycopg.rows import Row
 from psycopg.sql import SQL
+import json
+import datetime
+
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger_context
+from app.schemas.location import LocationFilter
 
 
 @dataclass
@@ -16,8 +20,18 @@ class JobMatch:
     job_id: str
     title: str
     description: str
+    workplace: str
+    is_remote: bool
+    short_description: str
+    field: str
+    experience: str
+    skills: str
+    country: str
+    city: str
+    company: str
     portal: str
     company: str
+    location_strict: bool
     score: float
 
 
@@ -51,65 +65,374 @@ class JobMatcher:
         self,
         cursor: psycopg.Cursor[Row],
         cv_embedding: List[float],
+        location: Optional[LocationFilter] = None,
+        keywords: Optional[List[str]] = None,
         limit: int = 50
     ) -> List[JobMatch]:
         """
         Get top matching jobs using multiple similarity metrics.
 
+        This implementation assumes the following schema changes:
+        - Locations table has columns: city, country (country is FK to table Countries and has column NAME)
+        
         Args:
-                cursor: Database cursor for executing queries
-                cv_embedding: The embedding vector of the CV
-                limit: Maximum number of results to return
+            cursor: Database cursor for executing queries
+            cv_embedding: The embedding vector of the CV
+            location: Optional. Filter by job location if provided (Country, City)
+            keywords: Optional. Filter by presence of ANY of the given keywords 
+                      in the job title or description
+            limit: Maximum number of results to return
 
         Returns:
-                List of JobMatch objects containing job details and similarity scores
-
-        Raises:
-                psycopg.Error: If database query fails
+            List of JobMatch objects
         """
         try:
-            query: SQL = SQL("""
-            WITH combined_scores AS (
-                SELECT
-                    j.title, 
-                    j.description,
-                    j.job_id,
-                    j.company_id,
-                    c.company_name,
-                    embedding <-> %s::vector as l2_distance,
-                    embedding <=> %s::vector as cosine_distance,
-                    -(embedding <#> %s::vector) as inner_product
+
+            where_clauses = []
+            count_params = []  # used for the COUNT & simpler fallback
+            # embeddings_params will be the same as count_params, but we'll add embeddings later
+
+            # Location filter (hard filter by country, or is_remote)
+            if location and location.country:
+                where_clauses.append("(co.country_name ILIKE %s OR j.is_remote)")
+                count_params.append(location.country)
+
+            #if location and location.city:
+                #where_clauses.append("(l.city = %s)")
+                #count_params.append(location.city)
+
+            # Keywords filter (title or description must contain ANY of the keywords)
+            if keywords and len(keywords) > 0:
+                or_clauses = []
+                for kw in keywords:
+                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
+                    count_params.extend([f"%{kw}%", f"%{kw}%"])
+
+                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
+
+            where_sql = ""
+            if where_clauses:
+                where_sql = "WHERE " + " AND ".join(where_clauses)
+
+            count_query = SQL(f"""
+                SELECT COUNT(*) AS total_count
                 FROM "Jobs" j
                 LEFT JOIN "Companies" c ON j.company_id = c.company_id
-            ),
-            normalized_scores AS (
+                LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                LEFT JOIN "Countries" co ON l.country = co.country_id
+                {where_sql}
+            """)
+
+            cursor.execute(count_query, count_params)
+            row_count = cursor.fetchone()[0]
+
+            if row_count <= 5:
+                simple_query = SQL(f"""
+                    SELECT
+                        j.title,
+                        j.description,
+                        j.id,
+                        j.workplace_type,
+                        j.is_remote,
+                        j.short_description,
+                        j.field,
+                        j.experience,
+                        j.skills_required,
+                        co.country_name,
+                        l.city,
+                        c.company_name,
+                        FALSE AS location_strict,
+                        1.0 AS combined_score
+                    FROM "Jobs" j
+                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    LEFT JOIN "Countries" co ON l.country = co.country_id
+                    {where_sql}
+                    LIMIT 5
+                """)
+
+                cursor.execute(simple_query, count_params)
+                results = cursor.fetchall()
+
+                job_matches = [
+                    JobMatch(
+                        id=str(row[2]),
+                        job_id=str(row[2]),
+                        title=row[0],
+                        description=row[1],
+                        workplace=row[3],
+                        is_remote=bool(row[4]),
+                        short_description=row[5],
+                        field=row[6],
+                        experience=row[7],
+                        skills=row[8],
+                        country=row[9],
+                        city=row[10],
+                        company=row[11],
+                        portal="test_portal",
+                        location_strict=bool(row[12]),
+                        score=float(row[13])
+                    )
+                    for row in results
+                ]
+
+                return job_matches
+
+
+            params = [cv_embedding, cv_embedding, cv_embedding]  # embeddings
+
+            if location and location.city:
+                location_score_sql = f"""
+                    CASE 
+                        WHEN l.city = %s THEN 1.0
+                        ELSE 0.0
+                    END
+                """
+                params.append(location.city)
+            else:
+                location_score_sql = "1.0"
+
+            embeddings_params = params + count_params + [limit]
+
+            query = SQL(f"""
+                WITH combined_scores AS (
+                    SELECT
+                        j.title,
+                        j.description,
+                        j.id,
+                        j.workplace_type,
+                        j.is_remote,
+                        j.short_description,
+                        j.field,
+                        j.experience,
+                        j.skills_required,
+                        co.country_name,
+                        l.city,
+                        c.company_name,
+                        embedding <-> %s::vector as l2_distance,
+                        embedding <=> %s::vector as cosine_distance,
+                        -(embedding <#> %s::vector) as inner_product,
+                        {location_score_sql} as location_strict
+                    FROM "Jobs" j
+                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    LEFT JOIN "Countries" co ON l.country = co.country_id
+                    {where_sql}
+                ),
+                normalized_scores AS (
+                    SELECT 
+                        title,
+                        description,
+                        id,
+                        workplace_type,
+                        is_remote,
+                        short_description,
+                        field,
+                        experience,
+                        skills_required,
+                        country_name,
+                        city,
+                        company_name,
+                        location_strict,
+                        (
+                            (1 - (l2_distance - MIN(l2_distance) OVER()) / 
+                            NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
+                        + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
+                            NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.4
+                        + (
+                            (inner_product - MIN(inner_product) OVER()) / 
+                            NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
+                            ) * 0.2
+                        ) as combined_score
+                    FROM combined_scores
+                )
                 SELECT 
                     title,
                     description,
-                    job_id,
+                    id,
+                    workplace_type,
+                    is_remote,
+                    short_description,
+                    field,
+                    experience,
+                    skills_required,
+                    country_name,
+                    city,
                     company_name,
-                    (1 - (l2_distance - MIN(l2_distance) OVER()) / 
-                        NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4 +
-                    (1 - (cosine_distance - MIN(cosine_distance) OVER()) / 
-                        NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.4 +
-                    (inner_product - MIN(inner_product) OVER()) / 
-                        NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0) * 0.2 
-                    as combined_score
-                FROM combined_scores
-            )
-            SELECT 
-                title,
-                description,
-                job_id,
-                company_name,
-                combined_score
-            FROM normalized_scores
-            ORDER BY combined_score DESC
-            LIMIT %s;
+                    location_strict,
+                    combined_score
+                FROM normalized_scores
+                ORDER BY location_strict DESC, combined_score DESC
+                LIMIT %s;
             """)
 
-            cursor.execute(
-                query, (cv_embedding, cv_embedding, cv_embedding, limit))
+            cursor.execute(query, embeddings_params)
+            results = cursor.fetchall()
+
+            job_matches = [
+                JobMatch(
+                    id=str(row[2]),
+                    job_id=str(row[2]),
+                    title=row[0],
+                    description=row[1],
+                    workplace=row[3],
+                    is_remote=bool(row[4]),
+                    short_description=row[5],
+                    field=row[6],
+                    experience=row[7],
+                    skills=row[8],
+                    country=row[9],
+                    city=row[10],
+                    company=row[11],
+                    portal="test_portal",
+                    location_strict=bool(row[12]),
+                    score=float(row[13])
+                )
+                for row in results
+            ]
+
+            return job_matches
+
+        except psycopg.Error as e:
+            # Handle/log error as you normally do
+            context = get_logger_context(
+                action="get_top_jobs",
+                status="error",
+                error=str(e)
+            )
+            logger.error("Database query failed", context)
+            raise
+
+    # HARD EXPERIMENTAL by Ale
+    '''def get_top_jobs_with_advanced_location(
+        self,
+        cursor: psycopg.Cursor[Row],
+        cv_embedding: List[float],
+        user_location: Optional[Tuple[float, float, str]] = None,  # (lat, lng, city)
+        keywords: Optional[List[str]] = None,
+        radius_km: float = 50.0,
+        limit: int = 50
+    ) -> List[JobMatch]:
+        """
+        EXPERIMENTAL: Get top matching jobs using advanced location handling.
+        
+        This implementation assumes the following schema changes:
+        - Locations table has columns: city, state, country, latitude, longitude, is_remote, metro_area
+        - PostGIS extension is installed
+        
+        Args:
+            cursor: Database cursor for executing queries
+            cv_embedding: The embedding vector of the CV
+            user_location: Optional tuple of (latitude, longitude, city)
+            keywords: Optional keywords for filtering
+            radius_km: Search radius in kilometers
+            limit: Maximum number of results to return
+
+        Returns:
+            List of JobMatch objects
+        """
+        try:
+            where_clauses = []
+            params = [cv_embedding, cv_embedding, cv_embedding]
+
+            # Advanced location handling
+            if user_location:
+                lat, lng, city = user_location
+                location_score_sql = f"""
+                    CASE 
+                        WHEN l.is_remote THEN 1.0
+                        WHEN l.city = %s THEN 1.0
+                        WHEN l.metro_area = (SELECT metro_area FROM "Locations" WHERE city = %s LIMIT 1) THEN 0.9
+                        ELSE GREATEST(
+                            0.1,
+                            1 - (
+                                ST_Distance(
+                                    ST_MakePoint(l.longitude, l.latitude)::geography,
+                                    ST_MakePoint(%s, %s)::geography
+                                ) / (%s * 1000)  -- Convert km to meters
+                            )
+                        )
+                    END * 0.2  -- Location weight in final score
+                """
+                params.extend([city, city, lng, lat, radius_km])
+                
+                # Location filter - include remote jobs or jobs within radius
+                where_clauses.append("""
+                    (
+                        l.is_remote = true 
+                        OR ST_DWithin(
+                            ST_MakePoint(l.longitude, l.latitude)::geography,
+                            ST_MakePoint(%s, %s)::geography,
+                            %s * 1000
+                        )
+                    )
+                """)
+                params.extend([lng, lat, radius_km])
+
+            # Keywords handling (same as original)
+            if keywords and len(keywords) > 0:
+                or_clauses = []
+                for kw in keywords:
+                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
+                    params.extend([f"%{kw}%", f"%{kw}%"])
+                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
+
+            where_sql = ""
+            if where_clauses:
+                where_sql = "WHERE " + " AND ".join(where_clauses)
+
+            # Modified query to include location score
+            location_score = location_score_sql if user_location else "1.0 * 0.2"
+            
+            query = SQL(f"""
+                WITH combined_scores AS (
+                    SELECT
+                        j.title, 
+                        j.description,
+                        j.id,
+                        j.company_id,
+                        c.company_name,
+                        embedding <-> %s::vector as l2_distance,
+                        embedding <=> %s::vector as cosine_distance,
+                        -(embedding <#> %s::vector) as inner_product,
+                        {location_score} as location_score
+                    FROM "Jobs" j
+                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
+                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
+                    {where_sql}
+                ),
+                normalized_scores AS (
+                    SELECT 
+                        title,
+                        description,
+                        id,
+                        company_name,
+                        (
+                            (1 - (l2_distance - MIN(l2_distance) OVER()) / 
+                              NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.3
+                          + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
+                              NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.3
+                          + (
+                              (inner_product - MIN(inner_product) OVER()) / 
+                              NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
+                            ) * 0.2
+                          + location_score
+                        ) as combined_score
+                    FROM combined_scores
+                )
+                SELECT 
+                    title,
+                    description,
+                    id as job_id,
+                    company_name,
+                    combined_score
+                FROM normalized_scores
+                ORDER BY combined_score DESC
+                LIMIT %s;
+            """)
+
+            params.append(limit)
+            cursor.execute(query, params)
             results = cursor.fetchall()
 
             job_matches = [
@@ -120,40 +443,95 @@ class JobMatcher:
                     description=row[1],
                     company=row[3],
                     portal="test_portal",
+                    location_strict=True,
                     score=float(row[4])
                 )
                 for row in results
             ]
 
-            context = get_logger_context(
-                action="get_top_jobs",
-                status="success",
-                matches_found=len(job_matches)
-            )
-            logger.info("Successfully retrieved matching jobs", context)
             return job_matches
 
         except psycopg.Error as e:
             context = get_logger_context(
-                action="get_top_jobs",
+                action="get_top_jobs_advanced",
                 status="error",
                 error=str(e)
             )
-            logger.error("Database query failed", context)
+            logger.error("Advanced location query failed", context)
+            raise'''
+
+    async def save_matches(
+        self,
+        job_results: dict,
+        resume_id: str,
+        save_to_mongodb: bool = False
+    ) -> None:
+        """
+        Save job matches to JSON file and optionally to MongoDB.
+        
+        Args:
+            job_results: Dictionary containing matched jobs
+            resume_id: ID of the resume used for matching
+            save_to_mongodb: Whether to save to MongoDB (default: False)
+        """
+        try:
+            # Save to JSON
+            filename = f"job_matches_{resume_id}.json"
+            with open(filename, 'w') as f:
+                json.dump(job_results, f, indent=2)
+            
+            context = get_logger_context(
+                action="save_matches",
+                status="success",
+                file=filename
+            )
+            logger.info("Successfully saved matches to JSON", context)
+            
+            # Save to MongoDB if flag is True
+            if save_to_mongodb:
+                from app.core.mongodb import database
+                matches_collection = database.get_collection("job_matches")
+                
+                # Add metadata to job results
+                job_results["resume_id"] = resume_id
+                job_results["timestamp"] = datetime.datetime.utcnow()
+                
+                await matches_collection.insert_one(job_results)
+                
+                context = get_logger_context(
+                    action="save_matches",
+                    status="success",
+                    destination="mongodb"
+                )
+                logger.info("Successfully saved matches to MongoDB", context)
+                
+        except Exception as e:
+            context = get_logger_context(
+                action="save_matches",
+                status="error",
+                error=str(e)
+            )
+            logger.error("Failed to save matches", context)
             raise
 
-    async def process_job(self, resume: dict) -> dict[str, list[dict[str, str | float]]]:
+    async def process_job(
+        self,
+        resume: dict,
+        location: Optional[LocationFilter] = None,
+        keywords: Optional[List[str]] = None,
+        save_to_mongodb: bool = False
+    ) -> dict[str, list[dict[str, str | float | bool]]]:
         """
         Process a CV and find matching jobs.
 
         Args:
-                resume: The resume text to process
+            resume: The resume data, including 'vector'
+            location: Optional. Filter by job location
+            keywords: Optional. Filter by job title/description that contains 
+                      any of these keywords
 
         Returns:
-                Optional list of dictionaries containing job details if successful
-
-        Raises:
-                Exception: If any step in the processing pipeline fails
+            A dict with a "jobs" list containing matched job info
         """
         try:
             context = get_logger_context(
@@ -163,29 +541,49 @@ class JobMatcher:
             logger.info("Starting job processing", context)
 
             cv_embedding = resume["vector"]
+
             with self.conn.cursor() as cursor:
                 job_matches = self.get_top_jobs_by_multiple_metrics(
-                    cursor, cv_embedding)
+                    cursor,
+                    cv_embedding,
+                    location=location,
+                    keywords=keywords
+                )
 
                 job_results = {
-                    "jobs":
-                    [
-                        {"id": str(match.id),
+                    "jobs": [
+                        {
+                            "id": str(match.id),
                             "job_id": str(match.job_id),
                             "description": match.description,
+                            "workplace_type": match.workplace,
+                            "is_remote": match.is_remote,
+                            "short_description": match.short_description,
+                            "field": match.field,
+                            "experience": match.experience,
+                            "skills_required": match.skills,
+                            "country": match.country,
+                            "city": match.city,
                             "company": match.company,
                             "portal": match.portal,
-                            "title": match.title
-                         }
+                            "location_strict": match.location_strict,
+                            "title": match.title,
+                            "score": match.score
+                        }
                         for match in job_matches
                     ]
                 }
 
+                # Save matches to JSON and optionally MongoDB
+                resume_id = str(resume.get("_id", "unknown"))
+                await self.save_matches(job_results, resume_id, save_to_mongodb)
+
                 context = get_logger_context(
                     action="process_job",
                     status="success",
-                    matches_found=len(job_results)
+                    matches_found=len(job_results["jobs"])
                 )
+                
                 logger.success("Successfully processed job", context)
                 return job_results
 
@@ -197,7 +595,3 @@ class JobMatcher:
             )
             logger.error(f"Failed to process job: {e}", context)
             raise
-
-
-settings = Settings()
-job_matcher = JobMatcher(settings)

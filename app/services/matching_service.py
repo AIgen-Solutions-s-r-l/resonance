@@ -9,6 +9,8 @@ from pymongo import ReturnDocument
 from app.core.logging_config import get_logger_context
 import loguru
 
+from app.schemas.location import LocationFilter
+
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
 
@@ -48,10 +50,22 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
         return {"error": f"Error retrieving resume: {str(e)}"}
 
 
-async def match_jobs_with_resume(resume, settings) -> List[Job]:
+async def match_jobs_with_resume(
+    resume: Dict[str, Any],
+    settings: Settings,
+    location: Optional[LocationFilter] = None,
+    keywords: Optional[List[str]] = None,
+    save_to_mongodb: bool = False
+) -> List[Job]:
     try:
         matcher = JobMatcher(settings)
-        matched_jobs = await matcher.process_job(resume)
+        
+        matched_jobs = await matcher.process_job(
+            resume,
+            location=location,
+            keywords=keywords,
+            save_to_mongodb=save_to_mongodb
+        )
         return matched_jobs
     except Exception as e:
         raise Exception("Failed to match jobs with resume.") from e

@@ -8,6 +8,7 @@ class JobSchema(BaseModel):
     job_id: str
     title: str
     is_remote: Optional[bool] = None
+    location_strict: Optional[bool] = None
     workplace_type: Optional[str] = None
     posted_date: Optional[datetime] = None
     job_state: Optional[str] = None
@@ -15,6 +16,8 @@ class JobSchema(BaseModel):
     apply_link: Optional[str] = None
     company: Optional[str] = None
     location: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
     portal: Optional[str] = None
     company_id: Optional[int] = None
     location_id: Optional[int] = None

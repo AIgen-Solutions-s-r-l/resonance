@@ -116,6 +116,13 @@ curl -X GET http://localhost:9006/jobs/match \
 -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
+**With optional parameters**:
+```bash
+curl -X GET "http://localhost:9006/jobs/match?location=Berlin&keywords=python&keywords=fastapi" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
 **Response Example**:
 ```json
 [

@@ -24,6 +24,7 @@ class Location(Base):
     def __str__(self):
         return f"Location(id={self.location_id}, location='{self.location}')"
 
+
 class Job(Base):
     __tablename__ = 'Jobs'
     job_id = Column(Integer, primary_key=True, autoincrement=True)

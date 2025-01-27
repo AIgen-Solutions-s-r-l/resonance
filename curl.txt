@@ -1,6 +1,7 @@
 curl -X POST https://auth.neuraltrading.group/auth/login -H "Content-Type: application/json" -d '{"username": "johndoe", "password": "securepassword"}'
 
+curl -X GET "http://localhost:9006/jobs/match" -H "accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzM3OTExNzU2fQ.NVPnfdH4TYHceB-JrTsnZJ_bmeM1ZPFbFt3Ph-5V8VI"
 
-
-
-curl -X GET "http://localhost:9006/jobs/match" -H "accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzMzNTA5MDA1fQ.p1LAffYlQM0RcBsaHO8ujdqoTSXGPQKgotAqbG032ew"
+curl -X GET "http://localhost:8010/jobs/match?country=Germany&city=Berlin&keywords=python" \
+  -H "accept: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwiaWQiOjQsImlzX2FkbWluIjpmYWxzZSwiZXhwIjoxNzM3OTEzMTMwfQ.0Y2oLSwKMI1iiR0PTND3DTE0AAI8P4URq24_D9wJSXY"
