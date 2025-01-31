@@ -76,3 +76,6 @@ async def root() -> Dict[str, str]:
     context = get_logger_context(action="health_check")
     logger.info("Health check requested", context)
     return {"message": "Matching Service is running!"}
+
+from app.routers.healthcheck_router import router as healthcheck_router
+app.include_router(healthcheck_router)
