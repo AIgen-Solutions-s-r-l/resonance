@@ -42,6 +42,7 @@ async def get_matched_jobs(
         None, 
         description="Filter jobs containing any of these keywords in the title or description"
     ),
+    offset: Optional[int] = Query(0, description="Get further jobs"),
     current_user: Any = Depends(get_current_user),
 ):
     """
@@ -78,7 +79,8 @@ async def get_matched_jobs(
             resume, 
             settings, 
             location=locationFilter, 
-            keywords=keywords
+            keywords=keywords,
+            offset = offset if offset is not None else 0
         )
 
         if isinstance(matched_jobs, list):

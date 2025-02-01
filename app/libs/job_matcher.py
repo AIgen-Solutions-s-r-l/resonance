@@ -66,18 +66,16 @@ class JobMatcher:
         cv_embedding: List[float],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        offset: int = 0,
         limit: int = 50
     ) -> List[JobMatch]:
         """
         Get top matching jobs using multiple similarity metrics.
-
-        This implementation assumes the following schema changes:
-        - Locations table has columns: city, country (country is FK to table Countries and has column NAME)
         
         Args:
             cursor: Database cursor for executing queries
             cv_embedding: The embedding vector of the CV
-            location: Optional. Filter by job location if provided (Country, City)
+            location: Optional. Filter by job location if provided
             keywords: Optional. Filter by presence of ANY of the given keywords 
                       in the job title or description
             limit: Maximum number of results to return
@@ -97,21 +95,21 @@ class JobMatcher:
                 count_params.append(location.country)
 
             if location and location.city:
-                where_clauses.append("(l.city = %s OR j.is_remote)")
+                where_clauses.append("(l.city = %s OR l.city = 'remote')")
                 count_params.append(location.city)
 
-            if location and location.latitude and location.longitude:
+            if location and location.latitude and location.longitude and location.radius_km:
                 where_clauses.append("""
                     (
-                        l.is_remote = true 
+                        l.city = 'remote'
                         OR ST_DWithin(
-                            ST_MakePoint(l.longitude, l.latitude)::geography,
+                            ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
                             ST_MakePoint(%s, %s)::geography,
                             %s * 1000
                         )
                     )
                 """)
-                params.extend([lng, lat, radius_km])
+                count_params.extend([location.longitude, location.latitude, location.radius_km])
 
             # Keywords filter (title or description must contain ANY of the keywords)
             if keywords and len(keywords) > 0:
@@ -145,7 +143,11 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        j.is_remote,
+                        CASE 
+                            WHEN l.city = 'remote' 
+                            THEN TRUE 
+                            ELSE FALSE END 
+                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -190,7 +192,7 @@ class JobMatcher:
 
             params = [cv_embedding, cv_embedding, cv_embedding]  # embeddings
 
-            embeddings_params = params + count_params + [limit]
+            embeddings_params = params + count_params + [limit, offset]
 
             query = SQL(f"""
                 WITH combined_scores AS (
@@ -199,7 +201,11 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        j.is_remote,
+                        CASE 
+                            WHEN l.city = 'remote' 
+                            THEN TRUE 
+                            ELSE FALSE END 
+                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -209,7 +215,7 @@ class JobMatcher:
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
                         embedding <=> %s::vector as cosine_distance,
-                        -(embedding <#> %s::vector) as inner_product,
+                        -(embedding <#> %s::vector) as inner_product
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
                     LEFT JOIN "Locations" l ON j.location_id = l.location_id
@@ -258,7 +264,8 @@ class JobMatcher:
                     combined_score
                 FROM normalized_scores
                 ORDER BY combined_score DESC
-                LIMIT %s;
+                LIMIT %s
+                OFFSET %s
             """)
 
             cursor.execute(query, embeddings_params)
@@ -357,7 +364,8 @@ class JobMatcher:
         resume: dict,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
-        save_to_mongodb: bool = False
+        save_to_mongodb: bool = False,
+        offset: int = 0
     ) -> dict[str, list[dict[str, str | float | bool]]]:
         """
         Process a CV and find matching jobs.
@@ -385,7 +393,8 @@ class JobMatcher:
                     cursor,
                     cv_embedding,
                     location=location,
-                    keywords=keywords
+                    keywords=keywords,
+                    offset=offset
                 )
 
                 job_results = {

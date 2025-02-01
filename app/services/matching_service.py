@@ -55,7 +55,8 @@ async def match_jobs_with_resume(
     settings: Settings,
     location: Optional[LocationFilter] = None,
     keywords: Optional[List[str]] = None,
-    save_to_mongodb: bool = False
+    save_to_mongodb: bool = False,
+    offset: int = 0
 ) -> List[Job]:
     try:
         matcher = JobMatcher(settings)
@@ -64,7 +65,8 @@ async def match_jobs_with_resume(
             resume,
             location=location,
             keywords=keywords,
-            save_to_mongodb=save_to_mongodb
+            save_to_mongodb=save_to_mongodb,
+            offset=offset
         )
         return matched_jobs
     except Exception as e:
