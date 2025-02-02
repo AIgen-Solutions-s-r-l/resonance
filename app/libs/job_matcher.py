@@ -31,7 +31,6 @@ class JobMatch:
     company: str
     portal: str
     company: str
-    location_strict: bool
     score: float
 
 
@@ -67,18 +66,16 @@ class JobMatcher:
         cv_embedding: List[float],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        offset: int = 0,
         limit: int = 50
     ) -> List[JobMatch]:
         """
         Get top matching jobs using multiple similarity metrics.
-
-        This implementation assumes the following schema changes:
-        - Locations table has columns: city, country (country is FK to table Countries and has column NAME)
         
         Args:
             cursor: Database cursor for executing queries
             cv_embedding: The embedding vector of the CV
-            location: Optional. Filter by job location if provided (Country, City)
+            location: Optional. Filter by job location if provided
             keywords: Optional. Filter by presence of ANY of the given keywords 
                       in the job title or description
             limit: Maximum number of results to return
@@ -94,12 +91,25 @@ class JobMatcher:
 
             # Location filter (hard filter by country, or is_remote)
             if location and location.country:
-                where_clauses.append("(co.country_name ILIKE %s OR j.is_remote)")
+                where_clauses.append("(co.country_name = %s)")
                 count_params.append(location.country)
 
-            #if location and location.city:
-                #where_clauses.append("(l.city = %s)")
-                #count_params.append(location.city)
+            if location and location.city:
+                where_clauses.append("(l.city = %s OR l.city = 'remote')")
+                count_params.append(location.city)
+
+            if location and location.latitude and location.longitude and location.radius_km:
+                where_clauses.append("""
+                    (
+                        l.city = 'remote'
+                        OR ST_DWithin(
+                            ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
+                            ST_MakePoint(%s, %s)::geography,
+                            %s * 1000
+                        )
+                    )
+                """)
+                count_params.extend([location.longitude, location.latitude, location.radius_km])
 
             # Keywords filter (title or description must contain ANY of the keywords)
             if keywords and len(keywords) > 0:
@@ -133,7 +143,11 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        j.is_remote,
+                        CASE 
+                            WHEN l.city = 'remote' 
+                            THEN TRUE 
+                            ELSE FALSE END 
+                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -141,7 +155,6 @@ class JobMatcher:
                         co.country_name,
                         l.city,
                         c.company_name,
-                        FALSE AS location_strict,
                         1.0 AS combined_score
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
@@ -170,29 +183,16 @@ class JobMatcher:
                         city=row[10],
                         company=row[11],
                         portal="test_portal",
-                        location_strict=bool(row[12]),
-                        score=float(row[13])
+                        score=float(row[12])
                     )
                     for row in results
                 ]
 
                 return job_matches
 
-
             params = [cv_embedding, cv_embedding, cv_embedding]  # embeddings
 
-            if location and location.city:
-                location_score_sql = f"""
-                    CASE 
-                        WHEN l.city = %s THEN 1.0
-                        ELSE 0.0
-                    END
-                """
-                params.append(location.city)
-            else:
-                location_score_sql = "1.0"
-
-            embeddings_params = params + count_params + [limit]
+            embeddings_params = params + count_params + [limit, offset]
 
             query = SQL(f"""
                 WITH combined_scores AS (
@@ -201,7 +201,11 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        j.is_remote,
+                        CASE 
+                            WHEN l.city = 'remote' 
+                            THEN TRUE 
+                            ELSE FALSE END 
+                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -211,8 +215,7 @@ class JobMatcher:
                         c.company_name,
                         embedding <-> %s::vector as l2_distance,
                         embedding <=> %s::vector as cosine_distance,
-                        -(embedding <#> %s::vector) as inner_product,
-                        {location_score_sql} as location_strict
+                        -(embedding <#> %s::vector) as inner_product
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
                     LEFT JOIN "Locations" l ON j.location_id = l.location_id
@@ -233,7 +236,6 @@ class JobMatcher:
                         country_name,
                         city,
                         company_name,
-                        location_strict,
                         (
                             (1 - (l2_distance - MIN(l2_distance) OVER()) / 
                             NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
@@ -259,11 +261,11 @@ class JobMatcher:
                     country_name,
                     city,
                     company_name,
-                    location_strict,
                     combined_score
                 FROM normalized_scores
-                ORDER BY location_strict DESC, combined_score DESC
-                LIMIT %s;
+                ORDER BY combined_score DESC
+                LIMIT %s
+                OFFSET %s
             """)
 
             cursor.execute(query, embeddings_params)
@@ -285,8 +287,7 @@ class JobMatcher:
                     city=row[10],
                     company=row[11],
                     portal="test_portal",
-                    location_strict=bool(row[12]),
-                    score=float(row[13])
+                    score=float(row[12]) if row[12] != None else 0.0
                 )
                 for row in results
             ]
@@ -303,162 +304,6 @@ class JobMatcher:
             logger.error("Database query failed", context)
             raise
 
-    # HARD EXPERIMENTAL by Ale
-    '''def get_top_jobs_with_advanced_location(
-        self,
-        cursor: psycopg.Cursor[Row],
-        cv_embedding: List[float],
-        user_location: Optional[Tuple[float, float, str]] = None,  # (lat, lng, city)
-        keywords: Optional[List[str]] = None,
-        radius_km: float = 50.0,
-        limit: int = 50
-    ) -> List[JobMatch]:
-        """
-        EXPERIMENTAL: Get top matching jobs using advanced location handling.
-        
-        This implementation assumes the following schema changes:
-        - Locations table has columns: city, state, country, latitude, longitude, is_remote, metro_area
-        - PostGIS extension is installed
-        
-        Args:
-            cursor: Database cursor for executing queries
-            cv_embedding: The embedding vector of the CV
-            user_location: Optional tuple of (latitude, longitude, city)
-            keywords: Optional keywords for filtering
-            radius_km: Search radius in kilometers
-            limit: Maximum number of results to return
-
-        Returns:
-            List of JobMatch objects
-        """
-        try:
-            where_clauses = []
-            params = [cv_embedding, cv_embedding, cv_embedding]
-
-            # Advanced location handling
-            if user_location:
-                lat, lng, city = user_location
-                location_score_sql = f"""
-                    CASE 
-                        WHEN l.is_remote THEN 1.0
-                        WHEN l.city = %s THEN 1.0
-                        WHEN l.metro_area = (SELECT metro_area FROM "Locations" WHERE city = %s LIMIT 1) THEN 0.9
-                        ELSE GREATEST(
-                            0.1,
-                            1 - (
-                                ST_Distance(
-                                    ST_MakePoint(l.longitude, l.latitude)::geography,
-                                    ST_MakePoint(%s, %s)::geography
-                                ) / (%s * 1000)  -- Convert km to meters
-                            )
-                        )
-                    END * 0.2  -- Location weight in final score
-                """
-                params.extend([city, city, lng, lat, radius_km])
-                
-                # Location filter - include remote jobs or jobs within radius
-                where_clauses.append("""
-                    (
-                        l.is_remote = true 
-                        OR ST_DWithin(
-                            ST_MakePoint(l.longitude, l.latitude)::geography,
-                            ST_MakePoint(%s, %s)::geography,
-                            %s * 1000
-                        )
-                    )
-                """)
-                params.extend([lng, lat, radius_km])
-
-            # Keywords handling (same as original)
-            if keywords and len(keywords) > 0:
-                or_clauses = []
-                for kw in keywords:
-                    or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
-                    params.extend([f"%{kw}%", f"%{kw}%"])
-                where_clauses.append("(" + " OR ".join(or_clauses) + ")")
-
-            where_sql = ""
-            if where_clauses:
-                where_sql = "WHERE " + " AND ".join(where_clauses)
-
-            # Modified query to include location score
-            location_score = location_score_sql if user_location else "1.0 * 0.2"
-            
-            query = SQL(f"""
-                WITH combined_scores AS (
-                    SELECT
-                        j.title, 
-                        j.description,
-                        j.id,
-                        j.company_id,
-                        c.company_name,
-                        embedding <-> %s::vector as l2_distance,
-                        embedding <=> %s::vector as cosine_distance,
-                        -(embedding <#> %s::vector) as inner_product,
-                        {location_score} as location_score
-                    FROM "Jobs" j
-                    LEFT JOIN "Companies" c ON j.company_id = c.company_id
-                    LEFT JOIN "Locations" l ON j.location_id = l.location_id
-                    {where_sql}
-                ),
-                normalized_scores AS (
-                    SELECT 
-                        title,
-                        description,
-                        id,
-                        company_name,
-                        (
-                            (1 - (l2_distance - MIN(l2_distance) OVER()) / 
-                              NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.3
-                          + (1 - (cosine_distance - MIN(cosine_distance) OVER()) /
-                              NULLIF(MAX(cosine_distance) OVER() - MIN(cosine_distance) OVER(), 0)) * 0.3
-                          + (
-                              (inner_product - MIN(inner_product) OVER()) / 
-                              NULLIF(MAX(inner_product) OVER() - MIN(inner_product) OVER(), 0)
-                            ) * 0.2
-                          + location_score
-                        ) as combined_score
-                    FROM combined_scores
-                )
-                SELECT 
-                    title,
-                    description,
-                    id as job_id,
-                    company_name,
-                    combined_score
-                FROM normalized_scores
-                ORDER BY combined_score DESC
-                LIMIT %s;
-            """)
-
-            params.append(limit)
-            cursor.execute(query, params)
-            results = cursor.fetchall()
-
-            job_matches = [
-                JobMatch(
-                    id=str(row[2]),
-                    job_id=str(row[2]),
-                    title=row[0],
-                    description=row[1],
-                    company=row[3],
-                    portal="test_portal",
-                    location_strict=True,
-                    score=float(row[4])
-                )
-                for row in results
-            ]
-
-            return job_matches
-
-        except psycopg.Error as e:
-            context = get_logger_context(
-                action="get_top_jobs_advanced",
-                status="error",
-                error=str(e)
-            )
-            logger.error("Advanced location query failed", context)
-            raise'''
 
     async def save_matches(
         self,
@@ -519,7 +364,8 @@ class JobMatcher:
         resume: dict,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
-        save_to_mongodb: bool = False
+        save_to_mongodb: bool = False,
+        offset: int = 0
     ) -> dict[str, list[dict[str, str | float | bool]]]:
         """
         Process a CV and find matching jobs.
@@ -547,7 +393,8 @@ class JobMatcher:
                     cursor,
                     cv_embedding,
                     location=location,
-                    keywords=keywords
+                    keywords=keywords,
+                    offset=offset
                 )
 
                 job_results = {
@@ -566,7 +413,6 @@ class JobMatcher:
                             "city": match.city,
                             "company": match.company,
                             "portal": match.portal,
-                            "location_strict": match.location_strict,
                             "title": match.title,
                             "score": match.score
                         }
