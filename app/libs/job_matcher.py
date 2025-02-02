@@ -287,7 +287,7 @@ class JobMatcher:
                     city=row[10],
                     company=row[11],
                     portal="test_portal",
-                    score=float(row[12])
+                    score=float(row[12]) if row[12] != None else 0.0
                 )
                 for row in results
             ]
