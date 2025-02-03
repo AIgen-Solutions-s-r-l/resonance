@@ -386,6 +386,9 @@ class JobMatcher:
             )
             logger.info("Starting job processing", context)
 
+            if not "vector" in resume.keys():
+                return {}
+
             cv_embedding = resume["vector"]
 
             with self.conn.cursor() as cursor:
