@@ -118,9 +118,17 @@ curl -X GET http://localhost:9006/jobs/match \
 
 **With optional parameters**:
 ```bash
-curl -X GET "http://localhost:9006/jobs/match?location=Berlin&keywords=python&keywords=fastapi" \
+curl -X GET "http://localhost:9006/jobs/match?country=Germany&keywords=python&keywords=fastapi" \
   -H "accept: application/json" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+curl -X GET "http://localhost:9006/jobs/match?latitude=32.5&longitude=-96.1&radius_km=50.0" \
+-H "accept: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+curl -X GET "http://localhost:9006/jobs/match?offset=50" \
+-H "accept: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 ```
 
 **Response Example**:
