@@ -22,23 +22,14 @@ class Settings(BaseSettings):
 
     # MongoDB settings
     mongodb: str = os.getenv("MONGODB", "mongodb://localhost:27017")
-    mongodb_host: str = os.getenv("MONGODB_HOST", "localhost")
-    mongodb_port: int = int(os.getenv("MONGODB_PORT", 27017))
-    mongodb_username: str = os.getenv("MONGODB_USERNAME", "appUser")
-    mongodb_password: str = os.getenv("MONGODB_PASSWORD", "password123")
     mongodb_database: str = os.getenv("MONGODB_DATABASE", "resumes")
-    mongodb_auth_source: str = os.getenv("MONGODB_AUTH_SOURCE", "main_db")
-    
+
     # PostgreSQL settings
     db_name: str = os.getenv("DBNAME", "matching")
     db_user: str = os.getenv("DBUSER", "testuser")
     db_password: str = os.getenv("DBPASSWORD", "testpassword")
     db_host: str = os.getenv("DBHOST", "localhost")
     db_port: str = os.getenv("DBPORT", "5432")
-
-    @property
-    def mongodb_uri(self) -> str:
-        return f"mongodb://{self.mongodb_username}:{self.mongodb_password}@{self.mongodb_host}:{self.mongodb_port}/{self.mongodb_database}?authSource={self.mongodb_auth_source}"
 
     # RabbitMQ settings
     rabbitmq_url: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")

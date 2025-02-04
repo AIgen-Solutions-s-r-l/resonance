@@ -10,12 +10,12 @@ settings = Settings()
 try:
     logger.info("Initializing MongoDB connection", extra={
         "event_type": "mongodb_init",
-        "mongodb_host": settings.mongodb_host,
+        "mongodb_uri": settings.mongodb,
         "mongodb_database": settings.mongodb_database
     })
 
     client = AsyncIOMotorClient(
-        settings.mongodb_uri,
+        settings.mongodb,
         serverSelectionTimeoutMS=5000
     )
 
@@ -25,7 +25,7 @@ try:
     client.admin.command('ping')
     logger.info("MongoDB connection established", extra={
         "event_type": "mongodb_connected",
-        "host": settings.mongodb_host,
+        "mongodb_uri": settings.mongodb,
         "database": settings.mongodb_database
     })
 
