@@ -6,9 +6,32 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: |
+          # Disable Poetry’s virtualenv so that packages install in the runner’s Python
+          poetry config virtualenvs.create false
+          poetry install --no-root
+
+      - name: Run tests
+        run: pytest
+
+  build-and-push:
+    needs: test  # Only run build if tests pass
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
