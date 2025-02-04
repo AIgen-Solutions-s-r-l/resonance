@@ -85,7 +85,7 @@ class JobMatcher:
         """
         try:
 
-            where_clauses = []
+            where_clauses = ["embedding IS NOT NULL"]
             count_params = []  # used for the COUNT & simpler fallback
             # embeddings_params will be the same as count_params, but we'll add embeddings later
 
