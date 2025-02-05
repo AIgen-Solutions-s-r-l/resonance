@@ -1,0 +1,123 @@
+flowchart TD
+    %% PostgreSQL Database Tables
+    subgraph PostgreSQL["PostgreSQL Database"]
+        direction TB
+        Jobs["Jobs Table|
+            job_id: Integer PK|
+            title: String|
+            is_remote: Boolean|
+            workplace_type: String|
+            posted_date: DateTime|
+            job_state: String|
+            description: Text|
+            apply_link: String|
+            embedding: Vector|
+            company_id: Integer FK|
+            location_id: Integer FK"]
+        Companies["Companies Table|
+            company_id: Integer PK|
+            company_name: String"]
+        Locations["Locations Table|
+            location_id: Integer PK|
+            location: String"]
+    end
+
+    %% MongoDB Database
+    subgraph MongoDB["MongoDB Database"]
+        direction TB
+        ResumesCollection["Resumes Collection|
+            _id: ObjectId|
+            user_id: Integer|
+            version: String|
+            vector: Array<float>|
+            content: Object"]
+        JobMatchesCollection["Job Matches Collection|
+            _id: ObjectId|
+            resume_id: String|
+            timestamp: DateTime|
+            jobs: Array<Object>"]
+    end
+
+    %% Core Components
+    subgraph Core["Core Components"]
+        direction TB
+        Config["Config|
+            Settings Class|
+            service_name|
+            log_level|
+            database_url|
+            mongodb_url"]
+        DBManager["Database Manager|
+            AsyncSessionLocal|
+            get_db()"]
+        MongoManager["MongoDB Manager|
+            client: AsyncIOMotorClient|
+            database"]
+        Auth["Auth Manager|
+            security.py|
+            auth.py"]
+    end
+
+    %% Services Layer
+    subgraph Services["Services Layer"]
+        direction TB
+        MatchingService["MatchingService|
+            get_resume_by_user_id()|
+            match_jobs_with_resume()"]
+    end
+
+    %% Libraries
+    subgraph Libraries["Libraries"]
+        direction TB
+        JobMatcher["JobMatcher|
+            get_top_jobs_by_multiple_metrics()|
+            save_matches()|
+            process_job()"]
+        TextEmbedder["TextEmbedder|
+            embed_text()"]
+    end
+
+    %% API Routes
+    subgraph Routes["API Routes"]
+        direction TB
+        JobsRouter["JobsMatchedRouter|
+            GET /jobs/matched|
+            POST /jobs/match"]
+        HealthRouter["HealthcheckRouter|
+            GET /health|
+            GET /health/db|
+            GET /health/mongodb"]
+    end
+
+    %% Relationships
+    Jobs --> Companies
+    Jobs --> Locations
+    Companies --> Jobs
+    Locations --> Jobs
+
+    JobsRouter --> MatchingService
+    MatchingService --> JobMatcher
+    JobMatcher --> DBManager
+    JobMatcher --> MongoManager
+    JobMatcher --> TextEmbedder
+
+    HealthRouter --> DBManager
+    HealthRouter --> MongoManager
+
+    DBManager --> PostgreSQL
+    MongoManager --> MongoDB
+
+    %% Styling
+    classDef postgresql fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef mongodb fill:#9cf,stroke:#333,stroke-width:2px;
+    classDef service fill:#bfb,stroke:#333,stroke-width:1px;
+    classDef library fill:#fbf,stroke:#333,stroke-width:1px;
+    classDef core fill:#ffd,stroke:#333,stroke-width:1px;
+    classDef route fill:#dff,stroke:#333,stroke-width:1px;
+
+    class Jobs,Companies,Locations postgresql;
+    class ResumesCollection,JobMatchesCollection mongodb;
+    class MatchingService service;
+    class JobMatcher,TextEmbedder library;
+    class Config,DBManager,MongoManager,Auth core;
+    class JobsRouter,HealthRouter route;
