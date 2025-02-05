@@ -21,5 +21,5 @@ async def test_get_resume_by_user_id(monkeypatch):
     result = await get_resume_by_user_id(123)
 
     assert "fake_field" in result.keys(), f"unexpectedly, result was {result}"
-    assert result["fake_field"] == "fake_value", f"expected 'fake_field' to be 'fake_value', got '{result.keys["fake_field"]}' instead"
+    assert result["fake_field"] == "fake_value", f"expected 'fake_field' to be 'fake_value', got '{result['fake_field']}' instead"
 
