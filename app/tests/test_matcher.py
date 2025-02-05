@@ -1,118 +1,138 @@
-import psycopg
+import random
 import pytest
+import builtins
 from unittest.mock import AsyncMock, MagicMock, patch
-from app.main import process_resume_callback
-from app.libs.job_matcher import process_job
-import json
+from app.libs.job_matcher import JobMatcher, JobMatch
+from app.core.config import Settings
+from app.schemas.location import LocationFilter
 
-# Test: Process Resume Callback - Success Case
-@pytest.mark.asyncio
-async def test_process_resume_callback_success():
-    resume_data = {"user_id": "123", "experience": "Python Developer"}
-    matched_jobs = ["Job Description 1", "Job Description 2"]
+@pytest.fixture
+def mock_settings():
+    return Settings()
 
-    with patch("app.main.rabbitmq_client.send_message", new_callable=AsyncMock) as mock_send_message, \
-         patch("app.services.document_finder.match_cv.process_job", return_value=matched_jobs):
-        
-        message = AsyncMock()
-        message.body.decode = MagicMock(return_value=json.dumps(resume_data))
 
-        await process_resume_callback(message)
+@pytest.fixture
+def job_matcher(monkeypatch, mock_settings):
+    mock_connect = MagicMock()
 
-        mock_send_message.assert_awaited_once_with(queue="job_to_apply_queue", message=matched_jobs)
+    # Patching psycopg.connect globally to return our mock connection
+    monkeypatch.setattr("psycopg.connect", mock_connect)
 
-# Test: Process Resume Callback - No Matches Found
-@pytest.mark.asyncio
-async def test_process_resume_callback_no_matches():
-    resume_data = {"user_id": "123", "experience": "Unknown Tech"}
+    return JobMatcher(mock_settings)
 
-    with patch("app.main.rabbitmq_client.send_message", new_callable=AsyncMock) as mock_send_message, \
-         patch("app.services.document_finder.match_cv.process_job", return_value=[]):
-        
-        message = AsyncMock()
-        message.body.decode = MagicMock(return_value=json.dumps(resume_data))
 
-        await process_resume_callback(message)
-
-        mock_send_message.assert_awaited_once_with(queue="job_to_apply_queue", message=[])
-
-# Test: Process Resume Callback - Invalid Message
-@pytest.mark.asyncio
-async def test_process_resume_callback_invalid_message():
-    invalid_message = AsyncMock()
-    invalid_message.body.decode = MagicMock(side_effect=ValueError("Invalid JSON"))
-
-    with patch("app.main.rabbitmq_client.send_message", new_callable=AsyncMock) as mock_send_message:
-        with pytest.raises(ValueError, match="Invalid JSON"):
-            await process_resume_callback(invalid_message)
-
-        mock_send_message.assert_not_called()
-
-# Test: Process Job - Database Error
-def test_process_job_database_error():
-    resume_data = {"user_id": "123", "experience": "Python Developer"}
-
-    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
-
-        # Mock a database connection error
-        mock_cursor.return_value.__enter__.side_effect = psycopg.ProgrammingError("cannot adapt type 'MagicMock' using placeholder '%s' (format: AUTO)")
-
-        # Verify the exception is raised with the correct message
-        with pytest.raises(psycopg.ProgrammingError, match="cannot adapt type 'MagicMock' using placeholder '%s'"):
-            process_job(json.dumps(resume_data))
-
-def test_process_job_success():
-    # Simplified input data
-    resume_data = {"user_id": "123", "experience": "Python Developer"}
+def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
     
-    # Database mock return values
-    db_results = [
-        ("Job Description 1", 0.1),
-        ("Job Description 2", 0.2),
+    mock_cursor = MagicMock()
+
+    mock_cursor.fetchone.return_value = [1]
+
+    mock_cursor.fetchall.return_value = [
+        ("Software Engineer", "Job description", "1", "office", False, "short desc",
+         "IT", "3 years", "Python, Django", "USA", "New York", "TechCorp", 1.0)
     ]
+
+    mock_embedding = [0.1, 0.2, 0.3]
+    job_matches = job_matcher.get_top_jobs_by_multiple_metrics(mock_cursor, mock_embedding)
+
+    assert len(job_matches) == 1
+    assert job_matches[0].title == "Software Engineer"
+    assert job_matches[0].score == 1.0
+
+
+def test_get_top_jobs_by_multiple_metrics_multiple_results(job_matcher):
+    mock_cursor = MagicMock()
+
+    mock_results = [ (f"Software Engineer {i}", f"Job description {i}", f"{i}", "office", False, "short desc",
+         "IT", "3 years", "Python, Django", "USA", "New York", "TechCorp", 1.0) for i in range(20) ]
+
+    mock_cursor.fetchone.return_value = [len(mock_results)]
+
+    mock_cursor.fetchall.return_value = mock_results
+
+    mock_embedding = [0.1, 0.2, 0.3]
+    job_matches = job_matcher.get_top_jobs_by_multiple_metrics(mock_cursor, mock_embedding)
+
+    assert len(job_matches) == len(mock_results)
+    assert job_matches[0].title == "Software Engineer 0"
+    assert job_matches[len(job_matches) - 1].title == f"Software Engineer {len(job_matches) - 1}"
+
+@pytest.mark.asyncio
+async def test_save_matches(monkeypatch, tmp_path, job_matcher):
+
+    mock_results = {"jobs": [{"id": "1", "title": "Software Engineer"}]}
+    resume_id = random.randint(0, 5000)
+
+    real_open = builtins.open
+    def mock_open(filename, mode='r', *args, **kwargs):
+        return real_open(tmp_path / filename, mode, *args, **kwargs)
     
-    # Expected output
-    expected_jobs = ["Job Description 1", "Job Description 2"]
+    monkeypatch.setattr("builtins.open", mock_open)
 
-    # Mock the database and embedding model
-    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
+    await job_matcher.save_matches(mock_results, resume_id, False)
 
-        # Mock embeddings
-        mock_embedding = [0.1] * 1536
-        MockEmbeddings.embed_documents.return_value = [mock_embedding]
+    file_path = tmp_path / f"job_matches_{resume_id}.json"
 
-        # Mock database behavior
-        mock_cursor.return_value.__enter__.return_value.fetchall.return_value = db_results
+    assert file_path.exists(), f"Expected file {file_path} was not created!"
 
-        # Call the function
-        jobs = process_job(json.dumps(resume_data))
 
-        # Enhanced assertion
-        assert jobs == expected_jobs, f"Expected {expected_jobs}, but got {jobs}"
+@pytest.mark.asyncio
+async def test_save_matches_also_on_mongo(monkeypatch, tmp_path, job_matcher):
 
-def test_process_job_no_matches():
-    # Simplified input data
-    resume_data = {"user_id": "123", "experience": "Unknown Tech"}
+    mock_results = {"jobs": [{"id": "1", "title": "Software Engineer"}]}
+    resume_id = random.randint(0, 5000)
 
-    # Simulate no matches in the database
-    db_results = []
-    expected_jobs = []
+    mock_collection = MagicMock()
+    mock_collection.insert_one = AsyncMock()
 
-    # Mock the database and embedding model
-    with patch("app.services.document_finder.match_cv.conn.cursor", MagicMock()) as mock_cursor, \
-         patch("app.services.document_finder.match_cv.embedding_model") as MockEmbeddings:
+    real_open = builtins.open
+    def mock_open(filename, mode='r', *args, **kwargs):
+        return real_open(tmp_path / filename, mode, *args, **kwargs)
+    
+    monkeypatch.setattr("builtins.open", mock_open)
 
-        # Mock embeddings
-        mock_embedding = [0.1] * 1536
-        MockEmbeddings.embed_documents.return_value = [mock_embedding]
+    monkeypatch.setattr("app.core.mongodb.database.get_collection", lambda _ : mock_collection)
 
-        # Mock database behavior to return no results
-        mock_cursor.return_value.__enter__.return_value.fetchall.return_value = db_results
+    await job_matcher.save_matches(mock_results, resume_id, True)
 
-        # Call the function
-        jobs = process_job(json.dumps(resume_data))
+    file_path = tmp_path / f"job_matches_{resume_id}.json"
 
-        # Enhanced assertion
-        assert jobs == expected_jobs, f"Expected {expected_jobs}, but got {jobs}"
+    assert file_path.exists(), f"Expected file {file_path} was not created!"
+    mock_collection.insert_one.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_process_job_without_embeddings(job_matcher):
+    resume = {"user_id": "123", "experience": "Python Developer"}
+
+    mock_cursor = MagicMock()
+    
+    job_matcher.conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    result = await job_matcher.process_job(resume)
+
+    assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_process_job_success(job_matcher):
+    resume = {"user_id": "123", "experience": "Python Developer", "vector": [0.1, 0.2, 0.3]}
+
+    mock_cursor = MagicMock()
+
+    mock_results = [ (f"Software Engineer {i}", f"Job description {i}", f"{i}", "office", False, "short desc",
+         "IT", "3 years", "Python, Django", "USA", "New York", "TechCorp", 1.0) for i in range(20) ]
+
+    mock_cursor.fetchone.return_value = [len(mock_results)]
+
+    mock_cursor.fetchall.return_value = mock_results
+    
+    job_matcher.conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    result = await job_matcher.process_job(resume)
+
+    assert type(result) == type({})
+    assert "jobs" in result.keys()
+    assert len(result["jobs"]) == len(mock_results)
+    assert result["jobs"][0]["title"] == "Software Engineer 0"
+

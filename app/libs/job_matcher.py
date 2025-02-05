@@ -85,7 +85,7 @@ class JobMatcher:
         """
         try:
 
-            where_clauses = []
+            where_clauses = ["embedding IS NOT NULL"]
             count_params = []  # used for the COUNT & simpler fallback
             # embeddings_params will be the same as count_params, but we'll add embeddings later
 
@@ -287,7 +287,7 @@ class JobMatcher:
                     city=row[10],
                     company=row[11],
                     portal="test_portal",
-                    score=float(row[12]) if row[12] != None else 0.0
+                    score=float(row[12])
                 )
                 for row in results
             ]
@@ -385,6 +385,9 @@ class JobMatcher:
                 status="started"
             )
             logger.info("Starting job processing", context)
+
+            if not "vector" in resume.keys():
+                return {}
 
             cv_embedding = resume["vector"]
 
