@@ -1,7 +1,5 @@
-import json
 from typing import Dict, Any, Optional
 from typing import List
-from app.models.job import Job
 from app.libs.job_matcher import JobMatcher
 from app.core.config import Settings
 from app.core.mongodb import collection_name
@@ -9,6 +7,7 @@ from pymongo import ReturnDocument
 from app.core.logging_config import get_logger_context
 import loguru
 
+from app.schemas.job import JobSchema
 from app.schemas.location import LocationFilter
 
 logger_context = get_logger_context()
@@ -57,7 +56,7 @@ async def match_jobs_with_resume(
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,
     offset: int = 0
-) -> List[Job]:
+) -> List[JobSchema]:
     try:
         matcher = JobMatcher(settings)
         
