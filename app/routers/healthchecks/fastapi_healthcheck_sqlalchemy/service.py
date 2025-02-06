@@ -4,7 +4,6 @@ from app.routers.healthchecks.fastapi_healthcheck.domain import HealthCheckInter
 from typing import List
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy import text
-from app.core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)

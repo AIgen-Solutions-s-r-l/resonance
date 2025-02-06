@@ -46,6 +46,8 @@ class Settings(BaseSettings):
 
     # OpenAI API key
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key")
+    llm_base_url: str = os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")
+    llm_model_name: str = os.getenv("LLM_MODEL_NAME", "openai/gpt-4o-mini")
     
     # Text Embedder
     text_embedder_model: str = "BAAI/bge-m3"
