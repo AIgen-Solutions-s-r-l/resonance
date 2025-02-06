@@ -109,6 +109,18 @@ Fetches the most recent job matches for the authenticated user.
 - `accept: application/json`
 - `Authorization: Bearer <JWT_TOKEN>`
 
+**Optional Query Parameters**
+
+- `keywords`: list of keywords that need to be in the job description or the job title
+- `country`: the country where the job is located, this filters out EVERY job which is in a different country (even remote ones)
+- `city`: the city where the job is located, this filters out EVERY job which is in a different city (BUT remote jobs remain allowed)
+- `offset`: the offset from the top match to start from (by default we limit to the top 50 results, thus to see the further ones this parameter is needed)
+
+Besides those, there are 3 optional parameters that, if present, specify a circle area where to limit the research for jobs. They are:
+- `latitude`: the latitude of the central point of the circle
+- `longitude`: the longitude of the central point of the circle
+- `radius_km`: the radius (in km) of the circle
+
 **Example cURL**:
 ```bash
 curl -X GET http://localhost:9006/jobs/match \

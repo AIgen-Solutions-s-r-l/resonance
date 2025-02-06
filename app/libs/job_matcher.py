@@ -21,7 +21,6 @@ class JobMatch:
     title: str
     description: str
     workplace: str
-    is_remote: bool
     short_description: str
     field: str
     experience: str
@@ -29,6 +28,7 @@ class JobMatch:
     country: str
     city: str
     company: str
+    logo: str
     portal: str
     company: str
     score: float
@@ -143,11 +143,6 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        CASE 
-                            WHEN l.city = 'remote' 
-                            THEN TRUE 
-                            ELSE FALSE END 
-                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -155,7 +150,8 @@ class JobMatcher:
                         co.country_name,
                         l.city,
                         c.company_name,
-                        1.0 AS combined_score
+                        c.logo,
+                        0.0 AS combined_score
                     FROM "Jobs" j
                     LEFT JOIN "Companies" c ON j.company_id = c.company_id
                     LEFT JOIN "Locations" l ON j.location_id = l.location_id
@@ -174,14 +170,14 @@ class JobMatcher:
                         title=row[0],
                         description=row[1],
                         workplace=row[3],
-                        is_remote=bool(row[4]),
-                        short_description=row[5],
-                        field=row[6],
-                        experience=row[7],
-                        skills=row[8],
-                        country=row[9],
-                        city=row[10],
-                        company=row[11],
+                        short_description=row[4],
+                        field=row[5],
+                        experience=row[6],
+                        skills=row[7],
+                        country=row[8],
+                        city=row[9],
+                        company=row[10],
+                        logo=row[11],
                         portal="test_portal",
                         score=float(row[12])
                     )
@@ -201,11 +197,6 @@ class JobMatcher:
                         j.description,
                         j.id,
                         j.workplace_type,
-                        CASE 
-                            WHEN l.city = 'remote' 
-                            THEN TRUE 
-                            ELSE FALSE END 
-                        AS is_remote,
                         j.short_description,
                         j.field,
                         j.experience,
@@ -213,6 +204,7 @@ class JobMatcher:
                         co.country_name,
                         l.city,
                         c.company_name,
+                        c.logo,
                         embedding <-> %s::vector as l2_distance,
                         embedding <=> %s::vector as cosine_distance,
                         -(embedding <#> %s::vector) as inner_product
@@ -236,6 +228,7 @@ class JobMatcher:
                         country_name,
                         city,
                         company_name,
+                        logo,
                         (
                             (1 - (l2_distance - MIN(l2_distance) OVER()) / 
                             NULLIF(MAX(l2_distance) OVER() - MIN(l2_distance) OVER(), 0)) * 0.4
@@ -261,6 +254,7 @@ class JobMatcher:
                     country_name,
                     city,
                     company_name,
+                    logo,
                     combined_score
                 FROM normalized_scores
                 ORDER BY combined_score DESC
@@ -278,14 +272,14 @@ class JobMatcher:
                     title=row[0],
                     description=row[1],
                     workplace=row[3],
-                    is_remote=bool(row[4]),
-                    short_description=row[5],
-                    field=row[6],
-                    experience=row[7],
-                    skills=row[8],
-                    country=row[9],
-                    city=row[10],
-                    company=row[11],
+                    short_description=row[4],
+                    field=row[5],
+                    experience=row[6],
+                    skills=row[7],
+                    country=row[8],
+                    city=row[9],
+                    company=row[10],
+                    logo=row[11],
                     portal="test_portal",
                     score=float(row[12])
                 )
@@ -407,7 +401,6 @@ class JobMatcher:
                             "job_id": str(match.job_id),
                             "description": match.description,
                             "workplace_type": match.workplace,
-                            "is_remote": match.is_remote,
                             "short_description": match.short_description,
                             "field": match.field,
                             "experience": match.experience,
@@ -415,6 +408,7 @@ class JobMatcher:
                             "country": match.country,
                             "city": match.city,
                             "company": match.company,
+                            "logo": match.logo,
                             "portal": match.portal,
                             "title": match.title,
                             "score": match.score
