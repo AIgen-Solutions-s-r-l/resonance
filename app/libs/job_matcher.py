@@ -89,7 +89,7 @@ class JobMatcher:
             count_params = []  # used for the COUNT & simpler fallback
             # embeddings_params will be the same as count_params, but we'll add embeddings later
 
-            # Location filter (hard filter by country, or is_remote)
+            # Location filter
             if location and location.country:
                 where_clauses.append("(co.country_name = %s)")
                 count_params.append(location.country)
@@ -220,7 +220,6 @@ class JobMatcher:
                         description,
                         id,
                         workplace_type,
-                        is_remote,
                         short_description,
                         field,
                         experience,
@@ -246,7 +245,6 @@ class JobMatcher:
                     description,
                     id,
                     workplace_type,
-                    is_remote,
                     short_description,
                     field,
                     experience,
