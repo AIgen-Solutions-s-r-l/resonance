@@ -8,7 +8,7 @@ import json
 import datetime
 
 
-from app.core.config import Settings
+from app.core.config import settings
 from app.core.logging_config import get_logger_context
 from app.schemas.location import LocationFilter
 
@@ -37,7 +37,7 @@ class JobMatch:
 class JobMatcher:
     """A class to handle job matching operations using CV embeddings and similarity metrics."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self) -> None:
         self.settings = settings
         self._initialize_database()
 

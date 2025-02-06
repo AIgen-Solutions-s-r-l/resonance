@@ -1,11 +1,10 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.core.config import Settings
+from app.core.config import settings
 from app.core.logging_config import get_logger_context
 import loguru
 
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
-settings = Settings()
 
 try:
     logger.info("Initializing MongoDB connection", extra={

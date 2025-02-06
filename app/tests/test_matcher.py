@@ -2,23 +2,17 @@ import random
 import pytest
 import builtins
 from unittest.mock import AsyncMock, MagicMock, patch
-from app.libs.job_matcher import JobMatcher, JobMatch
-from app.core.config import Settings
-from app.schemas.location import LocationFilter
-
-@pytest.fixture
-def mock_settings():
-    return Settings()
+from app.libs.job_matcher import JobMatcher
 
 
 @pytest.fixture
-def job_matcher(monkeypatch, mock_settings):
+def job_matcher(monkeypatch):
     mock_connect = MagicMock()
 
     # Patching psycopg.connect globally to return our mock connection
     monkeypatch.setattr("psycopg.connect", mock_connect)
 
-    return JobMatcher(mock_settings)
+    return JobMatcher()
 
 
 def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):

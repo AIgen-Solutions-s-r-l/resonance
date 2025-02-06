@@ -1,7 +1,7 @@
 from typing import List, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from app.core.auth import get_current_user
-from app.core.config import Settings
+from app.core.config import settings
 from app.schemas.job import JobSchema
 from app.services.matching_service import (
     get_resume_by_user_id,
@@ -13,7 +13,6 @@ from app.schemas.location import LocationFilter
 
 logger_context = get_logger_context()
 logger = loguru.logger.bind(**logger_context)
-settings = Settings()
 
 router = APIRouter(
     prefix="/jobs",
@@ -77,7 +76,6 @@ async def get_matched_jobs(
 
         matched_jobs = await match_jobs_with_resume(
             resume, 
-            settings, 
             location=locationFilter, 
             keywords=keywords,
             offset = offset if offset is not None else 0

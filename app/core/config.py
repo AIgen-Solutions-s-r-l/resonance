@@ -45,7 +45,12 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
     # OpenAI API key
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "sk-tSeHC_UQYlf-5gaww6ZZKYrl8Mg2F_lqZ9TamxtfdMT3BlbkFJCrcgPy_EN-4pwJk8DKMhYV6PYrKoTkHjgRJ87IobkA")
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key")
+    
+    # Text Embedder
+    text_embedder_model: str = "BAAI/bge-m3",
+    text_embedder_base_url: str = "https://api.deepinfra.com/v1/openai"
+    text_embedder_api_key: str = os.getenv("DEEPINFRA_TOKEN", "your-deepinfra-token")
 
     # Environment-specific logging configuration
     @property

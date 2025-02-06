@@ -1,6 +1,7 @@
+import os
 from typing import Union, List
 from openai import OpenAI
-import os
+from app.core.config import settings
 
 
 class TextEmbedder:
@@ -8,9 +9,9 @@ class TextEmbedder:
 
     def __init__(
         self,
-        model: str = "BAAI/bge-m3",
-        api_key: str = "lNU91OY7jk60zBlIFqJejlMkJDw6tLpM",
-        base_url: str = "https://api.deepinfra.com/v1/openai"
+        model: str = settings.text_embedder_model,
+        api_key: str = settings.text_embedder_api_key,
+        base_url: str = settings.text_embedder_base_url
     ):
         """
         Initialize the TextEmbedder.
@@ -20,10 +21,10 @@ class TextEmbedder:
             base_url: The base URL for the deepinfra API
         """
         self.model = model
-        self.api_key = api_key or os.getenv("DEEPINFRA_TOKEN")
+        self.api_key = api_key
         if not self.api_key:
             raise ValueError(
-                "API key must be provided or set as DEEPINFRA_TOKEN environment variable")
+                "API key must be provided or set as environment variable")
 
         self.client = OpenAI(
             api_key=self.api_key,

@@ -1,15 +1,13 @@
 from typing import Dict
 from fastapi import FastAPI
 from loguru import logger
-from app.core.config import Settings
+from app.core.config import settings
 from app.core.logging_config import (
     setup_logging,
     get_logger_context,
     LoggingConfig,
 )
 from app.routers.jobs_matched_router import router as jobs_router
-
-settings = Settings()
 
 logging_config = LoggingConfig(
     service_name=settings.service_name,

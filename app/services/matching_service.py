@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 from typing import List
 from app.models.job import Job
 from app.libs.job_matcher import JobMatcher
-from app.core.config import Settings
+from app.core.config import settings
 from app.core.mongodb import collection_name
 from pymongo import ReturnDocument
 from app.core.logging_config import get_logger_context
@@ -52,14 +52,13 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
 
 async def match_jobs_with_resume(
     resume: Dict[str, Any],
-    settings: Settings,
     location: Optional[LocationFilter] = None,
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,
     offset: int = 0
 ) -> List[Job]:
     try:
-        matcher = JobMatcher(settings)
+        matcher = JobMatcher()
         
         matched_jobs = await matcher.process_job(
             resume,
