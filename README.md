@@ -147,16 +147,18 @@ curl -X GET "http://localhost:9006/jobs/match?offset=50" \
 ```json
 [
   {
-    "id": 5,
+    "id": "c60e9663-75f5-4e46-a4f4-3d8a46c8bace",
+    "job_id": "c60e9663-75f5-4e46-a4f4-3d8a46c8bace",
     "title": "Backend Developer",
-    "is_remote": false,
     "workplace_type": "On-site",
     "posted_date": "2024-12-03T10:00:00",
     "job_state": "Active",
     "description": "Develop and optimize backend APIs, ensure robust database management.",
     "apply_link": "https://backend.jobs/apply/789",
     "company": "Backend Gurus",
-    "location": "Turin, Italy",
+    "logo": "https://lever-client-logos.s3.us-west-2.amazonaws.com/d31c5099-0e02-425b-8d4b-807fb072d059-1599833704949.png",
+    "city":"Nantes",
+    "country":"France",
     "portal": "Indeed"
   }
 ]
