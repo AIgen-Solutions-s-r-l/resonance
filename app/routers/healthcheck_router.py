@@ -4,6 +4,7 @@ from app.routers.healthchecks.fastapi_healthcheck_sqlalchemy import HealthCheckS
 from app.routers.healthchecks.fastapi_healthcheck_mongodb import HealthCheckMongoDB
 from app.routers.healthchecks.fastapi_healthcheck_llmapi import HealthCheckLlmApi
 from app.core.config import settings
+from app.log.logging import logger
 from fastapi import HTTPException
 
 router = APIRouter(tags=["healthcheck"])
@@ -16,8 +17,14 @@ router = APIRouter(tags=["healthcheck"])
         500: {"description": "Health check failed"}
     }
 )
-async def health_check():
-    
+async def health_check(withlog: bool = False):
+    if withlog:
+        logger.debug("healthcheck debug log")
+        logger.info("healthcheck info log")
+        logger.warning("healthcheck warning log")
+        logger.error("healthcheck error log")
+        logger.critical("healthcheck critical log")
+        
     _healthChecks = HealthCheckFactory()
     _healthChecks.add(
         HealthCheckSQLAlchemy(

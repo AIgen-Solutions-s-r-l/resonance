@@ -1,11 +1,10 @@
-import logging
+from app.log.logging import logger
 from app.routers.healthchecks.fastapi_healthcheck.service import HealthCheckBase
 from app.routers.healthchecks.fastapi_healthcheck.enum import HealthCheckStatusEnum
 from app.routers.healthchecks.fastapi_healthcheck.domain import HealthCheckInterface
 from typing import List, Optional
 import requests
 
-logger = logging.getLogger(__name__)
 
 class HealthCheckLlmApi(HealthCheckBase, HealthCheckInterface):
     _api_key: str

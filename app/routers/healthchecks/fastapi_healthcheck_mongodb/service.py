@@ -1,11 +1,10 @@
-import logging
+from app.log.logging import logger
 from app.routers.healthchecks.fastapi_healthcheck.service import HealthCheckBase
 from app.routers.healthchecks.fastapi_healthcheck.enum import HealthCheckStatusEnum
 from app.routers.healthchecks.fastapi_healthcheck.domain import HealthCheckInterface
 from typing import List, Optional
 from pymongo import AsyncMongoClient
 
-logger = logging.getLogger(__name__)
 
 class HealthCheckMongoDB(HealthCheckBase, HealthCheckInterface):
     _connection_uri: str

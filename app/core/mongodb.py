@@ -1,37 +1,34 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
-from app.core.logging_config import get_logger_context
-import loguru
+from app.log.logging import logger
 
-logger_context = get_logger_context()
-logger = loguru.logger.bind(**logger_context)
 
 try:
-    logger.info("Initializing MongoDB connection", extra={
-        "event_type": "mongodb_init",
-        "mongodb_uri": settings.mongodb,
-        "mongodb_database": settings.mongodb_database
-    })
-
-    client = AsyncIOMotorClient(
-        settings.mongodb,
-        serverSelectionTimeoutMS=5000
+    logger.info(
+        "Initializing MongoDB connection",
+        event_type="mongodb_init",
+        mongodb_uri=settings.mongodb,
+        mongodb_database=settings.mongodb_database,
     )
+
+    client = AsyncIOMotorClient(settings.mongodb, serverSelectionTimeoutMS=5000)
 
     database = client[settings.mongodb_database]
     collection_name = database.get_collection("resumes")
 
-    client.admin.command('ping')
-    logger.info("MongoDB connection established", extra={
-        "event_type": "mongodb_connected",
-        "mongodb_uri": settings.mongodb,
-        "database": settings.mongodb_database
-    })
+    client.admin.command("ping")
+    logger.info(
+        "MongoDB connection established",
+        event_type="mongodb_connected",
+        mongodb_uri=settings.mongodb,
+        database=settings.mongodb_database,
+    )
 
 except Exception as e:
-    logger.error("MongoDB connection failed", extra={
-        "event_type": "mongodb_error",
-        "error_type": type(e).__name__,
-        "error_details": str(e)
-    })
+    logger.error(
+        "MongoDB connection failed",
+        event_type="mongodb_error",
+        error_type=type(e).__name__,
+        error_details=str(e),
+    )
     raise

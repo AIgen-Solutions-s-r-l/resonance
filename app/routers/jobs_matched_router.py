@@ -1,18 +1,14 @@
 from typing import List, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends, status, Query
 from app.core.auth import get_current_user
-from app.core.config import settings
 from app.schemas.job import JobSchema
 from app.services.matching_service import (
     get_resume_by_user_id,
     match_jobs_with_resume,
 )
-from app.core.logging_config import get_logger_context
-import loguru
+from app.log.logging import logger
 from app.schemas.location import LocationFilter
 
-logger_context = get_logger_context()
-logger = loguru.logger.bind(**logger_context)
 
 router = APIRouter(
     prefix="/jobs",
@@ -86,7 +82,7 @@ async def get_matched_jobs(
         elif isinstance(matched_jobs, dict) and 'jobs' in matched_jobs:
             job_list = matched_jobs['jobs']
         else:
-            logger.error("Unexpected data structure for matched_jobs.")
+            logger.exception("Unexpected data structure for matched_jobs.")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure for matched jobs.",

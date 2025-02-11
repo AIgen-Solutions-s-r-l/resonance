@@ -112,7 +112,8 @@ dependencies = [
     "websockets (==13.1)",
     "win32-setctime (==1.1.0)",
     "yarl (==1.17.2)",
-    "zope-interface (==7.1.1)"
+    "zope-interface (==7.1.1)",
+    "datadog-api-client (==2.32.0)"
 ]
 
 

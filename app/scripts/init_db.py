@@ -1,7 +1,6 @@
 # app/scripts/init_db.py
 
 import asyncio
-import logging
 import sys
 from pathlib import Path
 
@@ -14,13 +13,10 @@ from app.core.database import database_url
 # Import the Base and models from job.py instead
 from app.core.base import Base
 from app.models.job import Company, Location, Job
+from app.log.logging import logger
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import text
 import asyncpg
-
-# Set up logger
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 async def create_database_if_not_exists() -> None:
@@ -53,7 +49,7 @@ async def create_database_if_not_exists() -> None:
         await conn.close()
 
     except Exception as e:
-        logger.error(f"Error while creating database: {str(e)}")
+        logger.exception(f"Error while creating database: {str(e)}")
         raise
 
 
@@ -80,7 +76,7 @@ async def init_database() -> None:
         logger.info("Database initialized successfully.")
 
     except Exception as e:
-        logger.error(f"An error occurred while initializing the database: {str(e)}")
+        logger.exception(f"An error occurred while initializing the database: {str(e)}")
         raise
     finally:
         await engine.dispose()
@@ -133,7 +129,7 @@ async def verify_database() -> None:
 
         logger.info("Database verification completed successfully.")
     except Exception as e:
-        logger.error(f"Database verification failed: {str(e)}")
+        logger.exception(f"Database verification failed: {str(e)}")
         raise
     finally:
         await engine.dispose()
