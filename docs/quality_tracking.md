@@ -217,3 +217,171 @@ POST /api/v1/quality-tracking/evaluations/{evaluation_id}/feedback
 
 Submit feedback for a quality evaluation.
 
+Request:
+```json
+{
+    "feedback_score": 85.5,
+    "feedback_text": "Good match but could improve skill alignment",
+    "reviewer": "john.doe@example.com"
+}
+```
+
+### Get Metrics
+
+```http
+GET /api/v1/quality-tracking/metrics/{evaluation_id}
+```
+
+Retrieve metrics for a specific evaluation.
+
+Parameters:
+- `metric_name` (optional): Filter by metric name
+- `start_time` (optional): Start time filter
+- `end_time` (optional): End time filter
+
+### Get Aggregated Metrics
+
+```http
+GET /api/v1/quality-tracking/metrics/aggregated/{metric_name}
+```
+
+Retrieve aggregated metrics across all evaluations.
+
+Parameters:
+- `start_time` (optional): Start time filter
+- `end_time` (optional): End time filter
+- `group_by` (optional): Field to group results by
+
+Response:
+```json
+{
+    "overall": {
+        "count": 100,
+        "average": 85.5,
+        "min": 65.0,
+        "max": 98.0,
+        "std_dev": 8.2
+    }
+}
+```
+
+## Integration Example
+
+```python
+from app.services.quality_evaluation_service import OpenAIQualityEvaluator
+from app.repositories.quality_tracking_repository import QualityTrackingRepository
+from app.services.metrics_tracking_service import QualityMetricsTracker
+
+async def evaluate_match(resume: dict, job: dict, session: AsyncSession):
+    # Initialize services
+    repository = QualityTrackingRepository(session)
+    metrics_tracker = QualityMetricsTracker(session)
+    evaluator = OpenAIQualityEvaluator(repository, metrics_tracker)
+    
+    # Evaluate match
+    quality_score = await evaluator.evaluate_match(resume, job)
+    
+    return quality_score
+```
+
+## Best Practices
+
+1. Error Handling:
+   - All components include comprehensive error handling
+   - Errors are logged with context using loguru
+   - API endpoints return appropriate HTTP status codes
+
+2. Logging:
+   - Use structured logging with loguru
+   - Include relevant context in log messages
+   - Log both successful operations and errors
+
+3. Database Operations:
+   - Use async SQLAlchemy for all database operations
+   - Implement proper transaction management
+   - Include indexes for better query performance
+
+4. API Design:
+   - Follow RESTful principles
+   - Use proper HTTP methods and status codes
+   - Include comprehensive documentation
+   - Validate input with Pydantic models
+
+## Monitoring
+
+The system tracks several key metrics:
+
+1. Quality Scores:
+   - Overall quality score
+   - Skill alignment score
+   - Experience match score
+
+2. Feedback Metrics:
+   - Feedback scores
+   - Reviewer agreement rate
+   - Time to feedback
+
+3. System Metrics:
+   - API response times
+   - Error rates
+   - Evaluation throughput
+
+## Security Considerations
+
+1. API Security:
+   - Use proper authentication
+   - Validate all inputs
+   - Sanitize outputs
+   - Rate limit API endpoints
+
+2. Data Privacy:
+   - Handle PII appropriately
+   - Implement access controls
+   - Audit logging for sensitive operations
+
+## Maintenance
+
+1. Regular Tasks:
+   - Monitor error rates
+   - Review feedback patterns
+   - Update LLM prompts based on feedback
+   - Optimize database queries
+
+2. Scaling:
+   - Monitor resource usage
+   - Optimize batch operations
+   - Consider caching for frequently accessed data
+
+## System Improvements
+
+1. Enhanced Evaluation Logic:
+   - Implement multi-model consensus scoring
+   - Add domain-specific evaluation criteria
+   - Include historical performance analysis
+   - Develop adaptive scoring weights
+
+2. Performance Optimizations:
+   - Add Redis caching layer
+   - Implement batch processing
+   - Use database materialized views
+   - Optimize LLM prompt tokens
+
+3. Advanced Analytics:
+   - Add ML-based score prediction
+   - Implement anomaly detection
+   - Create interactive dashboards
+   - Add A/B testing capabilities
+
+4. Feedback Enhancement:
+   - Add structured feedback templates
+   - Implement automated feedback analysis
+   - Create feedback-based learning system
+   - Add peer review system
+
+5. Infrastructure:
+   - Add service redundancy
+   - Implement circuit breakers
+   - Add request tracing
+   - Enhance monitoring alerts
+
+This documentation provides a comprehensive guide to using and maintaining the quality tracking system. For specific implementation details, refer to the source code and inline documentation.
