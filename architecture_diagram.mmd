@@ -56,6 +56,12 @@ flowchart TD
         Auth["Auth Manager|
             security.py|
             auth.py"]
+        BaseModels["Base Models|
+            base.py|
+            SQLAlchemy Models"]
+        Logger["Logger|
+            logging.py|
+            configure_logging()"]
     end
 
     %% Services Layer
@@ -87,6 +93,22 @@ flowchart TD
             GET /health|
             GET /health/db|
             GET /health/mongodb"]
+        HealthChecks["Health Check Services|
+            SQLAlchemy Health|
+            MongoDB Health|
+            LLM API Health"]
+    end
+
+    %% Data Schemas
+    subgraph Schemas["Data Schemas"]
+        direction TB
+        JobSchema["Job Schemas|
+            JobBase|
+            JobCreate|
+            JobResponse"]
+        LocationSchema["Location Schemas|
+            LocationBase|
+            LocationCreate"]
     end
 
     %% Relationships
@@ -101,11 +123,18 @@ flowchart TD
     JobMatcher --> MongoManager
     JobMatcher --> TextEmbedder
 
-    HealthRouter --> DBManager
-    HealthRouter --> MongoManager
+    HealthRouter --> HealthChecks
+    HealthChecks --> DBManager
+    HealthChecks --> MongoManager
 
     DBManager --> PostgreSQL
     MongoManager --> MongoDB
+
+    JobsRouter --> Schemas
+    HealthRouter --> Schemas
+
+    Logger --> Core
+    BaseModels --> Core
 
     %% Styling
     classDef postgresql fill:#f9f,stroke:#333,stroke-width:2px;
@@ -114,10 +143,12 @@ flowchart TD
     classDef library fill:#fbf,stroke:#333,stroke-width:1px;
     classDef core fill:#ffd,stroke:#333,stroke-width:1px;
     classDef route fill:#dff,stroke:#333,stroke-width:1px;
+    classDef schema fill:#fdb,stroke:#333,stroke-width:1px;
 
     class Jobs,Companies,Locations postgresql;
     class ResumesCollection,JobMatchesCollection mongodb;
     class MatchingService service;
     class JobMatcher,TextEmbedder library;
-    class Config,DBManager,MongoManager,Auth core;
-    class JobsRouter,HealthRouter route;
+    class Config,DBManager,MongoManager,Auth,BaseModels,Logger core;
+    class JobsRouter,HealthRouter,HealthChecks route;
+    class JobSchema,LocationSchema schema;
