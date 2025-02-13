@@ -49,11 +49,6 @@ class Settings(BaseSettings):
     llm_base_url: str = os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")
     llm_model_name: str = os.getenv("LLM_MODEL_NAME", "openai/gpt-4o-mini")
     
-    # Text Embedder
-    text_embedder_model: str = "BAAI/bge-m3"
-    text_embedder_base_url: str = "https://api.deepinfra.com/v1/openai"
-    text_embedder_api_key: str = os.getenv("DEEPINFRA_TOKEN", "your-deepinfra-token")
-    
     # Environment-specific logging configuration
     @property
     def logging_config(self) -> dict:
