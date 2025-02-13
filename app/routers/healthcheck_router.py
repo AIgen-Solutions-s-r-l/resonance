@@ -2,7 +2,6 @@ from fastapi import APIRouter
 from app.routers.healthchecks.fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
 from app.routers.healthchecks.fastapi_healthcheck_sqlalchemy import HealthCheckSQLAlchemy
 from app.routers.healthchecks.fastapi_healthcheck_mongodb import HealthCheckMongoDB
-from app.routers.healthchecks.fastapi_healthcheck_llmapi import HealthCheckLlmApi
 from app.core.config import settings
 from app.log.logging import logger
 from fastapi import HTTPException
@@ -38,15 +37,6 @@ async def health_check(withlog: bool = False):
             connection_uri=settings.mongodb,
             alias='mongo db',
             tags=('mongo', 'db')
-        )
-    )
-    _healthChecks.add(
-        HealthCheckLlmApi(
-            api_key=settings.openai_api_key,
-            llm_base_url=settings.llm_base_url,
-            llm_model_name=settings.llm_model_name,
-            alias='llm api',
-            tags=('llm', 'api')
         )
     )
     
