@@ -121,7 +121,7 @@ async def download_documents(
 - Calculate correlation between internal scores and LLM scores
 - Generate distribution analysis
 - Identify patterns and trends
-- Create visualization data
+- Log structured data, so we can visualize it with DataDog
 
 #### 4.2 Metrics to Track
 - Score distributions
