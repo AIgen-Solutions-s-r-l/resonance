@@ -7,7 +7,9 @@ from app.schemas.job import JobSchema
 from app.schemas.location import LocationFilter
 
 
-async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> Dict[str, Any]:
+async def get_resume_by_user_id(
+    user_id: int, version: Optional[str] = None
+) -> Dict[str, Any]:
     try:
         query = {"user_id": user_id}
         if version:
@@ -15,12 +17,22 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
 
         resume = await collection_name.find_one(query)
         if not resume:
-            logger.warning("Resume not found", event_type="resume_not_found", user_id=user_id, version=version)
+            logger.warning(
+                "Resume not found",
+                event_type="resume_not_found",
+                user_id=user_id,
+                version=version,
+            )
             return {"error": f"Resume not found for user ID: {user_id}"}
 
         resume["_id"] = str(resume["_id"])
 
-        logger.info("Resume retrieved", event_type="resume_retrieved", user_id=user_id, version=version)
+        logger.info(
+            "Resume retrieved",
+            event_type="resume_retrieved",
+            user_id=user_id,
+            version=version,
+        )
         return resume
 
     except Exception as e:
@@ -30,7 +42,7 @@ async def get_resume_by_user_id(user_id: int, version: Optional[str] = None) -> 
             user_id=user_id,
             version=version,
             error_type=type(e).__name__,
-            error_details=str(e)
+            error_details=str(e),
         )
         return {"error": f"Error retrieving resume: {str(e)}"}
 
@@ -40,17 +52,17 @@ async def match_jobs_with_resume(
     location: Optional[LocationFilter] = None,
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,
-    offset: int = 0
+    offset: int = 0,
 ) -> List[JobSchema]:
     try:
         matcher = JobMatcher()
-        
+
         matched_jobs = await matcher.process_job(
             resume,
             location=location,
             keywords=keywords,
             save_to_mongodb=save_to_mongodb,
-            offset=offset
+            offset=offset,
         )
         return matched_jobs
     except Exception as e:

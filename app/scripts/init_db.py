@@ -10,6 +10,7 @@ if project_root not in sys.path:
     sys.path.append(project_root)
 
 from app.core.database import database_url
+
 # Import the Base and models from job.py instead
 from app.core.base import Base
 from app.models.job import Company, Location, Job
@@ -24,9 +25,13 @@ async def create_database_if_not_exists() -> None:
     Create the database if it doesn't exist.
     """
     # Parse the database URL to get database name and connection details
-    db_url = database_url.replace('+asyncpg', '')  # Remove the asyncpg prefix if present
-    db_name = db_url.split('/')[-1]  # Get database name
-    postgres_url = db_url.rsplit('/', 1)[0] + '/postgres'  # Create URL for postgres database
+    db_url = database_url.replace(
+        "+asyncpg", ""
+    )  # Remove the asyncpg prefix if present
+    db_name = db_url.split("/")[-1]  # Get database name
+    postgres_url = (
+        db_url.rsplit("/", 1)[0] + "/postgres"
+    )  # Create URL for postgres database
 
     try:
         # Connect to the default postgres database
@@ -34,22 +39,21 @@ async def create_database_if_not_exists() -> None:
 
         # Check if our database exists
         result = await conn.fetch(
-            "SELECT 1 FROM pg_database WHERE datname = $1",
-            db_name
+            "SELECT 1 FROM pg_database WHERE datname = $1", db_name
         )
 
         if not result:
-            logger.info(f"Creating database {db_name}")
+            logger.info(f"Creating database {db_name}", db_name=db_name)
             # Create database if it doesn't exist
             await conn.execute(f'CREATE DATABASE "{db_name}"')
-            logger.info(f"Database {db_name} created successfully")
+            logger.info(f"Database {db_name} created successfully", db_name=db_name)
         else:
-            logger.info(f"Database {db_name} already exists")
+            logger.info(f"Database {db_name} already exists", db_name=db_name)
 
         await conn.close()
 
     except Exception as e:
-        logger.exception(f"Error while creating database: {str(e)}")
+        logger.exception(f"Error while creating database: {str(e)}", error=str(e))
         raise
 
 
@@ -76,7 +80,9 @@ async def init_database() -> None:
         logger.info("Database initialized successfully.")
 
     except Exception as e:
-        logger.exception(f"An error occurred while initializing the database: {str(e)}")
+        logger.exception(
+            f"An error occurred while initializing the database: {str(e)}", error=str(e)
+        )
         raise
     finally:
         await engine.dispose()
@@ -91,19 +97,25 @@ async def verify_database() -> None:
         logger.info("Verifying database connection...")
         async with engine.connect() as conn:
             # Check connection
-            result = await conn.execute(text("SELECT current_database(), current_timestamp"))
+            result = await conn.execute(
+                text("SELECT current_database(), current_timestamp")
+            )
             db_info = result.first()
-            logger.info(f"Successfully connected to database: {db_info[0]}")
-            logger.info(f"Current server time: {db_info[1]}")
+            logger.info(
+                f"Successfully connected to database: {db_info[0]}", db_name=db_info[0]
+            )
+            logger.info(f"Current server time: {db_info[1]}", server_time=db_info[1])
 
             # Check if tables exist
             result = await conn.execute(
-                text("""
+                text(
+                    """
                     SELECT table_name 
                     FROM information_schema.tables 
                     WHERE table_schema = 'public'
                     ORDER BY table_name;
-                """)
+                """
+                )
             )
             tables = result.fetchall()
             if tables:
@@ -111,25 +123,32 @@ async def verify_database() -> None:
                 for table in tables:
                     # Get column information for each table
                     columns_result = await conn.execute(
-                        text(f"""
+                        text(
+                            f"""
                             SELECT column_name, data_type, is_nullable
                             FROM information_schema.columns
                             WHERE table_name = '{table[0]}'
                             ORDER BY ordinal_position;
-                        """)
+                        """
+                        )
                     )
                     columns = columns_result.fetchall()
 
-                    logger.info(f"\n  Table: {table[0]}")
+                    logger.info(f"\n  Table: {table[0]}", table=table[0])
                     for column in columns:
                         nullable = "NULL" if column[2] == "YES" else "NOT NULL"
-                        logger.info(f"    - {column[0]}: {column[1]} {nullable}")
+                        logger.info(
+                            f"    - {column[0]}: {column[1]} {nullable}",
+                            column=column[0],
+                            data_type=column[1],
+                            nullable=nullable,
+                        )
             else:
                 logger.warning("No tables found in the database")
 
         logger.info("Database verification completed successfully.")
     except Exception as e:
-        logger.exception(f"Database verification failed: {str(e)}")
+        logger.exception(f"Database verification failed: {str(e)}", exception=str(e))
         raise
     finally:
         await engine.dispose()
@@ -142,5 +161,5 @@ async def main():
     logger.info("=== Database Setup Completed ===")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

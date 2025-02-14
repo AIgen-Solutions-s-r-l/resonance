@@ -18,8 +18,9 @@ async def lifespan(app: FastAPI):
         yield
         logger.info("Shutting down application")
     except Exception as e:
-        logger.error(f"Application lifecycle error: {str(e)}")
+        logger.error(f"Application lifecycle error: {str(e)}", error=str(e))
         raise
+
 
 app = FastAPI(
     lifespan=lifespan,
@@ -41,5 +42,7 @@ async def root() -> Dict[str, str]:
     """
     return {"message": "Matching Service is running!"}
 
+
 from app.routers.healthcheck_router import router as healthcheck_router
+
 app.include_router(healthcheck_router)

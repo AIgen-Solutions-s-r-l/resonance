@@ -5,6 +5,7 @@ from jose import jwt
 
 from app.core.config import settings
 
+
 def get_password_hash(password: str) -> str:
     """
     Generate password hash using bcrypt.
@@ -17,8 +18,8 @@ def get_password_hash(password: str) -> str:
     """
     # Generate salt and hash password
     salt = bcrypt.gensalt()
-    password_bytes = password.encode('utf-8')
-    return bcrypt.hashpw(password_bytes, salt).decode('utf-8')
+    password_bytes = password.encode("utf-8")
+    return bcrypt.hashpw(password_bytes, salt).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -32,8 +33,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches hash
     """
-    password_bytes = plain_password.encode('utf-8')
-    hashed_bytes = hashed_password.encode('utf-8')
+    password_bytes = plain_password.encode("utf-8")
+    hashed_bytes = hashed_password.encode("utf-8")
     return bcrypt.checkpw(password_bytes, hashed_bytes)
 
 
@@ -54,7 +55,9 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)  # Updated line
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.secret_key, algorithm=settings.algorithm
+    )
     return encoded_jwt
 
 
