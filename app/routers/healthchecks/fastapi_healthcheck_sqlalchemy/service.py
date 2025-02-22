@@ -26,5 +26,5 @@ class HealthCheckSQLAlchemy(HealthCheckBase, HealthCheckInterface):
                 if result.scalar() == 1:
                     res = HealthCheckStatusEnum.HEALTHY
             except Exception as e:
-                logger.error(f"Database health check failed: {e}")
+                logger.error(f"Database health check failed: {str(e)}", error=str(e))
         return res

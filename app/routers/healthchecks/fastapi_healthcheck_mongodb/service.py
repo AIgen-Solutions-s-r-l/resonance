@@ -23,9 +23,11 @@ class HealthCheckMongoDB(HealthCheckBase, HealthCheckInterface):
     async def __checkHealth__(self) -> HealthCheckStatusEnum:
         res: HealthCheckStatusEnum = HealthCheckStatusEnum.UNHEALTHY
         try:
-            client = AsyncMongoClient(self._connection_uri, serverSelectionTimeoutMS=5000)
+            client = AsyncMongoClient(
+                self._connection_uri, serverSelectionTimeoutMS=5000
+            )
             if await client.server_info():
                 res = HealthCheckStatusEnum.HEALTHY
         except Exception as e:
-            logger.error(f"Mongo health check failed: {e}")
+            logger.error(f"Mongo health check failed: {str(e)}", error=str(e))
         return res

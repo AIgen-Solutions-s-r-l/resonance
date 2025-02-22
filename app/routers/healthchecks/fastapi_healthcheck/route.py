@@ -3,6 +3,7 @@ from starlette.responses import JSONResponse
 from .service import HealthCheckFactory
 from .enum import HealthCheckStatusEnum
 
+
 async def healthCheckRoute(factory: HealthCheckFactory) -> Callable:
     """
     This function is passed to the add_api_route with the built factory.
@@ -10,12 +11,12 @@ async def healthCheckRoute(factory: HealthCheckFactory) -> Callable:
     When called, the endpoint method within, will be called and it will run the job bound to the factory.
     The results will be parsed and sent back to the requestor via JSON.
     """
-    
+
     _factory = factory
 
     async def endpoint() -> JSONResponse:
-        res = await _factory.check()    
-        if res['status'] == HealthCheckStatusEnum.UNHEALTHY.value:
+        res = await _factory.check()
+        if res["status"] == HealthCheckStatusEnum.UNHEALTHY.value:
             return JSONResponse(content=res, status_code=500)
         return JSONResponse(content=res, status_code=200)
 

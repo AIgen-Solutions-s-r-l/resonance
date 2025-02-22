@@ -15,6 +15,16 @@ from app.core.config import settings
 from app.log.logging import logger
 
 
+try:
+    logger.info("Starting application")
+    yield
+    logger.info("Shutting down application")
+except Exception as e:
+    logger.error(f"Application lifecycle error: {str(e)}", error=str(e))
+    raise
+
+
+
 app = FastAPI(
     title="Matching Service API",
     description="API for job-resume matching with quality tracking",
@@ -67,6 +77,7 @@ async def shutdown_event():
     logger.info("Database connections closed")
 
 
+
 @app.get("/", tags=["root"])
 async def root():
     """Root endpoint returning API information."""
@@ -77,3 +88,8 @@ async def root():
         "docs": "/docs",
         "redoc": "/redoc"
     }
+
+from app.routers.healthcheck_router import router as healthcheck_router
+
+app.include_router(healthcheck_router)
+

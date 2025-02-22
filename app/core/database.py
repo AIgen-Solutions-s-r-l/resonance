@@ -7,8 +7,12 @@ from app.log.logging import logger
 
 # Determine the database URL based on the environment
 # Use test_database_url if the `PYTEST_RUNNING` environment variable is set
-database_url = settings.test_database_url if os.getenv("PYTEST_RUNNING") == "true" else settings.database_url
-logger.info(f"Using database URL: {database_url}")
+database_url = (
+    settings.test_database_url
+    if os.getenv("PYTEST_RUNNING") == "true"
+    else settings.database_url
+)
+logger.info(f"Using database URL: {database_url}", database_url=database_url)
 
 # Create the asynchronous engine for connecting to the PostgreSQL database
 engine = create_async_engine(database_url, echo=True)
@@ -16,8 +20,9 @@ engine = create_async_engine(database_url, echo=True)
 # Define an asynchronous session factory bound to the engine
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
-    expire_on_commit=False  # Prevents objects from expiring after each commit
+    expire_on_commit=False,  # Prevents objects from expiring after each commit
 )
+
 
 async def get_db():
     """
