@@ -30,7 +30,8 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
                     # Try to decode token without verification for debugging
                     try:
                         # Don't verify signature here, just decode to see payload
-                        decoded = jwt.decode(token, options={"verify_signature": False})
+                        # But still need to provide the key parameter
+                        decoded = jwt.decode(token, settings.secret_key, options={"verify_signature": False})
                         logger.debug(
                             f"Auth header present for {path}. Token preview: {token_preview}",
                             decoded_payload=str(decoded),

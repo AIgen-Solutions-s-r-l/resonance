@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class JobSchema(BaseModel):
-    id: int
+    id: str  # Changed back to string to match existing UUID format in database
     title: str
     workplace_type: Optional[str] = None
     posted_date: Optional[datetime] = None
