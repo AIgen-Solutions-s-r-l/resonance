@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+from uuid import UUID
 
 
 class JobSchema(BaseModel):
-    id: str  # Changed back to string to match existing UUID format in database
+    id: UUID  # Using UUID type for validation while database stores string representation
     title: str
     workplace_type: Optional[str] = None
     posted_date: Optional[datetime] = None

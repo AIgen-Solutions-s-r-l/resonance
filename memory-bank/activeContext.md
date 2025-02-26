@@ -1,64 +1,58 @@
 ## Current Session Context
-2026-02-26, 11:13 PM
+2026-02-26, 11:43 PM
 
 ## Recent Changes
-- Analyzed JobSchema usage in the matching service
-- Created a detailed field removal plan
-- Successfully removed the specified fields from JobSchema:
-  - job_id (duplicate of id)
-  - company_id (internal database reference)
-  - location_id (internal database reference)
-  - cluster_id (internal grouping)
-  - processed_description (internal processing artifact)
-  - embedding (vector data for similarity calculations)
-  - sparse_embeddings (vector data for similarity calculations)
-- Made the following schema updates:
-  - Retained `id` field as string type to match UUID format in database
+- Analyzed job ID implementation in both schema and database model
+- Identified that job ID is conceptually a UUID but implemented as a string
+- Created a detailed implementation plan for changing the ID type to UUID in memory-bank/job_id_uuid_implementation_plan.md
+- Updated decision log with rationale for changing the ID from string to UUID type
+- Prepared for code implementation to update the Pydantic schema
+- Previous schema changes:
+  - Removed unnecessary fields from JobSchema:
+    - job_id (duplicate of id)
+    - company_id (internal database reference)
+    - location_id (internal database reference)
+    - cluster_id (internal grouping)
+    - processed_description (internal processing artifact)
+    - embedding (vector data for similarity calculations)
+    - sparse_embeddings (vector data for similarity calculations)
   - Renamed `logo` field to `company_logo`
   - Renamed `company` field to `company_name`
-- Updated JobMatcher to use the new field names when creating job dictionaries
-- Modified test script to test the new schema structure
-- Verified usage patterns across the codebase
-- Executed tests with coverage and generated detailed coverage reports
-- Created a detailed endpoint testing plan
-- Implemented a bash script (test_endpoints.sh) to test API endpoints using:
-  - Automated server startup with uvicorn on port 18001
-  - JWT token authentication with the authentication service
-  - Endpoint testing for root, job matching, and filtered job matching
-  - Proper error handling and cleanup of resources
-- Enhanced authentication debugging for the 401 Unauthorized error:
-  - Improved error handling in `get_current_user` with specific JWT error types
-  - Added detailed logging for authentication failures in `app/core/auth.py`
-  - Updated `verify_jwt_token` function with better documentation and settings
-  - Added a new `AuthDebugMiddleware` in `app/main.py` to:
-    - Log detailed information about authentication headers
-    - Log decoded token payloads for debugging
-    - Track response times for authentication requests
-    - Provide additional context for 401 responses
-- Fixed JWT token decoding error in AuthDebugMiddleware:
-  - Modified token decoding in main.py to include the secret key parameter
-  - Added enhanced debugging in verify_jwt_token in security.py
+- Fixed authentication and schema validation issues:
+  - Resolved token decoding error in AuthDebugMiddleware
+  - Added enhanced debugging in security.py for token validation
   - Created debug_token.py to diagnose JWT validation issues
-- Resolved authentication issues:
-  - Aligned the secret key in .env ("development-secret-key") with what the application uses
-  - Successfully verified token generation and validation
-- Fixed schema validation error:
+  - Aligned the secret key in .env with application expectations
   - Changed JobSchema.id field back to string type to match UUID format in database
-  - Successfully executed all endpoint tests
 
 ## Current Goals
+- Implement the UUID type change for job ID in app/schemas/job.py
+- Test the change to ensure backward compatibility and proper validation
+- Execute API endpoint tests to verify functionality remains intact
 - Document the test coverage findings and identify areas for improvement
-- Consider addressing the warnings detected during test execution
 - Plan for expanding test coverage beyond the current 33% overall coverage
 - Ensure no breaking changes to API consumers
-- Execute the endpoint test script to validate API functionality
 
 ## Implementation Details
-- Modified JobSchema in app/schemas/job.py with new field types and names
-- Updated app/libs/job_matcher.py to use the new field names when creating job dictionaries
-- Kept database model (Job class) unchanged since these fields are needed for internal operations
-- Found that `job_id` appears to be redundant with `id` (both are set to the same value)
-- Internal systems like quality tracking reference `job_id` but get it from `job.get("id")` or `Job.id`
+- The database model implementation:
+  ```python
+  id: str = Column(String, primary_key=True, default=lambda: str(uuid4()))
+  ```
+- Current schema implementation:
+  ```python
+  id: str  # Changed back to string to match existing UUID format in database
+  ```
+- Planned implementation:
+  ```python
+  from uuid import UUID
+  
+  id: UUID  # Using UUID type for validation while database stores string representation
+  ```
+- This approach leverages Pydantic's ability to:
+  - Validate incoming data against UUID format
+  - Serialize UUIDs to strings in responses
+  - Deserialize string representations back to UUID objects
+- No database model changes will be required as it already generates valid UUIDs
 
 ### Test Coverage Details (2026-02-26)
 - **Overall coverage: 33%** (675 lines not covered out of 1002 total)
@@ -96,10 +90,11 @@
 - Test warning in test_schema_changes.py (returning True instead of using assertions)
 
 ## Open Questions
-- [RESOLVED] No client applications appear to directly rely on these fields in critical functionality
-- [RESOLVED] The database model and internal processing still have access to these fields
-- Will the API consumers adapt to the new field names (company_name, company_logo) and the integer id?
-- Might need to update the from_orm mapping in jobs_matched_router.py since the DB model field names don't match the schema
+- Will using UUID type in the schema but storing as string in the database cause any serialization issues?
+- Are there any client applications that might be affected by stricter UUID validation?
+- Should we consider also updating the database model to use a native UUID type in the future?
+- Will the API consumers adapt to the new field names (company_name, company_logo) and the UUID type?
+- Might need to update the from_orm mapping in jobs_matched_router.py for proper field mapping
 # Active Context: Matching Service
 
 ## Current Session Context

@@ -8,7 +8,7 @@ def test_jobschema_without_removed_fields():
     """Test that JobSchema works correctly without the removed fields."""
     # Sample job data that includes fields we've removed
     job_data = {
-        "id": 1234,  # Changed from string to integer
+        "id": "f641d8eb-7eed-4477-b6db-462bca67448a",  # UUID format for proper type validation
         "job_id": "job-5678",  # Removed field
         "title": "Software Engineer",
         "description": "A great job for a developer",
@@ -44,7 +44,7 @@ def test_jobschema_without_removed_fields():
             print(f"  - {field}: {'❌ Present' if field in job_dict else '✅ Removed'}")
             
         # Verify that critical fields are still present
-        assert job_schema.id == 1234, f"Expected id to be integer 1234, got {job_schema.id} ({type(job_schema.id)})"
+        assert str(job_schema.id) == "f641d8eb-7eed-4477-b6db-462bca67448a", f"Expected id to be UUID 'f641d8eb-7eed-4477-b6db-462bca67448a', got {job_schema.id} ({type(job_schema.id)})"
         assert job_schema.title == "Software Engineer"
         assert job_schema.score == 0.95
         
