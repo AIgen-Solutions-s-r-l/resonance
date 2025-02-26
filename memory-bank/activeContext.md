@@ -34,6 +34,41 @@
 - Found that `job_id` appears to be redundant with `id` (both are set to the same value)
 - Internal systems like quality tracking reference `job_id` but get it from `job.get("id")` or `Job.id`
 
+### Test Coverage Details (2026-02-26)
+- **Overall coverage: 33%** (675 lines not covered out of 1002 total)
+- 8 tests executed and all passed successfully:
+  - 6 tests from app/tests/test_matcher.py
+  - 1 test from app/tests/test_matching_service.py
+  - 1 test from app/test_schema_changes.py
+
+#### Well-covered modules (90-100%)
+- app/schemas/job.py (100%) - Schema changes successfully tested
+- app/schemas/location.py (100%)
+- app/tests/test_matcher.py (100%)
+- app/tests/test_matching_service.py (100%)
+- app/core/config.py (90%)
+
+#### Partially covered modules
+- app/libs/job_matcher.py (79%) - Core matching logic
+- app/test_schema_changes.py (81%)
+- app/core/mongodb.py (77%)
+- app/services/matching_service.py (59%)
+- app/log/logging.py (48%)
+
+#### Modules with no coverage (0%)
+- API routers (app/routers/*)
+- Authentication modules (app/core/auth.py, app/core/security.py)
+- Database modules (app/core/database.py)
+- Models (app/models/*)
+- Scripts (app/scripts/*)
+- Quality tracking services
+
+#### Warnings Detected
+- Parsing issue with app/main.py
+- Deprecated class-based config in Pydantic
+- Deprecated use of datetime.datetime.utcnow() (should use datetime.datetime.now(datetime.UTC))
+- Test warning in test_schema_changes.py (returning True instead of using assertions)
+
 ## Open Questions
 - [RESOLVED] No client applications appear to directly rely on these fields in critical functionality
 - [RESOLVED] The database model and internal processing still have access to these fields
