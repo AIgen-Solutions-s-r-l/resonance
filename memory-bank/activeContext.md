@@ -1,58 +1,68 @@
 ## Current Session Context
-2026-02-26, 11:43 PM
+2026-02-27, 12:40 AM
 
 ## Recent Changes
-- Analyzed job ID implementation in both schema and database model
-- Identified that job ID is conceptually a UUID but implemented as a string
-- Created a detailed implementation plan for changing the ID type to UUID in memory-bank/job_id_uuid_implementation_plan.md
-- Updated decision log with rationale for changing the ID from string to UUID type
-- Prepared for code implementation to update the Pydantic schema
-- Previous schema changes:
-  - Removed unnecessary fields from JobSchema:
-    - job_id (duplicate of id)
-    - company_id (internal database reference)
-    - location_id (internal database reference)
-    - cluster_id (internal grouping)
-    - processed_description (internal processing artifact)
-    - embedding (vector data for similarity calculations)
-    - sparse_embeddings (vector data for similarity calculations)
-  - Renamed `logo` field to `company_logo`
-  - Renamed `company` field to `company_name`
-- Fixed authentication and schema validation issues:
-  - Resolved token decoding error in AuthDebugMiddleware
-  - Added enhanced debugging in security.py for token validation
-  - Created debug_token.py to diagnose JWT validation issues
-  - Aligned the secret key in .env with application expectations
-  - Changed JobSchema.id field back to string type to match UUID format in database
+- Identified MongoDB compatibility issues with Python UUID type in JobSchema
+- Reverted JobSchema.id field from UUID type to string type while adding explicit validation
+- Implemented a Pydantic field validator to ensure the string follows UUID format
+- Updated implementation plan to reflect the change in approach
+- Modified decisionLog.md to document the rationale behind the change
+- Successfully tested the implementation with test_schema_changes.py
+- Previous session changes:
+  - Analyzed job ID implementation in both schema and database model
+  - Identified that job ID is conceptually a UUID but implemented as a string
+  - Created a detailed implementation plan for changing the ID type to UUID
+  - Updated decision log with rationale for changing the ID from string to UUID type
+  - Previous schema changes:
+    - Removed unnecessary fields from JobSchema
+    - Renamed `logo` field to `company_logo`
+    - Renamed `company` field to `company_name`
+  - Fixed authentication and schema validation issues
 
 ## Current Goals
-- Implement the UUID type change for job ID in app/schemas/job.py
-- Test the change to ensure backward compatibility and proper validation
+- Monitor the JobSchema.id changes with MongoDB to ensure compatibility is maintained
+- Consider further improvements to the UUID validation logic if needed
 - Execute API endpoint tests to verify functionality remains intact
 - Document the test coverage findings and identify areas for improvement
 - Plan for expanding test coverage beyond the current 33% overall coverage
 - Ensure no breaking changes to API consumers
 
 ## Implementation Details
-- The database model implementation:
+- The database model implementation (unchanged):
   ```python
   id: str = Column(String, primary_key=True, default=lambda: str(uuid4()))
   ```
-- Current schema implementation:
+- Original schema implementation:
   ```python
   id: str  # Changed back to string to match existing UUID format in database
   ```
-- Planned implementation:
+- Intermediate implementation that caused MongoDB issues:
   ```python
   from uuid import UUID
   
   id: UUID  # Using UUID type for validation while database stores string representation
   ```
-- This approach leverages Pydantic's ability to:
-  - Validate incoming data against UUID format
-  - Serialize UUIDs to strings in responses
-  - Deserialize string representations back to UUID objects
-- No database model changes will be required as it already generates valid UUIDs
+- Current implementation with string type and validation:
+  ```python
+  from pydantic import BaseModel, field_validator
+  import re
+  
+  id: str  # Changed to str type for MongoDB compatibility while maintaining UUID validation
+  
+  @field_validator('id')
+  @classmethod
+  def validate_uuid_format(cls, v):
+      # Validate that the string is in UUID format
+      uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+      if not uuid_pattern.match(v):
+          raise ValueError('id must be a valid UUID string format')
+      return v
+  ```
+- This approach provides:
+  - Explicit validation for UUID format
+  - Better compatibility with MongoDB
+  - No loss of type safety
+  - No changes required to the database model
 
 ### Test Coverage Details (2026-02-26)
 - **Overall coverage: 33%** (675 lines not covered out of 1002 total)
@@ -90,11 +100,11 @@
 - Test warning in test_schema_changes.py (returning True instead of using assertions)
 
 ## Open Questions
-- Will using UUID type in the schema but storing as string in the database cause any serialization issues?
-- Are there any client applications that might be affected by stricter UUID validation?
-- Should we consider also updating the database model to use a native UUID type in the future?
-- Will the API consumers adapt to the new field names (company_name, company_logo) and the UUID type?
-- Might need to update the from_orm mapping in jobs_matched_router.py for proper field mapping
+- Are there any performance implications of using regex validation compared to native UUID type checking?
+- Should we consider adding more robust error messages for UUID validation failures?
+- Would adding a specific MongoDB-compatible UUID serialization/deserialization approach be beneficial?
+- Should we explore MongoDB's own ObjectId as an alternative for future collections?
+- Will the API consumers adapt to the new field names (company_name, company_logo)?
 # Active Context: Matching Service
 
 ## Current Session Context

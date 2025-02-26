@@ -400,6 +400,27 @@
       "score": 0.6543472056315128
     },
     {
+      "id": "92a569e4-7a2e-4a63-b89e-cd03863b784f",
+      "job_id": "92a569e4-7a2e-4a63-b89e-cd03863b784f",
+      "description": "Job Title: Analytics Engineer Intern - Springer Nature Opening Doors Program\n\nBrief Overview of the Role and Key Expectations:\nAn internship opportunity at Springer Nature focused on providing hands-on experience in data analytics. The intern will develop skills in data collection and processing, data pipeline development, database management, data quality assurance, and reporting and analysis. Additionally, the role involves collaborating with senior team members and other technical teams, using tools like Colab, Google Big Query, and Python for data analysis. The internship is designed to support diversity, equity, and inclusion in the organization.\n\nRequired Technical Skills:  \n- Data Collection and Processing  \n- SQL  \n- Python  \n- Fundamental statistical concepts and data analysis techniques  \n- Google Big Query  \n- Colab  \n\nRequired Soft Skills:  \n- Problem-solving skills  \n- Data accuracy and attention to detail  \n- Effective communication through written reports and presentations  \n- Teamwork and collaboration  \n- Willingness to learn new tools and technologies  \n\nPreferred/Nice-to-have Skills:  \n- Familiarity with modern JavaScript frameworks  \n- Docker  \n- Backend development with Node.js  \n- AWS  \n- Microservices architecture  \n\nExperience Requirements:  \n- Years of experience: Up to six months of internship  \n- Specific domain experience: Data Science, Data Analytics, Computer Science, Engineering, or related fields  \n- Category of experience: Entry-level  \n\nPosition Details:  \n- Work Location: Hybrid (Berlin, up to three days a week working from home)  \n- Workplace arrangement: Hybrid  \n\nAdditional Information:  \nCompetitive salary, support from employee networks, access to career development and training, hands-on experience at one of the largest academic publishing groups, support for diversity, equity, and inclusion. Application deadline: March 14th, 2025.",
+      "workplace_type": "Full-time",
+      "short_description": "Develop data pipelines, manage databases, ensure data quality, and analyze data for reports in Springer Nature\u2019s Marketing Data Analytics and Technology team. Must have SQL, Python, and strong problem-solving skills. Internship in Berlin, June 2025 to Dec 2025. Div\u591a\u6837\u6027\u548c\u5305\u5bb9\u6027\u3002",
+      "field": "Data",
+      "experience": "Entry-level",
+      "skills_required": [
+        "SQL",
+        "Python",
+        "Google Big Query"
+      ],
+      "country": "Germany",
+      "city": "Berlin",
+      "company_name": "springernature",
+      "company_logo": "https://springernature.wd3.myworkdayjobs.com/SpringerNatureCareers/assets/logo",
+      "portal": "test_portal",
+      "title": "Analytics Engineer Intern, Springer Nature Opening Doors Program",
+      "score": 0.6480343523876995
+    },
+    {
       "id": "9df436ab-2de2-42be-8511-38e32bbdf7b7",
       "job_id": "9df436ab-2de2-42be-8511-38e32bbdf7b7",
       "description": "Junior architect position focusing on collaborative project planning and sustainability. You will support the project leadership in the planning of green projects, working closely with various departments, and will play a role in the BIM-assisted planning process. The role also includes supporting the ATP Green Deal initiatives and contributing to the development of climate-neutral buildings.\n\nRequired Technical Skills:  \n- Auto-CAD Revit  \n- Adobe CS  \n\nRequired Soft Skills:  \n- Enthusiasm for integrated planning  \n- Engaged and structured work style  \n- Interest in sustainability and the Green Deal  \n\nPreferred/Nice-to-have Skills:  \n- Experience with BIM  \n- Knowledge of Python or other programming languages  \n- Experience with integrated project management  \n\nExperience Requirements:  \n- Years of experience: None specified  \n- Category of experience: Entry-level  \n- Specific domain experience: Architectural studies or comparable education  \n\nPosition Details:  \n- Work Location: Onsite (Berlin)  \n\nAdditional Information:  \nOffers opportunities to work on challenging international and multidisciplinary projects. Provides specific further training opportunities at the ATP Academy. Career and development perspectives are future-oriented and individually tailored. Flexible working hours and flexible office arrangements.",
@@ -671,6 +692,27 @@
       "portal": "test_portal",
       "title": "(Senior) Backend Engineer (f/m/d)",
       "score": 0.5346001182571399
+    },
+    {
+      "id": "53c3b26d-ec1b-42d1-92de-eb83f3565711",
+      "job_id": "53c3b26d-ec1b-42d1-92de-eb83f3565711",
+      "description": "Network Reliability Engineering position at IONOS, focusing on designing, improving, and automating scalable data center networks across multiple data centers. Involves building tools for network automation, researching, and recommending solutions for network performance and security. Collaborates with DevOps departments for support and innovation in K8S, storage, compute, and more. Participates in an on-call rotation.\n\nRequired Technical Skills:  \n- Linux (automation-development building blocks: Python, bash, iptables, tcpdump, git)  \n- Juniper devices (EX, QFX, MX, SRX series and routing protocols BGP, OSPF)  \n- K8S  \n- Storage  \n- Compute  \n- Software engineering best practices (code reviews, source control management, build processes, testing, release and change management)  \n\nPreferred/Nice-to-have Skills:  \n- Automated provisioning of network devices  \n- Cloud technologies (Ansible, Salt, Terraform, RESTCONF, NETCONF)  \n- Virtualized environments (VMware, OpenStack, GNS3-EVE, K8S, KVM, OpenVSwitch, Linux bridges)  \n\nExperience Requirements:  \n- Years of experience: Solid experience required  \n- Category of experience: Mid-level to senior-level  \n- Specific domain experience: Full stack development in networking and DevOps  \n\nPosition Details:  \n- Work Location: Hybrid (Berlin or Karlsruhe)  \n\nAdditional Information:  \nHybrid working model; flexible working hours; various employee benefits including a subsidized canteen, modern office space, and numerous training opportunities.",
+      "workplace_type": "Full-time",
+      "short_description": "Design, automate, and troubleshoot scalable data center networks. Expertise in Linux, Juniper devices, and automation tools like Ansible, Terraform. On-call rotations. Hybrid work model. Located in Berlin or Karlsruhe.",
+      "field": "Information Technology",
+      "experience": "Senior-level",
+      "skills_required": [
+        "Linux",
+        "Python",
+        "K8S"
+      ],
+      "country": "Germany",
+      "city": "Berlin",
+      "company_name": "IONOS EN",
+      "company_logo": "https://s101-recruiting.cdn.greenhouse.io/external_greenhouse_job_boards/logos/400/212/710/original/LOGO_IONOS_Blue_RGB.png?1699024747",
+      "portal": "test_portal",
+      "title": "Network Reliability Engineer",
+      "score": 0.531508979042697
     },
     {
       "id": "7aae411c-0bed-4be2-9fc2-0841f6330f80",
@@ -1007,48 +1049,6 @@
       "portal": "test_portal",
       "title": "IT Application Consultant \u2013 Bereich Trading",
       "score": 0.41652143630993993
-    },
-    {
-      "id": "e5883a88-61e5-4224-a80a-f46445c02c04",
-      "job_id": "e5883a88-61e5-4224-a80a-f46445c02c04",
-      "description": "Senior Test Automation Engineer role focused on ensuring the quality, reliability, and scalability of backend services in the Ridepooling Intelligence domain.\n\nRequired Technical Skills:  \n- Backend test automation  \n- gRPC  \n- RESTful and GraphQL APIs  \n- Microservices architecture  \n- Automated end-to-end testing  \n- CI/CD pipelines  \n- Observability tools (Grafana, Kibana)  \n\nRequired Soft Skills:  \n- Collaboration skills  \n- Problem-solving abilities  \n- Mentoring capability  \n- Team player mentality  \n\nPreferred/Nice-to-have Skills:  \n- Postman  \n- Swagger  \n- REST Assured or similar API testing frameworks  \n- Python  \n- JVM languages (Java, Kotlin, Scala)  \n- AWS experience  \n\nExperience Requirements:  \n- Years of experience: 5+ years  \n- Category of experience: Test Automation and Quality Assurance  \n- Specific domain experience: Backend services, API testing  \n\nPosition Details:  \n- Work Location: Hybrid (mix of remote and office)  \n\nAdditional Information:  \nIncludes competitive salary, bonus, hybrid work setup, flexible working hours, public transport ticket subsidy, MOIA ride discount, learning environment, mental health support, 30 vacation days, and more. Emphasizes a diverse and inclusive workplace culture.",
-      "workplace_type": "Full-time",
-      "short_description": "Senior Test Automation Engineer for Ridepooling Intelligence Unit. Design and implement automated tests for backend services. Drive quality strategies. Collaborate with cross-functional teams. Experience with backend test automation, microservices, and CI/CD required. Hybrid work setup, competitive salary, and continuous learning opportunities.",
-      "field": "Software Engineering",
-      "experience": "Senior-level",
-      "skills_required": [
-        "gRPC",
-        "RESTful",
-        "Python"
-      ],
-      "country": "Germany",
-      "city": "Berlin",
-      "company_name": "MOIA",
-      "company_logo": "https://s101-recruiting.cdn.greenhouse.io/external_greenhouse_job_boards/logos/400/043/310/resized/LinkedIn_Logo_16x9.jpg?1643793940",
-      "portal": "test_portal",
-      "title": "Senior Test Automation Engineer (m/f/d) - Ridepooling Intelligence",
-      "score": 0.4127077511255087
-    },
-    {
-      "id": "67044cf3-dfab-4ea9-85d3-12ef1f1af82a",
-      "job_id": "67044cf3-dfab-4ea9-85d3-12ef1f1af82a",
-      "description": "Freelance position involving training generative AI models by crafting and answering computer science questions and evaluating code generated by AI. This is a long-term project that can be completed remotely with flexible hours.\n\nRequired Technical Skills:  \n- Java  \n- Python  \n- JavaScript  \n- TypeScript  \n- C  \n- Swift  \n- Verilog  \n\nRequired Soft Skills:  \n- Ability to articulate complex concepts fluently in German  \n- Excellent attention to detail including grammar, punctuation, and style guidelines  \n\nPreferred/Nice-to-have Skills:  \n- No specific preferred skills mentioned  \n\nExperience Requirements:  \n- Years of experience: No specific experience required  \n- Category of experience: No specific domain experience required  \n\nPosition Details:  \n- Work Location: Remote  \n\nAdditional Information:  \nRemote position with flexible hours; long-term project with one of the leading generative AI companies.",
-      "workplace_type": "Contract",
-      "short_description": "Craft and answer computer science questions, evaluate AI-generated code; fluent German required; remote, flexible hours; long-term project with top AI company.",
-      "field": "Data",
-      "experience": "Entry-level",
-      "skills_required": [
-        "Java",
-        "Python",
-        "JavaScript"
-      ],
-      "country": "Germany",
-      "city": "Berlin",
-      "company_name": "Upwork",
-      "company_logo": "https://c.smartrecruiters.com/sr-company-logo-prod-aws-dc11/64dd25f55d99e2082514c2d6/huge?r=s3-us-east-2&_1727802643390",
-      "portal": "test_portal",
-      "title": "German Coding Expert (AI Trainer)",
-      "score": 0.4043482877081933
     }
   ]
 }

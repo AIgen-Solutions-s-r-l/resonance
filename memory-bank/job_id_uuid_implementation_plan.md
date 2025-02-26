@@ -1,33 +1,44 @@
-# Implementation Plan: Job ID Type Change from String to UUID
+# Implementation Plan: Job ID Type Handling in Schema (Updated)
 
 ## Overview
-This plan outlines the steps to change the JobSchema `id` field from a string type to a UUID type. This change will improve type safety while maintaining backward compatibility with the existing database and API consumers.
+This updated plan addresses MongoDB compatibility issues by using string type with explicit UUID validation for the JobSchema `id` field. This ensures both database compatibility and type safety.
 
 ## Current Implementation
 - Database model (`Job` class):
   ```python
   id: str = Column(String, primary_key=True, default=lambda: str(uuid4()))
   ```
-- Pydantic schema (`JobSchema` class):
+- Previous Pydantic schema (with UUID type):
   ```python
-  id: str  # Changed back to string to match existing UUID format in database
+  id: UUID  # Using UUID type for validation while database stores string representation
   ```
 
-## Implementation Steps
+## Revised Implementation Steps
 
 ### 1. Update the Pydantic Schema
 - Modify `app/schemas/job.py` to:
-  - Import UUID from the uuid module
-  - Change the `id` field type from `str` to `UUID`
+  - Import field_validator from pydantic
+  - Use str type for id field
+  - Add UUID format validation
 
 ```python
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import List, Optional
 from datetime import datetime
-from uuid import UUID  # Add this import
+import re
 
 class JobSchema(BaseModel):
-    id: UUID  # Change from str to UUID
+    id: str  # Changed to str type for MongoDB compatibility while maintaining UUID validation
+    
+    @field_validator('id')
+    @classmethod
+    def validate_uuid_format(cls, v):
+        # Validate that the string is in UUID format
+        uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+        if not uuid_pattern.match(v):
+            raise ValueError('id must be a valid UUID string format')
+        return v
+    
     # other fields remain unchanged
     
     class Config:
@@ -36,33 +47,29 @@ class JobSchema(BaseModel):
 
 ### 2. Test Data Validation and Serialization
 - Ensure Pydantic correctly:
-  - Validates incoming UUIDs (rejecting invalid formats)
-  - Serializes UUIDs to strings in responses
-  - Deserializes string representations back to UUID objects
+  - Validates incoming string UUIDs (rejecting invalid formats)
+  - Maintains the string format throughout processing
 
-### 3. Review Router Implementation
-- No changes needed to `app/routers/jobs_matched_router.py` as:
-  - The endpoint already uses `JobSchema` for response serialization
-  - The schema handles UUID conversion automatically
+### 3. Review Database Compatibility
+- This approach is compatible with both SQL and MongoDB databases
+- String representation is universally supported
+- Validation ensures data integrity
 
-### 4. Maintain Backward Compatibility
-- Keep the database model unchanged since:
-  - It already generates valid UUIDs
-  - It stores them as strings which is compatible with most database systems
-  - SQLAlchemy handles the conversion between the ORM and the database
+### 4. Maintain Type Safety
+- Field validator ensures only properly formatted UUIDs are accepted
+- Validation occurs at the schema level instead of the type level
+- Proper error messages are provided for invalid formats
 
 ### 5. Code Style Update
-- Update the comment in the schema for clarity:
-  ```python
-  id: UUID  # Using UUID type for validation while database stores string representation
-  ```
+- Updated comment explains the rationale behind the string type with validation
 
 ## Testing Approach
-1. Unit tests for schema validation
-2. Integration tests for database interactions
-3. End-to-end API tests to verify serialization/deserialization
+1. Unit tests for schema validation (test_schema_changes.py)
+2. Integration tests for database interactions with MongoDB
+3. End-to-end API tests to verify proper handling
 
 ## Implementation Notes
-- This change is strictly a schema validation improvement
+- This approach is a practical compromise that ensures both database compatibility and type safety
 - No database migration is required
-- No API response format changes will occur (UUIDs serialize to the same string format)
+- No API response format changes will occur
+- MongoDB compatibility is maintained while ensuring data integrity

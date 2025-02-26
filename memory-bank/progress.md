@@ -1,3 +1,56 @@
+## 2026-02-27 - Job ID Type Revision: UUID to String with Validation for MongoDB
+
+### Work Done
+- Changed JobSchema.id field from UUID type back to string type with explicit validation for MongoDB compatibility
+- Implemented a Pydantic field validator to ensure the string follows UUID format
+- Updated implementation plan to document the change in approach
+- Modified decisionLog.md to reflect the rationale behind the revision
+- Successfully tested the implementation with test_schema_changes.py
+- Ensured no breaking changes to existing code or API contracts
+
+### Implementation Details
+- Original database model implementation (unchanged):
+  ```python
+  id: str = Column(String, primary_key=True, default=lambda: str(uuid4()))
+  ```
+- Previous interim schema implementation:
+  ```python
+  from uuid import UUID
+  
+  id: UUID  # Using UUID type for validation while database stores string representation
+  ```
+- Current revised implementation:
+  ```python
+  from pydantic import BaseModel, field_validator
+  from typing import List, Optional
+  from datetime import datetime
+  import re
+
+  class JobSchema(BaseModel):
+      id: str  # Changed to str type for MongoDB compatibility while maintaining UUID validation
+      
+      @field_validator('id')
+      @classmethod
+      def validate_uuid_format(cls, v):
+          # Validate that the string is in UUID format
+          uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+          if not uuid_pattern.match(v):
+              raise ValueError('id must be a valid UUID string format')
+          return v
+  ```
+- This approach:
+  - Maintains compatibility with MongoDB which doesn't natively support Python UUID objects
+  - Preserves type safety through explicit validation
+  - Ensures only properly formatted UUIDs are accepted
+  - Requires no database model changes
+
+### Next Steps
+1. Monitor for any issues with MongoDB operations to confirm compatibility
+2. Consider adding more comprehensive testing for edge cases in UUID validation
+3. Evaluate performance impact of regex validation vs. native UUID type checking
+4. Update API documentation to clarify id field format requirements
+5. Consider documenting MongoDB compatibility constraints for future schema design decisions
+
 ## 2026-02-26 - Job ID Type Refinement: UUID Implementation
 
 ### Work Done
@@ -29,13 +82,13 @@
 - No database model changes required as it already generates valid UUIDs
 
 ### Next Steps
-1. Implement the schema change in app/schemas/job.py
-2. Test the change to ensure:
+1. ✅ Implement the schema change in app/schemas/job.py
+2. ✅ Test the change to ensure:
    - Backward compatibility with existing data
    - Proper validation of UUID formats
    - Correct serialization/deserialization
-3. Update any tests that might be affected by the change
-4. Verify API behavior remains unchanged for consumers
+3. ✅ Update any tests that might be affected by the change
+4. ✅ Verify API behavior remains unchanged for consumers
 
 ## 2026-02-26 - API Authentication and Schema Validation Fixes
 
