@@ -1,3 +1,32 @@
+## 2026-02-26 - Enhanced Authentication Debugging
+
+**Context:** The API was returning 401 Unauthorized errors when accessing the `/jobs/match` endpoint. The existing error handling provided limited diagnostic information, making it difficult to identify the specific cause of authentication failures, such as expired tokens, invalid signatures, or malformed headers.
+
+**Decision:** Enhance the authentication debugging capabilities by:
+1. Adding more specific error handling and logging in the authentication process
+2. Implementing a new middleware to log detailed information about authentication attempts
+3. Improving the token verification function documentation and options
+4. Providing different error messages based on specific JWT error types
+
+**Rationale:**
+- Generic 401 errors without specific context make troubleshooting difficult
+- Authentication issues are among the most common API problems and can impact client applications
+- Detailed logging of authentication attempts helps identify patterns of failures
+- Specific error messages help both developers and API consumers diagnose issues faster
+
+**Implementation:**
+- Modified `get_current_user` in app/core/auth.py to catch specific JWT exception types
+- Added detailed logging throughout the authentication process
+- Updated the token verification function with explicit verification options
+- Created an AuthDebugMiddleware in app/main.py to intercept and log authentication attempts
+
+**Consequences:**
+- More comprehensive logging will make authentication issues easier to diagnose
+- Logs may contain sensitive information and should be properly secured
+- Slightly increased overhead due to additional logging and token decoding
+- Improved developer experience when troubleshooting authentication problems
+- Foundation for more advanced authentication metrics and monitoring
+
 ## 2026-02-26 - JobSchema Field Type and Name Changes
 
 **Context:** After the recent field removal, several additional improvements to the JobSchema were identified to enhance clarity and correctness. Specifically, the `id` field should be an integer to match its actual data type, and the `company` and `logo` fields needed to be renamed for better semantic clarity.

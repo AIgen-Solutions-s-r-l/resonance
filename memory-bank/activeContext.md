@@ -1,5 +1,5 @@
 ## Current Session Context
-2026-02-26, 9:47 PM
+2026-02-26, 10:58 PM
 
 ## Recent Changes
 - Analyzed JobSchema usage in the matching service
@@ -20,12 +20,28 @@
 - Modified test script to test the new schema structure
 - Verified usage patterns across the codebase
 - Executed tests with coverage and generated detailed coverage reports
+- Created a detailed endpoint testing plan
+- Implemented a bash script (test_endpoints.sh) to test API endpoints using:
+  - Automated server startup with uvicorn on port 18001
+  - JWT token authentication with the authentication service
+  - Endpoint testing for root, job matching, and filtered job matching
+  - Proper error handling and cleanup of resources
+- Enhanced authentication debugging for the 401 Unauthorized error:
+  - Improved error handling in `get_current_user` with specific JWT error types
+  - Added detailed logging for authentication failures in `app/core/auth.py`
+  - Updated `verify_jwt_token` function with better documentation and settings
+  - Added a new `AuthDebugMiddleware` in `app/main.py` to:
+    - Log detailed information about authentication headers
+    - Log decoded token payloads for debugging
+    - Track response times for authentication requests
+    - Provide additional context for 401 responses
 
 ## Current Goals
 - Document the test coverage findings and identify areas for improvement
 - Consider addressing the warnings detected during test execution
 - Plan for expanding test coverage beyond the current 33% overall coverage
 - Ensure no breaking changes to API consumers
+- Execute the endpoint test script to validate API functionality
 
 ## Implementation Details
 - Modified JobSchema in app/schemas/job.py with new field types and names

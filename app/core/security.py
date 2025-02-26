@@ -70,5 +70,16 @@ def verify_jwt_token(token: str) -> dict:
 
     Returns:
         Decoded token data
+
+    Raises:
+        jose.exceptions.JWTError: If token validation fails
+        jose.exceptions.ExpiredSignatureError: If token has expired
     """
-    return jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+    # The jwt.decode function will raise specific exceptions like ExpiredSignatureError
+    # which will be caught by the caller (get_current_user)
+    return jwt.decode(
+        token,
+        settings.secret_key,
+        algorithms=[settings.algorithm],
+        options={"verify_signature": True, "verify_exp": True}
+    )

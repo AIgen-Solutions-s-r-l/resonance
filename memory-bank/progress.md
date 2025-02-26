@@ -1,3 +1,80 @@
+## 2026-02-26 - Authentication Debugging Enhancement
+
+### Work Done
+- Enhanced authentication debugging to diagnose 401 Unauthorized errors:
+  - Improved error handling in `get_current_user` function to catch specific JWT error types
+  - Added detailed logging for authentication failures with proper context information
+  - Updated the JWT token verification function with better documentation and explicit options
+  - Implemented a new `AuthDebugMiddleware` that:
+    - Logs detailed information about authentication headers
+    - Decodes and logs token payloads (without verification) for debugging
+    - Tracks response times for authentication requests
+    - Provides detailed context for 401 responses including auth configuration info
+
+### Implementation Details
+- Modified `app/core/auth.py` to:
+  - Import specific exception types from jose library (JWTError, ExpiredSignatureError)
+  - Add logging for token receipt, validation, and failure conditions
+  - Provide more specific error messages based on exception type
+  - Include traceback information for unexpected errors
+- Enhanced `app/core/security.py` to:
+  - Explicitly specify token verification options
+  - Improve function documentation with specific exception information
+- Added new middleware in `app/main.py`:
+  - Intercepts requests to protected endpoints
+  - Logs detailed authentication header information
+  - Attempts to decode JWT tokens to provide payload visibility
+  - Tracks timing for request handling
+  - Provides authentication configuration details on 401 responses
+
+### Next Steps
+1. Test the enhanced debugging with various authentication scenarios
+2. Review server logs to identify patterns in token validation failures
+3. Consider adding Prometheus metrics for authentication failures
+4. Evaluate token refresh mechanism to reduce 401 errors from expired tokens
+5. Consider implementing more user-friendly error messages for common auth failures
+
+## 2026-02-26 - API Endpoint Testing
+
+### Work Done
+- Created detailed endpoint testing plan in memory-bank/endpoint_testing_plan.md
+- Implemented a comprehensive bash script (test_endpoints.sh) for testing API endpoints:
+  - Automatic server startup with uvicorn on port 18001
+  - JWT token authentication via the external auth service
+  - Testing of root, job matching, and filtered job matching endpoints
+  - Robust error handling with detailed output for debugging
+  - Proper cleanup of server processes when testing is complete
+- Made the script executable for easy testing by developers
+- Designed the script to be easily maintainable and extensible for future endpoint additions
+
+### Implementation Details
+- Server configuration:
+  - Uses uvicorn to run the FastAPI application
+  - Configures port 18001 for consistent testing
+  - Includes graceful startup detection and timeout handling
+- Authentication flow:
+  - Obtains JWT token from https://auth.neuraltrading.group/auth/login
+  - Uses test credentials (johndoe/securepassword)
+  - Properly extracts and applies the token to authenticated requests
+- Endpoint testing:
+  - Tests the root endpoint (/) for server health
+  - Tests the job matching endpoint (/jobs/match) with authentication
+  - Tests the filtered job matching endpoint with query parameters:
+    - country=Germany
+    - city=Berlin
+    - keywords=python
+- Process management:
+  - Uses background processes with proper PID tracking
+  - Implements trap handlers for clean exit even on interruption
+  - Logs all activity for debugging purposes
+
+### Next Steps
+1. Execute the test script to validate API functionality
+2. Consider integrating the endpoint tests into CI/CD pipeline
+3. Expand the script to test additional endpoints as they are developed
+4. Add response validation using JSON schema
+5. Consider implementing performance benchmarking in the testing script
+
 ## 2026-02-26 - JobSchema Field Updates
 
 ### Work Done
