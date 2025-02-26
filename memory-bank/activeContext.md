@@ -1,5 +1,5 @@
 ## Current Session Context
-2026-02-26, 10:58 PM
+2026-02-26, 11:13 PM
 
 ## Recent Changes
 - Analyzed JobSchema usage in the matching service
@@ -13,7 +13,7 @@
   - embedding (vector data for similarity calculations)
   - sparse_embeddings (vector data for similarity calculations)
 - Made the following schema updates:
-  - Changed `id` field from string to integer
+  - Retained `id` field as string type to match UUID format in database
   - Renamed `logo` field to `company_logo`
   - Renamed `company` field to `company_name`
 - Updated JobMatcher to use the new field names when creating job dictionaries
@@ -35,6 +35,16 @@
     - Log decoded token payloads for debugging
     - Track response times for authentication requests
     - Provide additional context for 401 responses
+- Fixed JWT token decoding error in AuthDebugMiddleware:
+  - Modified token decoding in main.py to include the secret key parameter
+  - Added enhanced debugging in verify_jwt_token in security.py
+  - Created debug_token.py to diagnose JWT validation issues
+- Resolved authentication issues:
+  - Aligned the secret key in .env ("development-secret-key") with what the application uses
+  - Successfully verified token generation and validation
+- Fixed schema validation error:
+  - Changed JobSchema.id field back to string type to match UUID format in database
+  - Successfully executed all endpoint tests
 
 ## Current Goals
 - Document the test coverage findings and identify areas for improvement

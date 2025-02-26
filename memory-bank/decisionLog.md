@@ -1,3 +1,34 @@
+## 2026-02-26 - JWT Authentication Configuration and Schema Type Correction
+
+**Context:** During API endpoint testing with the test_endpoints.sh script, two critical issues were discovered:
+1. A JWT token decoding error in the AuthDebugMiddleware: "decode() missing 1 required positional argument: 'key'"
+2. After fixing the token decoding, a 401 Unauthorized error persisted due to a secret key mismatch
+3. After resolving authentication, a schema validation error occurred: "Input should be a valid integer unable to parse string as an integer"
+
+**Decision:**
+1. Fix the AuthDebugMiddleware token decoding by providing the required secret key parameter
+2. Update the .env file to align the SECRET_KEY with what the application expects ("development-secret-key")
+3. Revert the JobSchema.id field type from integer back to string to match the UUID format in the database
+
+**Rationale:**
+- The PyJWT library requires a key parameter even when not verifying the signature for debugging purposes
+- The application was using an environment variable SECRET_KEY value that differed from what was in the .env file
+- The JobSchema.id field was prematurely changed to integer without confirming the actual data type in the database, which appears to use UUID strings
+
+**Implementation:**
+1. Modified token decoding in AuthDebugMiddleware to include the secret key parameter
+2. Updated .env file with the correct secret key value
+3. Created debug_token.py script to diagnose JWT validation issues in detail
+4. Changed JobSchema.id back to string type in app/schemas/job.py
+5. Verified all endpoints work correctly with the test_endpoints.sh script
+
+**Consequences:**
+- Improved reliability of API authentication
+- More consistent debugging information for future authentication issues
+- API schema now correctly reflects the actual database data types
+- Better alignment between configuration files and application expectations
+- Enhanced diagnostics capability for future JWT authentication issues
+
 ## 2026-02-26 - Enhanced Authentication Debugging
 
 **Context:** The API was returning 401 Unauthorized errors when accessing the `/jobs/match` endpoint. The existing error handling provided limited diagnostic information, making it difficult to identify the specific cause of authentication failures, such as expired tokens, invalid signatures, or malformed headers.

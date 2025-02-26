@@ -1,3 +1,42 @@
+## 2026-02-26 - API Authentication and Schema Validation Fixes
+
+### Work Done
+- Fixed critical JWT token authentication issues affecting all API endpoints:
+  - Resolved token decoding error in AuthDebugMiddleware by providing required secret key parameter
+  - Added enhanced debugging in security.py to provide visibility into token validation
+  - Created debug_token.py script to diagnose JWT validation issues
+  - Discovered secret key mismatch between token generation and validation
+  - Fixed environment configuration by aligning the secret key in .env file with application expectations
+- Fixed schema validation error preventing successful job matching:
+  - Reverted id field in JobSchema back to string type to match UUID format in database
+  - Successfully executed all endpoint tests with 50 matching jobs returned
+  - Verified filtered job matching also works properly
+- Successfully validated all API endpoints using test_endpoints.sh script:
+  - Root endpoint (/): Returns service status message
+  - Jobs matching endpoint (/jobs/match): Returns list of matched jobs
+  - Filtered jobs matching endpoint: Returns jobs matching specified criteria
+
+### Implementation Details
+- JWT authentication fixes:
+  - Modified the token decoding in AuthDebugMiddleware to include the secret key parameter
+  - Discovered the application was using "development-secret-key" from environment variables
+  - Updated .env file to use the same secret key as the application
+  - Created debug_token.py for comprehensive JWT validation using both PyJWT and python-jose libraries
+  - Added detailed logging of token contents and validation parameters
+- Schema validation fix:
+  - JobSchema.id field was previously changed from string to integer
+  - Database was using UUID strings (e.g., "f641d8eb-7eed-4477-b6db-462bca67448a")
+  - Changed id field back to string type in app/schemas/job.py
+  - Retained all other schema changes (field removals and renames)
+
+### Next Steps
+1. Review database design to evaluate whether id field should be integer or string
+2. Update documentation to reflect the id field type decision (string UUID)
+3. Consider adding validation for the id field to ensure it follows UUID format
+4. Implement monitoring for authentication failures to detect similar issues
+5. Consider adding automated tests for authentication flows
+6. Document the JWT token format and validation process for future reference
+
 ## 2026-02-26 - Authentication Debugging Enhancement
 
 ### Work Done
