@@ -34,11 +34,7 @@ class Settings(BaseSettings):
         "DATABASE_URL",
         "postgresql+asyncpg://testuser:testpassword@localhost:5432/matching",
     )
-    test_database_url: str = os.getenv(
-        "TEST_DATABASE_URL",
-        "postgresql+asyncpg://testuser:testpassword@localhost:5432/test_matching",
-    )
-
+    
     # Authentication settings
     secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     algorithm: str = os.getenv("ALGORITHM", "HS256")
