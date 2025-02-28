@@ -25,13 +25,6 @@ class Settings(BaseSettings):
     mongodb: str = os.getenv("MONGODB", "mongodb://localhost:27017")
     mongodb_database: str = os.getenv("MONGODB_DATABASE", "resumes")
 
-    # PostgreSQL settings
-    db_name: str = os.getenv("DBNAME", "matching")
-    db_user: str = os.getenv("DBUSER", "testuser")
-    db_password: str = os.getenv("DBPASSWORD", "testpassword")
-    db_host: str = os.getenv("DBHOST", "localhost")
-    db_port: str = os.getenv("DBPORT", "5432")
-
     # RabbitMQ settings
     rabbitmq_url: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
     job_to_apply_queue: str = os.getenv("MATCHING_QUEUE", "job_to_apply_queue")
@@ -57,28 +50,6 @@ class Settings(BaseSettings):
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key")
     llm_base_url: str = os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")
     llm_model_name: str = os.getenv("LLM_MODEL_NAME", "openai/gpt-4o-mini")
-
-    # Environment-specific logging configuration
-    @property
-    def logging_config(self) -> dict:
-        """
-        Returns logging configuration based on environment.
-        """
-        base_config = {
-            "app_name": self.service_name,
-            "log_level": self.log_level,
-            "syslog_host": self.syslog_host if self.enable_logstash else None,
-            "syslog_port": self.syslog_port if self.enable_logstash else None,
-            "json_logs": self.json_logs,
-            "enable_logstash": self.enable_logstash,
-        }
-
-        if self.environment == "development":
-            base_config.update(
-                {"json_logs": False, "log_level": "DEBUG" if self.debug else "INFO"}
-            )
-
-        return base_config
 
     model_config = SettingsConfigDict(env_file=".env")
 

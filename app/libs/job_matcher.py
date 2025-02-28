@@ -43,14 +43,7 @@ class JobMatcher:
 
     def _initialize_database(self) -> None:
         try:
-            self.conn = psycopg.connect(
-                dbname=self.settings.db_name,
-                user=self.settings.db_user,
-                password=self.settings.db_password,
-                host=self.settings.db_host,
-                port=self.settings.db_port,
-                autocommit=True,
-            )
+            self.conn = psycopg.connect(self.settings.database_url, autocommit=True)
             logger.info("Database connection established successfully")
         except psycopg.Error as e:
             logger.error("Database connection failed")
