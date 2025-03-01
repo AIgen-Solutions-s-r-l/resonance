@@ -7,7 +7,6 @@ from typing import List
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy import text
 
-
 class HealthCheckSQLAlchemy(HealthCheckBase, HealthCheckInterface):
     _connection_uri: str
     _tags: List[str]
@@ -16,15 +15,18 @@ class HealthCheckSQLAlchemy(HealthCheckBase, HealthCheckInterface):
         self._connection_uri = connection_uri
         self._alias = alias
         self._tags = tags
-        #self._engine = create_async_engine(self._connection_uri, future=True)
         self._engine = psycopg.connect(self._connection_uri, autocommit=True)
 
-    def __checkHealth__(self) -> HealthCheckStatusEnum:
+    async def __checkHealth__(self) -> HealthCheckStatusEnum:
         res = HealthCheckStatusEnum.UNHEALTHY
-        with self._engine.cursor() as cursor:
-            try:
-                cursor.execute("SELECT 1")
-                res = HealthCheckStatusEnum.HEALTHY
-            except Exception as e:
-                logger.error(f"Database health check failed: {str(e)}", error=str(e))
+        try:
+            # Use AsyncConnection for asynchronous operations
+            async with await psycopg.AsyncConnection.connect(self._connection_uri, autocommit=True) as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute("SELECT 1")
+                    result = await cursor.fetchone()
+                    if result and result[0] == 1:
+                        res = HealthCheckStatusEnum.HEALTHY
+        except Exception as e:
+            logger.error(f"Database health check failed: {str(e)}", error=str(e))
         return res
