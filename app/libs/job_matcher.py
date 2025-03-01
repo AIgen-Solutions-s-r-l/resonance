@@ -46,7 +46,7 @@ class JobMatcher:
             self.conn = psycopg.connect(self.settings.database_url, autocommit=True)
             logger.info("Database connection established successfully")
         except psycopg.Error as e:
-            logger.error("Database connection failed")
+            logger.exception("Database connection failed")
             raise
 
     def get_top_jobs_by_multiple_metrics(
