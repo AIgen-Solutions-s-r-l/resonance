@@ -1,3 +1,4 @@
+import psycopg
 from app.log.logging import logger
 from app.routers.healthchecks.fastapi_healthcheck.service import HealthCheckBase
 from app.routers.healthchecks.fastapi_healthcheck.enum import HealthCheckStatusEnum
@@ -15,16 +16,15 @@ class HealthCheckSQLAlchemy(HealthCheckBase, HealthCheckInterface):
         self._connection_uri = connection_uri
         self._alias = alias
         self._tags = tags
-        self._engine = create_async_engine(self._connection_uri, future=True)
+        #self._engine = create_async_engine(self._connection_uri, future=True)
+        self._engine = psycopg.connect(self._connection_uri, autocommit=True)
 
-    async def __checkHealth__(self) -> HealthCheckStatusEnum:
+    def __checkHealth__(self) -> HealthCheckStatusEnum:
         res = HealthCheckStatusEnum.UNHEALTHY
-        async with AsyncSession(self._engine) as session:
+        with self._engine.cursor() as cursor:
             try:
-                sql = text("SELECT 1")
-                result = await session.execute(sql)
-                if result.scalar() == 1:
-                    res = HealthCheckStatusEnum.HEALTHY
+                cursor.execute("SELECT 1")
+                res = HealthCheckStatusEnum.HEALTHY
             except Exception as e:
                 logger.error(f"Database health check failed: {str(e)}", error=str(e))
         return res
