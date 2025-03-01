@@ -11,6 +11,8 @@ from app.core.config import settings
 from app.log.logging import logger
 from fastapi import HTTPException
 
+from app.routers.healthchecks.fastapi_healthcheck_sqlalchemy.service import HealthCheckPostgres
+
 router = APIRouter(tags=["healthcheck"])
 
 
@@ -32,7 +34,7 @@ async def health_check(withlog: bool = False):
 
     _healthChecks = HealthCheckFactory()
     _healthChecks.add(
-        HealthCheckSQLAlchemy(
+        HealthCheckPostgres(
             connection_uri=settings.database_url,
             alias="postgres db",
             tags=("postgres", "db", "sql01"),
