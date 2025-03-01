@@ -3,15 +3,12 @@ from app.routers.healthchecks.fastapi_healthcheck import (
     HealthCheckFactory,
     healthCheckRoute,
 )
-from app.routers.healthchecks.fastapi_healthcheck_sqlalchemy import (
-    HealthCheckSQLAlchemy,
-)
 from app.routers.healthchecks.fastapi_healthcheck_mongodb import HealthCheckMongoDB
 from app.core.config import settings
 from app.log.logging import logger
 from fastapi import HTTPException
 
-from app.routers.healthchecks.fastapi_healthcheck_sqlalchemy.service import HealthCheckPostgres
+from app.routers.healthchecks.fastapi_healthcheck_postgres.service import HealthCheckPostgres
 
 router = APIRouter(tags=["healthcheck"])
 

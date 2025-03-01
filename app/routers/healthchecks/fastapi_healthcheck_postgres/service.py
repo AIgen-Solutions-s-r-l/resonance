@@ -4,6 +4,7 @@ from app.routers.healthchecks.fastapi_healthcheck.service import HealthCheckBase
 from app.routers.healthchecks.fastapi_healthcheck.enum import HealthCheckStatusEnum
 from app.routers.healthchecks.fastapi_healthcheck.domain import HealthCheckInterface
 from typing import List
+
 class HealthCheckPostgres(HealthCheckBase, HealthCheckInterface):
     _connection_uri: str
     _tags: List[str]
