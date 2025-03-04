@@ -33,9 +33,10 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
                         # But still need to provide the key parameter
                         decoded = jwt.decode(token, settings.secret_key, options={"verify_signature": False})
                         logger.info(
-                            "Auth header present for {path}. Token preview: {token_preview}",
-                            token_preview=str(decoded),
-                            path=path
+                            "Auth header present for {path}. Token preview: {token_preview}. Decoded token: {decoded}",
+                            path=path,
+                            token_preview=token_preview,
+                            decoded=decoded
                         )
                     except Exception as e:
                         logger.exception("Could not decode token for debugging")
