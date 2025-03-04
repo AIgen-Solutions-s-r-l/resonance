@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     # PostgreSQL settings
     database_url: str = os.getenv(
         "DATABASE_URL",
-        "postgresql+asyncpg://testuser:testpassword@localhost:5432/matching",
+        "postgresql://testuser:testpassword@localhost:5432/matching",
     )
     
     # Authentication settings

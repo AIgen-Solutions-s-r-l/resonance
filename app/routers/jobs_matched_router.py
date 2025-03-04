@@ -116,11 +116,7 @@ async def get_matched_jobs(
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(
-            f"Validation error for user {current_user}: {str(e)}",
-            current_user=current_user,
-            error=str(e),
-        )
+        logger.exception("Validation error for user {current_user}", current_user=current_user)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),

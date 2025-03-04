@@ -312,16 +312,11 @@ class JobMatcher:
         """
         try:
             # Save to JSON
-            filename = f"job_matches_{resume_id}.json"
+            '''filename = f"job_matches_{resume_id}.json"
             with open(filename, "w") as f:
-                json.dump(job_results, f, indent=2)
+                json.dump(job_results, f, indent=2)'''
 
-            logger.info(
-                "Successfully saved matches to JSON",
-                action="save_matches",
-                status="success",
-                file=filename,
-            )
+            logger.info("Matched jobs are: {job_results}", job_results=job_results, event_type="job_matches")
 
             # Save to MongoDB if flag is True
             if save_to_mongodb:
