@@ -421,10 +421,8 @@ class JobMatcher:
                 return job_results
 
         except Exception as e:
-            logger.error(
-                f"Failed to process job: {e}",
-                action="process_job",
-                status="error",
-                error=str(e),
+            logger.exception(
+                "Failed to process job: {e}",
+                e=e
             )
             raise
