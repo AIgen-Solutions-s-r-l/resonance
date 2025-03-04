@@ -34,7 +34,7 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
                         decoded = jwt.decode(token, settings.secret_key, options={"verify_signature": False})
                         logger.info(
                             "Auth header present for {path}. Token preview: {token_preview}",
-                            decoded_payload=str(decoded),
+                            token_preview=str(decoded),
                             path=path
                         )
                     except Exception as e:
