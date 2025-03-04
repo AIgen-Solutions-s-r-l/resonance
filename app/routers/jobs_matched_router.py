@@ -109,7 +109,7 @@ async def get_matched_jobs(
             current_user=current_user,
         )
 
-        job_pydantic_list = [JobSchema.from_orm(job) for job in job_list]
+        job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
 
         return job_pydantic_list
 
