@@ -33,5 +33,29 @@ class JobSchema(BaseModel):
     score: Optional[float] = None
     skills_required: Optional[List[str]] = None
 
+    @field_validator("skills_required", mode="before")
+    @classmethod
+    def parse_skills_required(cls, value):
+        # If it's already a list, just return it.
+        if isinstance(value, list):
+            return value
+        
+        # Otherwise, assume it's a string like '{Excel,Word,"Power Point"}'
+        # and parse it into a list of strings.
+        
+        # 1) Remove leading/trailing braces if any:
+        value = value.strip()
+        if value.startswith("{") and value.endswith("}"):
+            value = value[1:-1]
+        
+        # 2) Now split on commas (or do something more robust if the data can contain commas inside quotes)
+        # A quick approach:
+        items = value.split(",")
+
+        # 3) Clean quotes/spaces around each item
+        items = [item.strip().strip('"') for item in items]
+
+        return items
+
     class Config:
         from_attributes = True
