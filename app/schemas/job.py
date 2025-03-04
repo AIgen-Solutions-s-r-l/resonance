@@ -39,6 +39,8 @@ class JobSchema(BaseModel):
         # If it's already a list, just return it.
         if isinstance(value, list):
             return value
+        if value is None:
+            return []
         
         # Otherwise, assume it's a string like '{Excel,Word,"Power Point"}'
         # and parse it into a list of strings.

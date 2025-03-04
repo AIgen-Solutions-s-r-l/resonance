@@ -32,25 +32,22 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
                         # Don't verify signature here, just decode to see payload
                         # But still need to provide the key parameter
                         decoded = jwt.decode(token, settings.secret_key, options={"verify_signature": False})
-                        logger.debug(
-                            f"Auth header present for {path}. Token preview: {token_preview}",
-                            decoded_payload=str(decoded),
-                            path=path
+                        logger.info(
+                            "Auth header present for {path}. Token preview: {token_preview}. Decoded token: {decoded}",
+                            path=path,
+                            token_preview=token_preview,
+                            decoded=decoded
                         )
                     except Exception as e:
-                        logger.warning(
-                            f"Could not decode token for debugging: {str(e)}",
-                            token_preview=token_preview,
-                            path=path,
-                            error=str(e)
-                        )
+                        logger.exception("Could not decode token for debugging")
                 else:
-                    logger.warning(
-                        f"Malformed Authorization header for {path}: {auth_header}",
-                        path=path
+                    logger.error(
+                        "Malformed Authorization header for {path}: {auth_header}",
+                        path=path,
+                        auth_header=auth_header
                     )
             else:
-                logger.warning(f"No Authorization header present for {path}", path=path)
+                logger.error("No Authorization header present for {path}", path=path)
         
         # Process the request and get response
         start_time = time.time()
@@ -59,18 +56,18 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
         
         # Log response status for auth issues
         if response.status_code == 401:
-            logger.warning(
-                f"401 Unauthorized response for {path}. Process time: {process_time:.4f}s",
-                path=path,
-                status_code=response.status_code,
-                process_time=f"{process_time:.4f}"
+            logger.error(
+                "401 Unauthorized response for {path}",
+                path=path
             )
             if path.startswith("/jobs/"):
                 # Log the configured secret key (partial)
                 secret_preview = settings.secret_key[:3] + "..." if settings.secret_key else "Not set"
                 logger.debug(
-                    f"Auth configuration: algorithm={settings.algorithm}, "
-                    f"secret_key_preview={secret_preview}"
+                    "Auth configuration: algorithm={algorithm}, "
+                    "secret_key_preview={secret_preview}",
+                    algorithm=settings.algorithm,
+                    secret_preview=secret_preview
                 )
         
         return response
@@ -89,7 +86,7 @@ async def lifespan(app: FastAPI):
         yield
         logger.info("Shutting down application")
     except Exception as e:
-        logger.error(f"Application lifecycle error: {str(e)}", error=str(e))
+        logger.exception("Application lifecycle error: {error}", error=str(e))
         raise
 
 

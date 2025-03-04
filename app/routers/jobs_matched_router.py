@@ -123,9 +123,8 @@ async def get_matched_jobs(
         )
     except Exception as e:
         logger.exception(
-            "Unexpected error for user {current_user}: {str(e)}",
+            "Unexpected error for user {current_user}",
             current_user=current_user,
-            exception=str(e),
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

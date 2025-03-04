@@ -37,15 +37,14 @@ async def get_resume_by_user_id(
 
     except Exception as e:
         logger.exception(
-            f"Error retrieving resume: {str(e)}",
+            "Error retrieving resume",
             event_type="resume_retrieval_error",
             user_id=user_id,
             version=version,
             error_type=type(e).__name__,
             error_details=str(e),
         )
-        return {"error": f"Error retrieving resume: {str(e)}"}
-
+        return {"error": "Error retrieving resume"}
 
 async def match_jobs_with_resume(
     resume: Dict[str, Any],

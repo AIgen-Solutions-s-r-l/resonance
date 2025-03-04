@@ -78,11 +78,10 @@ def verify_jwt_token(token: str) -> dict:
     
     # Log token info (just first 10 chars for security)
     token_preview = token[:10] + "..." if len(token) > 10 else token
-    logger.debug(f"Verifying token: {token_preview}")
+    logger.info(f"Verifying token: {token_preview}")
     
     # Log decoding parameters (partial secret key for security)
     secret_preview = settings.secret_key[:3] + "..." if settings.secret_key else "None"
-    logger.debug(f"Decoding with: algorithm={settings.algorithm}, secret_key_preview={secret_preview}")
     
     # Try to decode without verification first to see payload
     try:
@@ -91,9 +90,9 @@ def verify_jwt_token(token: str) -> dict:
             settings.secret_key,
             options={"verify_signature": False}
         )
-        logger.debug(f"Token payload (unverified): {unverified_payload}")
+        logger.info(f"Token payload (unverified): {unverified_payload}")
     except Exception as e:
-        logger.warning(f"Could not decode token payload: {str(e)}")
+        logger.exception("Could not decode token payload")
     
     # The jwt.decode function will raise specific exceptions like ExpiredSignatureError
     # which will be caught by the caller (get_current_user)

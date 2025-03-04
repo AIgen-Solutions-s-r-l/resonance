@@ -39,20 +39,19 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         return int(user_id)
         
     except ExpiredSignatureError as e:
-        logger.warning(f"Token expired: {str(e)}")
+        logger.error("Token expired")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
     except JWTError as e:
-        logger.warning(f"JWT validation error: {str(e)}")
+        logger.exception(f"JWT validation error")
         raise credentials_exception
     except ValueError as e:
         # This might happen if int(user_id) fails
-        logger.warning(f"Invalid user_id format: {str(e)}")
+        logger.exception(f"Invalid user_id format")
         raise credentials_exception
     except Exception as e:
-        logger.error(f"Unexpected auth error: {str(e)}", exc_info=True)
-        logger.debug(f"Auth error traceback: {traceback.format_exc()}")
+        logger.exception(f"Unexpected auth error")
         raise credentials_exception
