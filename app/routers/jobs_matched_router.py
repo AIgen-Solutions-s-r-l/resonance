@@ -67,8 +67,8 @@ async def get_matched_jobs(
         )
 
         logger.info(
-            f"User {current_user} is requesting matched jobs. ",
-            f"Location filter: {locationFilter}, Keywords: {keywords}",
+            "User {current_user} is requesting matched jobs. ",
+            "Location filter: {locationFilter}, Keywords: {keywords}",
             current_user=current_user,
             locationFilter=locationFilter,
             keywords=keywords,
@@ -77,7 +77,7 @@ async def get_matched_jobs(
         resume = await get_resume_by_user_id(current_user)
         if not resume or "error" in resume:
             logger.error(
-                f"Resume not found for user {current_user}.", current_user=current_user
+                "Resume not found for user {current_user}.", current_user=current_user
             )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -104,30 +104,26 @@ async def get_matched_jobs(
 
         job_count = len(job_list)
         logger.info(
-            f"Found {job_count} jobs matched for user {current_user}.",
+            "Found {job_count} jobs matched for user {current_user}.",
             job_count=job_count,
             current_user=current_user,
         )
 
-        job_pydantic_list = [JobSchema.from_orm(job) for job in job_list]
+        job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
 
         return job_pydantic_list
 
     except HTTPException:
         raise
     except ValueError as e:
-        logger.warning(
-            f"Validation error for user {current_user}: {str(e)}",
-            current_user=current_user,
-            error=str(e),
-        )
+        logger.exception("Validation error for user {current_user}", current_user=current_user)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
     except Exception as e:
         logger.exception(
-            f"Unexpected error for user {current_user}: {str(e)}",
+            "Unexpected error for user {current_user}: {str(e)}",
             current_user=current_user,
             exception=str(e),
         )
