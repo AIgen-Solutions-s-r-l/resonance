@@ -312,9 +312,9 @@ class JobMatcher:
         """
         try:
             # Save to JSON
-            '''filename = f"job_matches_{resume_id}.json"
+            filename = f"job_matches_{resume_id}.json"
             with open(filename, "w") as f:
-                json.dump(job_results, f, indent=2)'''
+                json.dump(job_results, f, indent=2)
 
             logger.info("Matched jobs are: {job_results}", job_results=job_results, event_type="job_matches")
 
@@ -410,7 +410,7 @@ class JobMatcher:
 
                 # Save matches to JSON and optionally MongoDB
                 resume_id = str(resume.get("_id", "unknown"))
-                await self.save_matches(job_results, resume_id, save_to_mongodb)
+                #await self.save_matches(job_results, resume_id, save_to_mongodb)
 
                 logger.success(
                     "Successfully processed job",
