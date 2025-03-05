@@ -5,6 +5,14 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from app.libs.job_matcher import JobMatcher
 
 
+# Create a mock Row that supports both dict and list access
+class MockRow(dict):
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self.values())[key]
+        return super().__getitem__(key)
+
+
 @pytest.fixture
 def job_matcher(monkeypatch):
     mock_connect = MagicMock()
@@ -19,9 +27,9 @@ def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
 
     mock_cursor = MagicMock()
 
-    mock_cursor.fetchone.return_value = [1]
+    mock_cursor.fetchone.return_value = MockRow({'count': 1})
 
-    mock_cursor.fetchall.return_value = [{
+    mock_row = MockRow({
         'title': "Software Engineer",
         'description': "Job description",
         'id': "1",
@@ -34,7 +42,9 @@ def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
         'city': "New York",
         'company_name': "TechCorp",
         'score': 1.0
-    }]
+    })
+    
+    mock_cursor.fetchall.return_value = [mock_row]
 
     mock_embedding = [0.1, 0.2, 0.3]
     job_matches = job_matcher.get_top_jobs_by_multiple_metrics(
@@ -49,22 +59,25 @@ def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
 def test_get_top_jobs_by_multiple_metrics_multiple_results(job_matcher):
     mock_cursor = MagicMock()
 
-    mock_results = [{
-        'title': f"Software Engineer {i}",
-        'description': f"Job description {i}",
-        'id': f"{i}",
-        'workplace_type': "office",
-        'short_description': "short desc",
-        'field': "IT",
-        'experience': "3 years",
-        'skills_required': "Python, Django",
-        'country': "USA",
-        'city': "New York",
-        'company_name': "TechCorp",
-        'score': 1.0
-    } for i in range(20)]
+    # Create mock results using MockRow
+    mock_results = [
+        MockRow({
+            'title': f"Software Engineer {i}",
+            'description': f"Job description {i}",
+            'id': f"{i}",
+            'workplace_type': "office",
+            'short_description': "short desc",
+            'field': "IT",
+            'experience': "3 years",
+            'skills_required': "Python, Django",
+            'country': "USA",
+            'city': "New York",
+            'company_name': "TechCorp",
+            'score': 1.0
+        }) for i in range(20)
+    ]
 
-    mock_cursor.fetchone.return_value = [len(mock_results)]
+    mock_cursor.fetchone.return_value = MockRow({'count': len(mock_results)})
 
     mock_cursor.fetchall.return_value = mock_results
 
@@ -152,22 +165,25 @@ async def test_process_job_success(job_matcher):
 
     mock_cursor = MagicMock()
 
-    mock_results = [{
-        'title': f"Software Engineer {i}",
-        'description': f"Job description {i}",
-        'id': f"{i}",
-        'workplace_type': "office",
-        'short_description': "short desc",
-        'field': "IT",
-        'experience': "3 years",
-        'skills_required': "Python, Django",
-        'country': "USA",
-        'city': "New York",
-        'company_name': "TechCorp",
-        'score': 1.0
-    } for i in range(20)]
+    # Create mock results using MockRow for process_job test
+    mock_results = [
+        MockRow({
+            'title': f"Software Engineer {i}",
+            'description': f"Job description {i}",
+            'id': f"{i}",
+            'workplace_type': "office",
+            'short_description': "short desc",
+            'field': "IT",
+            'experience': "3 years",
+            'skills_required': "Python, Django",
+            'country': "USA",
+            'city': "New York",
+            'company_name': "TechCorp",
+            'score': 1.0
+        }) for i in range(20)
+    ]
 
-    mock_cursor.fetchone.return_value = [len(mock_results)]
+    mock_cursor.fetchone.return_value = MockRow({'count': len(mock_results)})
 
     mock_cursor.fetchall.return_value = mock_results
 

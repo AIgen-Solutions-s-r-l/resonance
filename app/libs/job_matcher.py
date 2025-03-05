@@ -68,6 +68,28 @@ class JobMatcher:
         Returns:
             JobMatch instance if successful, None if required fields are missing
         """
+        logger.debug(
+            "Creating JobMatch from row",
+            row_type=type(row),
+            row_data=row
+        )
+        
+        if not isinstance(row, dict):
+            logger.error(
+                "Row is not a dictionary",
+                row_type=type(row),
+                row_data=row
+            )
+            # Convert Row to dict if needed
+            try:
+                row = dict(row)
+            except Exception as e:
+                logger.error(
+                    "Failed to convert row to dictionary",
+                    error=str(e)
+                )
+                return None
+                
         if not self._validate_row_data(row):
             logger.warning(
                 "Skipping job match due to missing required fields",
