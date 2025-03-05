@@ -21,23 +21,20 @@ def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
 
     mock_cursor.fetchone.return_value = [1]
 
-    mock_cursor.fetchall.return_value = [
-        (
-            "Software Engineer",
-            "Job description",
-            "1",
-            "office",
-            False,
-            "short desc",
-            "IT",
-            "3 years",
-            "Python, Django",
-            "USA",
-            "New York",
-            "TechCorp",
-            1.0,
-        )
-    ]
+    mock_cursor.fetchall.return_value = [{
+        'title': "Software Engineer",
+        'description': "Job description",
+        'id': "1",
+        'workplace_type': "office",
+        'short_description': "short desc",
+        'field': "IT",
+        'experience': "3 years",
+        'skills_required': "Python, Django",
+        'country': "USA",
+        'city': "New York",
+        'company_name': "TechCorp",
+        'score': 1.0
+    }]
 
     mock_embedding = [0.1, 0.2, 0.3]
     job_matches = job_matcher.get_top_jobs_by_multiple_metrics(
@@ -52,24 +49,20 @@ def test_get_top_jobs_by_multiple_metrics_single_result(job_matcher):
 def test_get_top_jobs_by_multiple_metrics_multiple_results(job_matcher):
     mock_cursor = MagicMock()
 
-    mock_results = [
-        (
-            f"Software Engineer {i}",
-            f"Job description {i}",
-            f"{i}",
-            "office",
-            False,
-            "short desc",
-            "IT",
-            "3 years",
-            "Python, Django",
-            "USA",
-            "New York",
-            "TechCorp",
-            1.0,
-        )
-        for i in range(20)
-    ]
+    mock_results = [{
+        'title': f"Software Engineer {i}",
+        'description': f"Job description {i}",
+        'id': f"{i}",
+        'workplace_type': "office",
+        'short_description': "short desc",
+        'field': "IT",
+        'experience': "3 years",
+        'skills_required': "Python, Django",
+        'country': "USA",
+        'city': "New York",
+        'company_name': "TechCorp",
+        'score': 1.0
+    } for i in range(20)]
 
     mock_cursor.fetchone.return_value = [len(mock_results)]
 
@@ -159,24 +152,20 @@ async def test_process_job_success(job_matcher):
 
     mock_cursor = MagicMock()
 
-    mock_results = [
-        (
-            f"Software Engineer {i}",
-            f"Job description {i}",
-            f"{i}",
-            "office",
-            False,
-            "short desc",
-            "IT",
-            "3 years",
-            "Python, Django",
-            "USA",
-            "New York",
-            "TechCorp",
-            1.0,
-        )
-        for i in range(20)
-    ]
+    mock_results = [{
+        'title': f"Software Engineer {i}",
+        'description': f"Job description {i}",
+        'id': f"{i}",
+        'workplace_type': "office",
+        'short_description': "short desc",
+        'field': "IT",
+        'experience': "3 years",
+        'skills_required': "Python, Django",
+        'country': "USA",
+        'city': "New York",
+        'company_name': "TechCorp",
+        'score': 1.0
+    } for i in range(20)]
 
     mock_cursor.fetchone.return_value = [len(mock_results)]
 

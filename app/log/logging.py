@@ -16,7 +16,7 @@ class LogConfig:
         self.enviroment = os.getenv("ENVIRONMENT", "development")
         self.service = os.getenv("SERVICE_NAME", "default_service_name")
         self.hostname = os.getenv("HOSTNAME", "unknown")
-        self.loglevel = os.getenv("LOGLEVEL", "INFO")
+        self.loglevel = os.getenv("LOGLEVEL", "DEBUG" if self.enviroment == "development" else "INFO")
         self.loglevel_dd = os.getenv("LOGLEVEL_DATADOG", "ERROR")
 
 
