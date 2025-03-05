@@ -15,6 +15,10 @@ class Settings(BaseSettings):
 
     # Logging settings
     log_level: str = os.getenv("LOG_LEVEL", "DEBUG")
+    
+    # Override log level for development
+    if environment == "development":
+        log_level = "DEBUG"
     syslog_host: str = os.getenv("SYSLOG_HOST", "172.17.0.1")
     syslog_port: int = int(os.getenv("SYSLOG_PORT", "5141"))
     json_logs: bool = os.getenv("JSON_LOGS", "True").lower() == "true"
