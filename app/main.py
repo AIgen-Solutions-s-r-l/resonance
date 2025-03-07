@@ -77,7 +77,6 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
 
 async def lifespan(app: FastAPI):
     """
-    Manages application startup and shutdown.
 
     Args:
         app: FastAPI application instance
@@ -85,9 +84,6 @@ async def lifespan(app: FastAPI):
 
     try:
         logger.info("Starting application")
-        
-        # Setup metrics system
-        setup_metrics(app)
         
         # Report initial system metrics
         collect_system_metrics()
@@ -116,6 +112,15 @@ app = FastAPI(
     description="API for matching jobs with user resumes.",
     version="1.0.0",
 )
+
+# Setup metrics (must be done before other middleware)
+try:
+    setup_metrics(app)
+except Exception as e:
+    logger.error(
+        "Failed to set up metrics system",
+        error=str(e)
+    )
 
 # Add auth debugging middleware
 app.add_middleware(AuthDebugMiddleware)

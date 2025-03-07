@@ -56,7 +56,7 @@ from app.core.config import settings
 from app.log.logging import logger
 
 
-class PrometheusMetricsBackend:
+class PrometheusBackend:
     """
     Backend for exposing metrics to Prometheus.
     
@@ -67,10 +67,18 @@ class PrometheusMetricsBackend:
     - Timings (implemented as Summaries)
     """
     
-    def __init__(self) -> None:
-        """Initialize the Prometheus backend."""
+    def __init__(
+        self,
+        prefix: Optional[str] = None
+    ) -> None:
+        """
+        Initialize the Prometheus backend.
+        
+        Args:
+            prefix: Optional metric name prefix
+        """
         # Get settings
-        self.prefix = settings.metrics_prefix or "app"
+        self.prefix = prefix or settings.metrics_prefix or "app"
         self.port = settings.metrics_prometheus_port
         self.enabled = settings.metrics_enabled and PROMETHEUS_AVAILABLE
         
@@ -118,12 +126,11 @@ class PrometheusMetricsBackend:
                 port=self.port
             )
     
-    def increment_counter(
+    def increment(
         self,
         name: str,
-        tags: Optional[Dict[str, str]],
-        value: int,
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None,
+        value: int = 1
     ) -> None:
         """
         Increment a counter metric.
@@ -131,8 +138,7 @@ class PrometheusMetricsBackend:
         Args:
             name: Metric name
             tags: Optional tags
-            value: Value to increment by
-            sample_rate: Sample rate (ignored for Prometheus)
+            value: Value to increment by (default: 1)
         """
         # Convert tags to label names and values
         label_names, label_values = self._get_labels(name, tags)
@@ -143,12 +149,11 @@ class PrometheusMetricsBackend:
         # Increment counter with labels
         counter.labels(*label_values).inc(value)
     
-    def report_gauge(
+    def gauge(
         self,
         name: str,
         value: Union[int, float],
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a gauge metric.
@@ -157,7 +162,6 @@ class PrometheusMetricsBackend:
             name: Metric name
             value: Gauge value
             tags: Optional tags
-            sample_rate: Sample rate (ignored for Prometheus)
         """
         # Convert tags to label names and values
         label_names, label_values = self._get_labels(name, tags)
@@ -168,12 +172,11 @@ class PrometheusMetricsBackend:
         # Set gauge with labels
         gauge.labels(*label_values).set(value)
     
-    def report_timing(
+    def timing(
         self,
         name: str,
         value: float,
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a timing metric.
@@ -182,7 +185,6 @@ class PrometheusMetricsBackend:
             name: Metric name
             value: Timing value in milliseconds
             tags: Optional tags
-            sample_rate: Sample rate (ignored for Prometheus)
         """
         # Convert tags to label names and values
         label_names, label_values = self._get_labels(name, tags)
@@ -193,12 +195,11 @@ class PrometheusMetricsBackend:
         # Observe timing with labels (convert ms to seconds for Prometheus)
         summary.labels(*label_values).observe(value / 1000.0)
     
-    def report_histogram(
+    def histogram(
         self,
         name: str,
         value: Union[int, float],
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a histogram metric.
@@ -207,7 +208,6 @@ class PrometheusMetricsBackend:
             name: Metric name
             value: Histogram value
             tags: Optional tags
-            sample_rate: Sample rate (ignored for Prometheus)
         """
         # Convert tags to label names and values
         label_names, label_values = self._get_labels(name, tags)
@@ -444,7 +444,7 @@ def setup_metrics_endpoint(app: Any) -> None:
             Response containing Prometheus metrics
         """
         return Response(
-            content=PrometheusMetricsBackend.generate_latest(),
+            content=PrometheusBackend.generate_latest(),
             media_type="text/plain"
         )
     
