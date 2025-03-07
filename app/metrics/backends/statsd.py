@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.log.logging import logger
 
 
-class StatsDBackend:
+class StatsdMetricsBackend:
     """
     Backend for sending metrics to a StatsD server.
     
