@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.log.logging import logger
 
 
-class StatsdMetricsBackend:
+class StatsDBackend:
     """
     Backend for sending metrics to a StatsD server.
     
@@ -23,12 +23,27 @@ class StatsdMetricsBackend:
     - Histograms
     """
     
-    def __init__(self) -> None:
-        """Initialize the StatsD backend."""
-        # Get settings
-        self.host = settings.metrics_statsd_host
-        self.port = settings.metrics_statsd_port
-        self.default_sample_rate = settings.metrics_sample_rate
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        prefix: Optional[str] = None,
+        sample_rate: float = 1.0
+    ) -> None:
+        """
+        Initialize the StatsD backend.
+        
+        Args:
+            host: StatsD server host
+            port: StatsD server port
+            prefix: Optional metric name prefix
+            sample_rate: Default sample rate
+        """
+        # Store configuration
+        self.host = host
+        self.port = port
+        self.prefix = prefix
+        self.default_sample_rate = sample_rate
         
         # Create socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,17 +52,18 @@ class StatsdMetricsBackend:
         self.max_packet_size = 512
         
         logger.info(
-            f"StatsD metrics backend initialized",
+            "StatsD metrics backend initialized",
             host=self.host,
-            port=self.port
+            port=self.port,
+            prefix=self.prefix,
+            default_sample_rate=self.default_sample_rate
         )
     
-    def increment_counter(
+    def increment(
         self,
         name: str,
-        tags: Optional[Dict[str, str]],
-        value: int,
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None,
+        value: int = 1
     ) -> None:
         """
         Increment a counter metric.
@@ -55,9 +71,15 @@ class StatsdMetricsBackend:
         Args:
             name: Metric name
             tags: Optional tags
-            value: Value to increment by
-            sample_rate: Sample rate
+            value: Value to increment by (default: 1)
         """
+        # Use default sample rate
+        sample_rate = self.default_sample_rate
+        
+        # Apply prefix if set
+        if self.prefix:
+            name = f"{self.prefix}.{name}"
+        
         # Only send if we pass the sample rate check
         if not self._should_send(sample_rate):
             return
@@ -77,12 +99,11 @@ class StatsdMetricsBackend:
         # Send metric
         self._send(line)
     
-    def report_gauge(
+    def gauge(
         self,
         name: str,
         value: Union[int, float],
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a gauge metric.
@@ -91,8 +112,14 @@ class StatsdMetricsBackend:
             name: Metric name
             value: Gauge value
             tags: Optional tags
-            sample_rate: Sample rate
         """
+        # Use default sample rate
+        sample_rate = self.default_sample_rate
+        
+        # Apply prefix if set
+        if self.prefix:
+            name = f"{self.prefix}.{name}"
+        
         # Only send if we pass the sample rate check
         if not self._should_send(sample_rate):
             return
@@ -108,12 +135,11 @@ class StatsdMetricsBackend:
         # Send metric
         self._send(line)
     
-    def report_timing(
+    def timing(
         self,
         name: str,
         value: float,
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a timing metric.
@@ -122,8 +148,14 @@ class StatsdMetricsBackend:
             name: Metric name
             value: Timing value in milliseconds
             tags: Optional tags
-            sample_rate: Sample rate
         """
+        # Use default sample rate
+        sample_rate = self.default_sample_rate
+        
+        # Apply prefix if set
+        if self.prefix:
+            name = f"{self.prefix}.{name}"
+        
         # Only send if we pass the sample rate check
         if not self._should_send(sample_rate):
             return
@@ -143,12 +175,11 @@ class StatsdMetricsBackend:
         # Send metric
         self._send(line)
     
-    def report_histogram(
+    def histogram(
         self,
         name: str,
         value: Union[int, float],
-        tags: Optional[Dict[str, str]],
-        sample_rate: float
+        tags: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Report a histogram metric.
@@ -157,8 +188,14 @@ class StatsdMetricsBackend:
             name: Metric name
             value: Histogram value
             tags: Optional tags
-            sample_rate: Sample rate
         """
+        # Use default sample rate
+        sample_rate = self.default_sample_rate
+        
+        # Apply prefix if set
+        if self.prefix:
+            name = f"{self.prefix}.{name}"
+        
         # Only send if we pass the sample rate check
         if not self._should_send(sample_rate):
             return
