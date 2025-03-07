@@ -161,7 +161,7 @@ class JobMatcher:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         offset: int = 0,
-        limit: int = 50,
+        limit: int = 5,
     ) -> List[JobMatch]:
         """
         Get top matching jobs using multiple similarity metrics.
