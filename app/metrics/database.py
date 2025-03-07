@@ -68,22 +68,62 @@ def sql_query_timer(
                 # Report timing
                 report_timing("db.query.duration", duration_ms, metric_tags)
                 
+                # Categorize query duration
+                if duration_ms < 50:
+                    duration_category = "fast"
+                elif duration_ms < 200:
+                    duration_category = "medium"
+                elif duration_ms < 500:
+                    duration_category = "slow"
+                elif duration_ms < 2000:
+                    duration_category = "very_slow"
+                elif duration_ms < 10000:
+                    duration_category = "extremely_slow"
+                else:
+                    duration_category = "critical"
+                
+                # Add duration category to tags
+                metric_tags["duration_category"] = duration_category
+                
+                # Create histogram for all query durations
+                from app.metrics.core import report_histogram
+                report_histogram("db.query.duration_distribution", duration_ms, metric_tags)
+                
                 # Check for slow query
                 if duration_ms > settings.slow_query_threshold_ms:
-                    # Add slow query tag
+                    # Add slow query tag with more detail
                     slow_tags = metric_tags.copy()
                     slow_tags["slow"] = "true"
+                    slow_tags["duration_seconds"] = f"{duration_ms/1000:.2f}s"
                     
-                    # Log slow query
+                    # Record specific gauge for this slow query
+                    report_gauge(f"db.query.slow.{query_name}.duration_ms", duration_ms, slow_tags)
+                    
+                    # Log slow query with more detail
                     logger.warning(
                         "Slow database query detected",
                         query=query_name,
                         duration_ms=duration_ms,
-                        threshold_ms=settings.slow_query_threshold_ms
+                        duration_seconds=duration_ms/1000,
+                        threshold_ms=settings.slow_query_threshold_ms,
+                        duration_category=duration_category
                     )
                     
-                    # Increment slow query counter
+                    # Increment slow query counter with more detailed tags
                     increment_counter("db.query.slow", slow_tags)
+                    
+                    # For extremely slow queries, add a critical log
+                    if duration_ms > 60000:  # More than 1 minute
+                        logger.error(
+                            "Critical database query performance",
+                            query=query_name,
+                            duration_ms=duration_ms,
+                            duration_minutes=duration_ms/60000,
+                            threshold_ms=settings.slow_query_threshold_ms,
+                            # Include parameters or partial parameters if safe
+                            args_length=len(args) if args else 0,
+                            kwargs_keys=list(kwargs.keys()) if kwargs else []
+                        )
                 
                 # Report result size if applicable
                 if result is not None and hasattr(result, "__len__"):
@@ -167,22 +207,62 @@ def async_sql_query_timer(
                 # Report timing
                 report_timing("db.query.duration", duration_ms, metric_tags)
                 
+                # Categorize query duration
+                if duration_ms < 50:
+                    duration_category = "fast"
+                elif duration_ms < 200:
+                    duration_category = "medium"
+                elif duration_ms < 500:
+                    duration_category = "slow"
+                elif duration_ms < 2000:
+                    duration_category = "very_slow"
+                elif duration_ms < 10000:
+                    duration_category = "extremely_slow"
+                else:
+                    duration_category = "critical"
+                
+                # Add duration category to tags
+                metric_tags["duration_category"] = duration_category
+                
+                # Create histogram for all query durations
+                from app.metrics.core import report_histogram
+                report_histogram("db.query.duration_distribution", duration_ms, metric_tags)
+                
                 # Check for slow query
                 if duration_ms > settings.slow_query_threshold_ms:
-                    # Add slow query tag
+                    # Add slow query tag with more detail
                     slow_tags = metric_tags.copy()
                     slow_tags["slow"] = "true"
+                    slow_tags["duration_seconds"] = f"{duration_ms/1000:.2f}s"
                     
-                    # Log slow query
+                    # Record specific gauge for this slow query
+                    report_gauge(f"db.query.slow.{query_name}.duration_ms", duration_ms, slow_tags)
+                    
+                    # Log slow query with more detail
                     logger.warning(
                         "Slow database query detected",
                         query=query_name,
                         duration_ms=duration_ms,
-                        threshold_ms=settings.slow_query_threshold_ms
+                        duration_seconds=duration_ms/1000,
+                        threshold_ms=settings.slow_query_threshold_ms,
+                        duration_category=duration_category
                     )
                     
-                    # Increment slow query counter
+                    # Increment slow query counter with more detailed tags
                     increment_counter("db.query.slow", slow_tags)
+                    
+                    # For extremely slow queries, add a critical log
+                    if duration_ms > 60000:  # More than 1 minute
+                        logger.error(
+                            "Critical database query performance",
+                            query=query_name,
+                            duration_ms=duration_ms,
+                            duration_minutes=duration_ms/60000,
+                            threshold_ms=settings.slow_query_threshold_ms,
+                            # Include parameters or partial parameters if safe
+                            args_length=len(args) if args else 0,
+                            kwargs_keys=list(kwargs.keys()) if kwargs else []
+                        )
                 
                 # Report result size if applicable
                 if result is not None and hasattr(result, "__len__"):

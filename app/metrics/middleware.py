@@ -108,18 +108,37 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             
             # Track slow requests
             if duration_ms > settings.slow_request_threshold_ms:
+                # Create detailed tags for slow requests
                 slow_tags = tags.copy()
                 slow_tags["slow"] = "true"
+                slow_tags["duration_range"] = f"{int(duration_ms / 1000)}s" # Duration in seconds range
                 
+                # Add request details as tags
+                try:
+                    # Extract query parameters
+                    query_params = dict(request.query_params)
+                    if query_params:
+                        slow_tags["has_query_params"] = "true"
+                except Exception:
+                    pass
+                
+                # Record slow request counter with detailed tags
                 increment_counter("http.requests.slow", slow_tags)
                 
+                # Record actual duration of slow request as a gauge
+                report_gauge("http.requests.slow.duration_ms", duration_ms, slow_tags)
+                
+                # Record detailed information about the slow request
                 logger.warning(
                     "Slow HTTP request",
                     path=path,
                     route=route,
                     method=method,
                     duration_ms=duration_ms,
-                    threshold_ms=settings.slow_request_threshold_ms
+                    duration_seconds=duration_ms/1000,
+                    threshold_ms=settings.slow_request_threshold_ms,
+                    request_id=request.headers.get("x-request-id", "unknown"),
+                    query_params=dict(request.query_params)
                 )
             
             # Track response size
