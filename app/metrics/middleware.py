@@ -1,23 +1,25 @@
 """
-FastAPI metrics middleware.
+FastAPI middleware for metrics collection.
 
-This module provides middleware for collecting HTTP request metrics in FastAPI.
+This module provides middleware for collecting metrics related
+to HTTP requests and responses in FastAPI applications.
 """
 
 import time
-from typing import Any, Awaitable, Callable, Dict, Optional
+from typing import Callable, Dict, Optional, Union
 
 from fastapi import FastAPI, Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.responses import Response as FastAPIResponse
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.types import ASGIApp
 
 from app.core.config import settings
 from app.log.logging import logger
-from app.metrics.core import increment_counter, report_timing
+from app.metrics.core import increment_counter, report_gauge, report_timing
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
-    """Middleware for collecting HTTP request metrics."""
+    """Middleware for collecting request/response metrics."""
     
     def __init__(
         self,
@@ -25,60 +27,61 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         exclude_paths: Optional[list[str]] = None
     ) -> None:
         """
-        Initialize the metrics middleware.
+        Initialize metrics middleware.
         
         Args:
             app: FastAPI application
-            exclude_paths: List of paths to exclude from metrics
+            exclude_paths: List of paths to exclude from metrics collection
         """
         super().__init__(app)
-        self.exclude_paths = exclude_paths or ["/metrics", "/health", "/ping"]
-    
+        self.exclude_paths = exclude_paths or ["/metrics", "/health", "/healthcheck"]
+        
     async def dispatch(
         self,
         request: Request,
-        call_next: Callable[[Request], Awaitable[Response]]
+        call_next: RequestResponseEndpoint
     ) -> Response:
         """
         Process a request and collect metrics.
         
         Args:
-            request: FastAPI request
-            call_next: Function to call next middleware
+            request: HTTP request
+            call_next: Next middleware or route handler
             
         Returns:
-            FastAPI response
+            HTTP response
         """
-        # Skip if metrics disabled
+        # Skip if metrics are disabled
         if not settings.metrics_enabled:
             return await call_next(request)
         
-        # Get request path
+        # Check if path should be excluded
         path = request.url.path
-        
-        # Skip excluded paths
         if any(path.startswith(exclude) for exclude in self.exclude_paths):
             return await call_next(request)
         
-        # Create tags
+        # Extract route information
+        route = getattr(request.scope.get("route"), "path", "unknown")
+        method = request.method
+        
+        # Prepare tags
         tags = {
-            "method": request.method,
+            "method": method,
+            "route": route,
             "path": path
         }
         
-        # Get route
-        route = getattr(request, "route", None)
-        route_path = getattr(route, "path", "") if route else ""
-        if route_path:
-            tags["route"] = route_path
-        
-        # Add app name if available
-        app_name = settings.metrics_app_name or settings.app_name
-        if app_name:
-            tags["app"] = app_name
-        
-        # Start timing
+        # Start timer
         start_time = time.time()
+        
+        # Track request size
+        try:
+            content_length = request.headers.get("content-length")
+            if content_length:
+                request_size = int(content_length)
+                report_gauge("http.request.size", request_size, tags)
+        except (ValueError, TypeError):
+            pass
         
         # Increment request counter
         increment_counter("http.requests", tags)
@@ -87,43 +90,82 @@ class MetricsMiddleware(BaseHTTPMiddleware):
             # Process request
             response = await call_next(request)
             
-            # Get status code
-            status_code = response.status_code
-            
-            # Update tags with status code
-            tags["status"] = str(status_code)
-            
-            # Add status code range
-            status_range = f"{status_code // 100}xx"
-            tags["status_range"] = status_range
-            
-            # Calculate request duration
+            # Calculate duration
             duration = time.time() - start_time
             duration_ms = duration * 1000.0
             
-            # Report request duration
+            # Add status code tag
+            status_code = response.status_code
+            status_range = f"{status_code // 100}xx"
+            
+            tags.update({
+                "status_code": str(status_code),
+                "status_range": status_range
+            })
+            
+            # Report timing
             report_timing("http.request.duration", duration_ms, tags)
             
-            # Increment status counter
-            increment_counter("http.status", tags)
+            # Track slow requests
+            if duration_ms > settings.slow_request_threshold_ms:
+                slow_tags = tags.copy()
+                slow_tags["slow"] = "true"
+                
+                increment_counter("http.requests.slow", slow_tags)
+                
+                logger.warning(
+                    "Slow HTTP request",
+                    path=path,
+                    route=route,
+                    method=method,
+                    duration_ms=duration_ms,
+                    threshold_ms=settings.slow_request_threshold_ms
+                )
+            
+            # Track response size
+            try:
+                resp_content_length = response.headers.get("content-length")
+                if resp_content_length:
+                    response_size = int(resp_content_length)
+                    report_gauge("http.response.size", response_size, tags)
+            except (ValueError, TypeError):
+                pass
+            
+            # Add timing header if enabled
+            if settings.include_timing_header:
+                response.headers["X-Response-Time"] = f"{duration_ms:.2f}ms"
             
             return response
             
         except Exception as e:
-            # Calculate request duration
+            # Calculate duration for errors
             duration = time.time() - start_time
             duration_ms = duration * 1000.0
             
-            # Update tags for error
-            tags["status"] = "500"
-            tags["status_range"] = "5xx"
-            tags["error"] = e.__class__.__name__
+            # Add error tags
+            error_tags = tags.copy()
+            error_tags.update({
+                "status_code": "500",
+                "status_range": "5xx",
+                "error": "true",
+                "error_type": e.__class__.__name__
+            })
             
-            # Report request duration with error tags
-            report_timing("http.request.duration", duration_ms, tags)
+            # Report timing for errors
+            report_timing("http.request.duration", duration_ms, error_tags)
             
             # Increment error counter
-            increment_counter("http.errors", tags)
+            increment_counter("http.errors", error_tags)
+            
+            # Log error
+            logger.error(
+                "Error processing HTTP request",
+                path=path,
+                route=route,
+                method=method,
+                error=str(e),
+                error_type=e.__class__.__name__
+            )
             
             # Re-raise the exception
             raise
@@ -131,19 +173,20 @@ class MetricsMiddleware(BaseHTTPMiddleware):
 
 def add_metrics_middleware(app: FastAPI) -> None:
     """
-    Add metrics middleware to a FastAPI application.
+    Add metrics middleware to FastAPI application.
     
     Args:
         app: FastAPI application
     """
     if not settings.metrics_enabled:
+        logger.info("Metrics collection is disabled")
         return
     
     try:
-        # Add middleware
+        # Add metrics middleware
         app.add_middleware(MetricsMiddleware)
         
-        logger.info("Metrics middleware added to FastAPI application")
+        logger.info("Added metrics middleware to application")
         
     except Exception as e:
         logger.error(
@@ -152,50 +195,189 @@ def add_metrics_middleware(app: FastAPI) -> None:
         )
 
 
-def add_timing_header_middleware(app: FastAPI) -> None:
+class RouteMetrics:
+    """Helper for collecting route-specific metrics."""
+    
+    @staticmethod
+    def track_request(
+        route_name: str,
+        tags: Optional[Dict[str, str]] = None
+    ) -> None:
+        """
+        Track an API request.
+        
+        Args:
+            route_name: Name of the route
+            tags: Additional tags
+        """
+        if not settings.metrics_enabled:
+            return
+        
+        try:
+            # Create tags
+            metric_tags = {
+                "route": route_name
+            }
+            
+            # Add custom tags
+            if tags:
+                metric_tags.update(tags)
+            
+            # Increment request counter
+            increment_counter("http.routes.requests", metric_tags)
+            
+        except Exception as e:
+            if settings.metrics_debug:
+                logger.error(
+                    "Failed to track route request",
+                    error=str(e)
+                )
+    
+    @staticmethod
+    def record_timing(
+        route_name: str,
+        duration_ms: float,
+        tags: Optional[Dict[str, str]] = None
+    ) -> None:
+        """
+        Record route timing.
+        
+        Args:
+            route_name: Name of the route
+            duration_ms: Duration in milliseconds
+            tags: Additional tags
+        """
+        if not settings.metrics_enabled:
+            return
+        
+        try:
+            # Create tags
+            metric_tags = {
+                "route": route_name
+            }
+            
+            # Add custom tags
+            if tags:
+                metric_tags.update(tags)
+            
+            # Report timing
+            report_timing("http.routes.duration", duration_ms, metric_tags)
+            
+            # Track slow requests
+            if duration_ms > settings.slow_request_threshold_ms:
+                slow_tags = metric_tags.copy()
+                slow_tags["slow"] = "true"
+                
+                increment_counter("http.routes.slow", slow_tags)
+                
+                logger.warning(
+                    "Slow route execution",
+                    route=route_name,
+                    duration_ms=duration_ms,
+                    threshold_ms=settings.slow_request_threshold_ms
+                )
+            
+        except Exception as e:
+            if settings.metrics_debug:
+                logger.error(
+                    "Failed to record route timing",
+                    error=str(e)
+                )
+    
+    @staticmethod
+    def track_error(
+        route_name: str,
+        error_type: str,
+        tags: Optional[Dict[str, str]] = None
+    ) -> None:
+        """
+        Track a route error.
+        
+        Args:
+            route_name: Name of the route
+            error_type: Type of error
+            tags: Additional tags
+        """
+        if not settings.metrics_enabled:
+            return
+        
+        try:
+            # Create tags
+            metric_tags = {
+                "route": route_name,
+                "error_type": error_type
+            }
+            
+            # Add custom tags
+            if tags:
+                metric_tags.update(tags)
+            
+            # Increment error counter
+            increment_counter("http.routes.errors", metric_tags)
+            
+        except Exception as e:
+            if settings.metrics_debug:
+                logger.error(
+                    "Failed to track route error",
+                    error=str(e)
+                )
+
+
+def route_metrics_timer(
+    route_name: str,
+    tags: Optional[Dict[str, str]] = None
+) -> Callable:
     """
-    Add middleware to include request timing in response headers.
+    Decorator for tracking route timing.
     
     Args:
-        app: FastAPI application
+        route_name: Name of the route
+        tags: Additional tags
+        
+    Returns:
+        Decorator function
     """
-    if not settings.metrics_enabled or not settings.include_timing_header:
-        return
-    
-    try:
-        # Create middleware
-        @app.middleware("http")
-        async def add_timing_header(request: Request, call_next: Callable) -> Response:
-            # Start timing
+    def decorator(func: Callable) -> Callable:
+        async def wrapper(*args, **kwargs):
+            # Skip if metrics disabled
+            if not settings.metrics_enabled:
+                return await func(*args, **kwargs)
+            
+            # Record start time
             start_time = time.time()
             
-            # Process request
-            response = await call_next(request)
-            
-            # Calculate request duration
-            duration = time.time() - start_time
-            duration_ms = duration * 1000.0
-            
-            # Add timing header
-            response.headers["X-Request-Time-Ms"] = f"{duration_ms:.2f}"
-            
-            return response
-        
-        logger.info("Timing header middleware added to FastAPI application")
-        
-    except Exception as e:
-        logger.error(
-            "Failed to add timing header middleware",
-            error=str(e)
-        )
-
-
-def setup_all_middleware(app: FastAPI) -> None:
-    """
-    Set up all metrics middleware for a FastAPI application.
-    
-    Args:
-        app: FastAPI application
-    """
-    add_metrics_middleware(app)
-    add_timing_header_middleware(app)
+            try:
+                # Track request
+                RouteMetrics.track_request(route_name, tags)
+                
+                # Execute function
+                result = await func(*args, **kwargs)
+                
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Record timing
+                RouteMetrics.record_timing(route_name, duration_ms, tags)
+                
+                return result
+                
+            except Exception as e:
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Record timing with error
+                error_tags = tags.copy() if tags else {}
+                error_tags["error"] = "true"
+                
+                RouteMetrics.record_timing(route_name, duration_ms, error_tags)
+                
+                # Track error
+                RouteMetrics.track_error(route_name, e.__class__.__name__, tags)
+                
+                # Re-raise the exception
+                raise
+                
+        return wrapper
+    return decorator

@@ -1,71 +1,89 @@
 # Metrics Implementation Plan
 
 ## Overview
+This plan outlines how to implement basic performance metrics tracking for the matching service, focusing on API response times and matching algorithm performance.
 
-This document outlines the plan for implementing comprehensive metrics collection in the matching service to monitor performance, usage patterns, and system health.
+## Current Metrics Infrastructure
+Our analysis shows that the service already has a comprehensive metrics system with:
 
-## Key Metrics Categories
+1. **HTTP/API Metrics**
+   - Request/response times
+   - Status code tracking
+   - Slow request identification
+   - Request size measurement
 
-1. **Algorithm Performance Metrics**
-   - Execution time of matching algorithms
-   - Score distributions
-   - Path usage (which algorithm branches are taken)
-   - Match counts and quality metrics
+2. **Algorithm Performance Metrics**
+   - Execution time tracking
+   - Match score distribution
+   - Result size reporting
+   - Error rate tracking
 
-2. **API Performance Metrics**
-   - Request duration
-   - Error rates
-   - Concurrent request counts
-   - Endpoint usage statistics
+3. **System Metrics**
+   - CPU, memory, disk usage
+   - Network performance
+   - Process stats
 
-3. **Database Metrics**
+4. **Database Metrics**
    - Query performance
-   - Connection pool utilization
-   - Vector database operation performance
+   - Connection pool statistics
 
-4. **System Health Metrics**
-   - Memory usage
-   - CPU utilization
-   - Service response times
-   - Component availability
+## Implementation Steps
 
-## Implementation Status
+### 1. Enable Existing Metrics
+Ensure the following settings are enabled in your environment or `.env` file:
 
-- [x] Core metrics infrastructure
-  - [x] StatsD/DogStatsD backends
-  - [x] Timer decorators and context managers
-  - [x] Statistical metrics reporting
-  - [x] Test compatibility fixes
+```
+METRICS_ENABLED=True
+METRICS_STATSD_ENABLED=True
+METRICS_STATSD_HOST=127.0.0.1
+METRICS_STATSD_PORT=8125
+INCLUDE_TIMING_HEADER=True
+```
 
-- [ ] Algorithm metrics
-  - [x] Function timing
-  - [x] Path reporting
-  - [x] Match score distribution
-  - [ ] Match quality metrics
+### 2. Instrument Job Matcher
+Ensure the matching algorithm is properly instrumented by applying the decorators to key methods:
 
-- [ ] API metrics
-  - [x] Request timing
-  - [ ] Endpoint usage tracking
-  - [ ] Error rate monitoring
+```python
+# Already implemented in app/metrics/algorithm.py
+instrument_job_matcher(job_matcher_instance)
+```
 
-- [ ] Database metrics
-  - [x] Connection pool monitoring
-  - [ ] Query performance tracking
-  - [ ] Vector database performance
+### 3. Start the Service
+Run the service on port 19001:
 
-## Deployment Considerations
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 19001
+```
 
-1. **Local Development**
-   - Local StatsD server for development
-   - Mock metrics backend for testing
+### 4. Test with Curl Commands
+Test endpoints and verify metrics are being collected:
 
-2. **Staging/Production**
-   - DogStatsD for Datadog integration
-   - Appropriate sample rates to control metric volume
-   - Tags for proper filtering and aggregation
+```bash
+# Health check
+curl http://localhost:19001/
 
-## Recent Changes
+# Get matched jobs (replace with valid token)
+curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:19001/jobs/matches
+```
 
-- Fixed test compatibility issues by ensuring tags are properly formatted and passed as keyword arguments to the metrics backend
-- Implemented support for both positional and keyword tag arguments in all metrics backends
-- Updated reporting functions to format tags consistently for test verification
+### 5. View Metrics
+Metrics are being sent to StatsD on localhost:8125. You can:
+- Use the simple_statsd_server.py to view metrics
+- Or use any StatsD-compatible metric visualization tool
+
+## Key Metrics to Monitor
+
+### API Response Times
+- `http.request.duration` - Overall response time for HTTP requests
+- `http.routes.duration` - Time spent in specific route handlers
+
+### Matching Algorithm Performance
+- `algorithm.duration` - Time spent in matching algorithms
+- `algorithm.match_count` - Number of matches found
+- `algorithm.score.distribution` - Distribution of match scores
+- `algorithm.operation.duration` - Time spent in specific matching operations
+
+## Next Steps
+1. Verify metrics are being properly collected
+2. Set up alerting for slow operations (if needed)
+3. Consider adding custom metrics for specific business needs
