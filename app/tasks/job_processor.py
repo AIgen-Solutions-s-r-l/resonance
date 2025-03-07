@@ -15,7 +15,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from app.core.config import settings
 from app.log.logging import logger
 from app.schemas.location import LocationFilter
-from app.libs.job_matcher import JobMatcher
+from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.metrics.tasks import async_task_timer
 
 
@@ -146,7 +146,7 @@ class TaskManager:
             await cls.update_task_status(task_id, TaskStatus.PROCESSING)
             
             # Create matcher instance
-            matcher = JobMatcher()
+            matcher = OptimizedJobMatcher()
             
             # Process job matching
             match_results = await matcher.process_job(
