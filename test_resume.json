@@ -1,0 +1,5 @@
+{
+  "resume_text": "Experienced software engineer with 8 years of Python development. Skilled in FastAPI, PostgreSQL, and machine learning. Led development of recommendation systems and data pipelines at TechCorp and DataSolutions.",
+  "preferred_locations": [{"country": "United States", "city": "San Francisco"}],
+  "limit": 5
+}
