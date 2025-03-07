@@ -1,6 +1,139 @@
 # Matching Service Metrics Guide
 
-This document provides a comprehensive overview of the metrics collected by the matching service and how to interpret them for monitoring performance, diagnosing issues, and improving service quality.
+This document provides a comprehensive overview of the metrics collected by the matching service, how to set up and configure metrics collection, and how to interpret metrics for monitoring performance, diagnosing issues, and improving service quality.
+
+## Setup and Configuration
+
+### Quick Start
+
+To quickly get started with metrics:
+
+1. Configure metrics in your `.env` file:
+   ```
+   METRICS_ENABLED=True
+   METRICS_STATSD_ENABLED=True
+   METRICS_STATSD_HOST=127.0.0.1
+   METRICS_STATSD_PORT=8125
+   ```
+
+2. Run the local StatsD server:
+   ```bash
+   python simple_statsd_server.py --verbose
+   ```
+
+3. Start your application:
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 19001
+   ```
+
+4. Monitor metrics in the StatsD server terminal
+
+### Available Metrics Backends
+
+The service supports multiple metrics backends that can be configured via environment variables:
+
+#### 1. StatsD Backend
+
+The StatsD backend sends metrics to a StatsD server over UDP.
+
+**Configuration:**
+```
+METRICS_ENABLED=True
+METRICS_STATSD_ENABLED=True
+METRICS_STATSD_HOST=127.0.0.1
+METRICS_STATSD_PORT=8125
+STATSD_USE_TAGS=True
+```
+
+**Running the local StatsD server:**
+
+For development and testing, use the included simple StatsD server:
+
+```bash
+# Basic usage
+python simple_statsd_server.py
+
+# With verbose output
+python simple_statsd_server.py --verbose
+
+# With custom host/port
+python simple_statsd_server.py --host 0.0.0.0 --port 8125
+
+# With output to file
+python simple_statsd_server.py --output-file metrics.log
+
+# Help
+python simple_statsd_server.py --help
+```
+
+The StatsD server will display metrics every 10 seconds and when you terminate the server.
+
+#### 2. Prometheus Backend
+
+The Prometheus backend exposes metrics via an HTTP endpoint for scraping.
+
+**Configuration:**
+```
+METRICS_ENABLED=True
+METRICS_PROMETHEUS_ENABLED=True
+METRICS_PROMETHEUS_PORT=9091
+PROMETHEUS_STANDALONE=True  # Set to True to run a standalone HTTP server
+```
+
+When configured, metrics will be available at `http://localhost:9091/metrics`.
+
+#### 3. DataDog Integration
+
+For production monitoring, you can configure DataDog integration:
+
+**Configuration:**
+```
+METRICS_ENABLED=True
+METRICS_STATSD_ENABLED=True
+METRICS_STATSD_HOST=127.0.0.1
+METRICS_STATSD_PORT=8125
+DD_API_KEY=your-datadog-api-key
+DD_APP_KEY=your-datadog-app-key
+```
+
+### Testing Metrics Collection
+
+Use the included test scripts to verify metrics collection:
+
+1. **Run a simple metrics test:**
+   ```bash
+   python test_metrics_simple.py
+   ```
+
+2. **Run the full metrics test suite:**
+   ```bash
+   # Make the script executable first
+   chmod +x run_metrics_test.sh
+   
+   # Run the test script
+   ./run_metrics_test.sh
+   ```
+
+### All Metrics Configuration Options
+
+| Environment Variable | Default | Description |
+|----------------------|---------|-------------|
+| `METRICS_ENABLED` | `True` | Master switch to enable/disable metrics |
+| `METRICS_DEBUG` | `False` | Enable verbose logging of metrics |
+| `METRICS_PREFIX` | `matching_service` | Prefix for all metrics |
+| `METRICS_SAMPLE_RATE` | `1.0` | Sampling rate (0.0-1.0) for metrics |
+| `METRICS_COLLECTION_ENABLED` | `True` | Enable periodic metrics collection |
+| `INCLUDE_TIMING_HEADER` | `False` | Include timing info in HTTP responses |
+| `METRICS_STATSD_ENABLED` | `True` | Enable StatsD backend |
+| `METRICS_STATSD_HOST` | `127.0.0.1` | StatsD server host |
+| `METRICS_STATSD_PORT` | `8125` | StatsD server port |
+| `METRICS_PROMETHEUS_ENABLED` | `False` | Enable Prometheus backend |
+| `METRICS_PROMETHEUS_PORT` | `9091` | Prometheus server port |
+| `SYSTEM_METRICS_ENABLED` | `True` | Enable system metrics collection |
+| `SYSTEM_METRICS_INTERVAL` | `60` | System metrics collection interval (seconds) |
+| `SLOW_REQUEST_THRESHOLD_MS` | `1000.0` | Threshold to log slow HTTP requests (ms) |
+| `SLOW_QUERY_THRESHOLD_MS` | `500.0` | Threshold to log slow DB queries (ms) |
+| `SLOW_OPERATION_THRESHOLD_MS` | `2000.0` | Threshold to log slow operations (ms) |
 
 ## Metrics Overview
 
@@ -20,6 +153,7 @@ The service uses a pluggable metrics backend architecture that supports:
 
 - **StatsD**: Basic metrics collection
 - **DogStatsD**: Enhanced metrics collection with Datadog, including tags
+- **Prometheus**: Metrics collection for Prometheus-based monitoring
 
 Metrics can be enabled/disabled and sampled using configuration settings.
 
@@ -125,3 +259,43 @@ report_gauge("custom.measurement", value, {"source": "component"})
 
 # Counter metric
 increment_counter("custom.event.count", {"event": "type"})
+```
+
+## Advanced Usage
+
+### Decorator-based Metrics
+
+For timing function executions, use the provided decorators:
+
+```python
+from app.metrics import timer, matching_algorithm_timer, sql_query_timer
+
+# Basic timing decorator
+@timer("my.function.duration")
+def my_function():
+    # Function body...
+    pass
+
+# Algorithm-specific decorator
+@matching_algorithm_timer("vector_similarity")
+def my_matching_algorithm():
+    # Algorithm implementation...
+    pass
+
+# Database query timing
+@sql_query_timer("SELECT")
+def execute_query():
+    # Query execution...
+    pass
+```
+
+### Context Manager
+
+For timing code blocks:
+
+```python
+from app.metrics import Timer
+
+with Timer("my.operation.duration", {"operation": "custom"}):
+    # Code to time
+    pass
