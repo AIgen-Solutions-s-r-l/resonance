@@ -6,9 +6,51 @@ This module provides a backend for exposing metrics to Prometheus.
 
 from typing import Dict, Optional, Union, Set, Any
 import threading
+import importlib.util
 
-from prometheus_client import Counter, Gauge, Histogram, Summary, REGISTRY
-from prometheus_client import start_http_server, exposition
+# Check if prometheus_client is available
+PROMETHEUS_AVAILABLE = importlib.util.find_spec("prometheus_client") is not None
+
+# Only import if available
+if PROMETHEUS_AVAILABLE:
+    from prometheus_client import Counter, Gauge, Histogram, Summary, REGISTRY
+    from prometheus_client import start_http_server, exposition
+else:
+    # Create dummy classes if prometheus_client is not available
+    class DummyMetric:
+        def __init__(self, *args, **kwargs):
+            pass
+            
+        def labels(self, *args, **kwargs):
+            return self
+            
+        def inc(self, *args, **kwargs):
+            pass
+            
+        def set(self, *args, **kwargs):
+            pass
+            
+        def observe(self, *args, **kwargs):
+            pass
+    
+    # Create dummy classes
+    Counter = Gauge = Histogram = Summary = DummyMetric
+    
+    # Create dummy REGISTRY and exposition
+    class DummyRegistry:
+        pass
+    
+    REGISTRY = DummyRegistry()
+    
+    class DummyExposition:
+        @staticmethod
+        def generate_latest(*args, **kwargs):
+            return b"# Prometheus client not installed"
+    
+    exposition = DummyExposition()
+    
+    def start_http_server(*args, **kwargs):
+        pass
 
 from app.core.config import settings
 from app.log.logging import logger
@@ -30,7 +72,7 @@ class PrometheusMetricsBackend:
         # Get settings
         self.prefix = settings.metrics_prefix or "app"
         self.port = settings.metrics_prometheus_port
-        self.enabled = settings.metrics_enabled
+        self.enabled = settings.metrics_enabled and PROMETHEUS_AVAILABLE
         
         # Storage for metrics
         self._counters: Dict[str, Counter] = {}
@@ -47,23 +89,31 @@ class PrometheusMetricsBackend:
         # Lock for thread safety
         self._lock = threading.RLock()
         
+        # Log warning if prometheus_client is not available
+        if not PROMETHEUS_AVAILABLE:
+            logger.warning(
+                "prometheus_client library not installed. Prometheus metrics backend will be disabled.",
+                hint="Install with 'pip install prometheus_client'"
+            )
+            return
+        
         # Start HTTP server if enabled
         if self.enabled and self.port > 0:
             try:
                 start_http_server(self.port)
                 logger.info(
-                    f"Prometheus metrics HTTP server started",
+                    "Prometheus metrics HTTP server started",
                     port=self.port
                 )
             except Exception as e:
                 logger.error(
-                    f"Failed to start Prometheus metrics HTTP server",
+                    "Failed to start Prometheus metrics HTTP server",
                     error=str(e),
                     port=self.port
                 )
         else:
             logger.info(
-                f"Prometheus metrics HTTP server disabled",
+                "Prometheus metrics HTTP server disabled",
                 enabled=self.enabled,
                 port=self.port
             )
@@ -366,6 +416,13 @@ def setup_metrics_endpoint(app: Any) -> None:
         app: FastAPI application
     """
     if not settings.metrics_enabled:
+        return
+        
+    if not PROMETHEUS_AVAILABLE:
+        logger.warning(
+            "Cannot set up metrics endpoint: prometheus_client library not installed",
+            hint="Install with 'pip install prometheus_client'"
+        )
         return
     
     # Only import FastAPI if metrics are enabled

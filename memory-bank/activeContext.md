@@ -1,7 +1,13 @@
 ## Current Session Context
-2025-03-07, 6:55 PM
+2025-03-07, 8:56 PM
 
 ## Recent Activities
+- Fixed middleware import errors that were causing test failures:
+  1. Added missing `add_timing_header_middleware` function that was being imported but didn't exist
+  2. Added missing `setup_all_middleware` function to coordinate middleware setup
+  3. Implemented proper error handling and logging in the new middleware functions
+  4. Ensured backward compatibility with existing middleware functionality
+
 - Fixed test compatibility issues in the metrics system:
   1. Updated metrics backend to support both positional and keyword arguments for tags
   2. Modified reporting functions to format tags consistently for test verification

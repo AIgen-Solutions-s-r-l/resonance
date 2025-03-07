@@ -6,18 +6,24 @@ to collect metrics at regular intervals.
 """
 
 import asyncio
+import functools
 import threading
 import time
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Tuple, TypeVar, cast
 
 from app.core.config import settings
 from app.log.logging import logger
+from app.metrics.core import increment_counter, report_timing
 from app.metrics.system import collect_system_metrics
 
 
+# Function type variable
+F = TypeVar('F', bound=Callable[..., Any])
+
 # Type for collection tasks
 TaskFunc = Callable[[], Any]
-AsyncTaskFunc = Callable[[], asyncio.coroutine]
+# Updated for modern Python compatibility (asyncio.coroutine is deprecated)
+AsyncTaskFunc = Callable[[], Awaitable[Any]]
 
 # Collection thread state
 _collection_thread: Optional[threading.Thread] = None
@@ -28,6 +34,154 @@ _collection_thread_lock = threading.Lock()
 # Async collection tasks
 _async_collection_tasks: Dict[str, Tuple[AsyncTaskFunc, int]] = {}
 _async_task: Optional[asyncio.Task] = None
+
+
+def task_timer(
+    task_name: str,
+    tags: Optional[Dict[str, str]] = None
+) -> Callable[[F], F]:
+    """
+    Decorator to time task execution.
+    
+    Args:
+        task_name: Name of the task
+        tags: Additional tags
+        
+    Returns:
+        Decorator function
+    """
+    def decorator(func: F) -> F:
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Skip if metrics disabled
+            if not settings.metrics_enabled:
+                return func(*args, **kwargs)
+            
+            # Create tags
+            metric_tags = {
+                "task": task_name
+            }
+            
+            # Add custom tags
+            if tags:
+                metric_tags.update(tags)
+            
+            # Start timing
+            start_time = time.time()
+            
+            try:
+                # Execute function
+                result = func(*args, **kwargs)
+                
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Update tags for success
+                metric_tags["status"] = "success"
+                
+                # Report timing
+                report_timing("task.duration", duration_ms, metric_tags)
+                
+                # Increment counter
+                increment_counter("task.count", metric_tags)
+                
+                return result
+                
+            except Exception as e:
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Update tags for error
+                metric_tags["status"] = "error"
+                metric_tags["error_type"] = e.__class__.__name__
+                
+                # Report timing with error tags
+                report_timing("task.duration", duration_ms, metric_tags)
+                
+                # Increment error counter
+                increment_counter("task.count", metric_tags)
+                
+                # Re-raise the exception
+                raise
+                
+        return cast(F, wrapper)
+    return decorator
+
+
+def async_task_timer(
+    task_name: str,
+    tags: Optional[Dict[str, str]] = None
+) -> Callable[[F], F]:
+    """
+    Decorator to time async task execution.
+    
+    Args:
+        task_name: Name of the task
+        tags: Additional tags
+        
+    Returns:
+        Decorator function
+    """
+    def decorator(func: F) -> F:
+        @functools.wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Skip if metrics disabled
+            if not settings.metrics_enabled:
+                return await func(*args, **kwargs)
+            
+            # Create tags
+            metric_tags = {
+                "task": task_name
+            }
+            
+            # Add custom tags
+            if tags:
+                metric_tags.update(tags)
+            
+            # Start timing
+            start_time = time.time()
+            
+            try:
+                # Execute function
+                result = await func(*args, **kwargs)
+                
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Update tags for success
+                metric_tags["status"] = "success"
+                
+                # Report timing
+                report_timing("task.duration", duration_ms, metric_tags)
+                
+                # Increment counter
+                increment_counter("task.count", metric_tags)
+                
+                return result
+                
+            except Exception as e:
+                # Calculate duration
+                duration = time.time() - start_time
+                duration_ms = duration * 1000.0
+                
+                # Update tags for error
+                metric_tags["status"] = "error"
+                metric_tags["error_type"] = e.__class__.__name__
+                
+                # Report timing with error tags
+                report_timing("task.duration", duration_ms, metric_tags)
+                
+                # Increment error counter
+                increment_counter("task.count", metric_tags)
+                
+                # Re-raise the exception
+                raise
+                
+        return cast(F, wrapper)
+    return decorator
 
 
 def register_collection_task(

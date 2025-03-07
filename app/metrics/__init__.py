@@ -132,6 +132,9 @@ def get_default_tags() -> Dict[str, str]:
     return tags
 
 
+# Aliases for backward compatibility
+init_app = setup_metrics
+
 # Re-export commonly used functions with simpler names
 def increment(
     name: str,

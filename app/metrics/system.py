@@ -8,9 +8,126 @@ metrics such as CPU, memory, and disk usage.
 import os
 import platform
 import time
+import importlib.util
 from typing import Dict, Optional
 
-import psutil
+# Check if psutil is available
+PSUTIL_AVAILABLE = importlib.util.find_spec("psutil") is not None
+
+# Only import if available
+if PSUTIL_AVAILABLE:
+    import psutil
+else:
+    # Create dummy psutil functionality
+    class DummyPsutil:
+        @staticmethod
+        def cpu_percent(*args, **kwargs):
+            return 0.0
+            
+        @staticmethod
+        def cpu_count(*args, **kwargs):
+            return 1
+            
+        @staticmethod
+        def virtual_memory():
+            class DummyVirtualMemory:
+                total = 0
+                available = 0
+                used = 0
+                free = 0
+                percent = 0.0
+            return DummyVirtualMemory()
+            
+        @staticmethod
+        def swap_memory():
+            class DummySwapMemory:
+                total = 0
+                used = 0
+                free = 0
+                percent = 0.0
+            return DummySwapMemory()
+            
+        @staticmethod
+        def disk_usage(path):
+            class DummyDiskUsage:
+                total = 0
+                used = 0
+                free = 0
+                percent = 0.0
+            return DummyDiskUsage()
+            
+        @staticmethod
+        def disk_io_counters(*args, **kwargs):
+            class DummyDiskIO:
+                read_count = 0
+                write_count = 0
+                read_bytes = 0
+                write_bytes = 0
+                read_time = 0
+                write_time = 0
+            return DummyDiskIO()
+            
+        @staticmethod
+        def disk_partitions(*args, **kwargs):
+            return []
+            
+        @staticmethod
+        def Process(*args, **kwargs):
+            class DummyProcess:
+                @staticmethod
+                def cpu_percent(*args, **kwargs):
+                    return 0.0
+                
+                @staticmethod
+                def memory_info():
+                    class DummyMemoryInfo:
+                        rss = 0
+                        vms = 0
+                    return DummyMemoryInfo()
+                
+                @staticmethod
+                def memory_percent():
+                    return 0.0
+                
+                @staticmethod
+                def num_threads():
+                    return 1
+                
+                @staticmethod
+                def open_files():
+                    return []
+                
+                @staticmethod
+                def connections():
+                    return []
+            return DummyProcess()
+            
+        @staticmethod
+        def net_io_counters(*args, **kwargs):
+            class DummyNetIO:
+                bytes_sent = 0
+                bytes_recv = 0
+                packets_sent = 0
+                packets_recv = 0
+                errin = 0
+                errout = 0
+                dropin = 0
+                dropout = 0
+            return DummyNetIO()
+            
+        @staticmethod
+        def net_connections(*args, **kwargs):
+            return []
+            
+        # Define exception classes
+        class AccessDenied(Exception):
+            pass
+            
+        class ZombieProcess(Exception):
+            pass
+    
+    # Create dummy psutil
+    psutil = DummyPsutil()
 
 from app.core.config import settings
 from app.log.logging import logger
@@ -25,6 +142,13 @@ def collect_system_metrics() -> bool:
         True if metrics were collected successfully, False otherwise
     """
     if not settings.metrics_enabled or not settings.system_metrics_enabled:
+        return False
+    
+    if not PSUTIL_AVAILABLE:
+        logger.warning(
+            "psutil library not installed. System metrics collection will be limited.",
+            hint="Install with 'pip install psutil'"
+        )
         return False
     
     try:

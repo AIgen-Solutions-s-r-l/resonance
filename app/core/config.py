@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     metrics_sample_rate: float = float(os.getenv("METRICS_SAMPLE_RATE", "1.0"))
     metrics_collection_enabled: bool = os.getenv("METRICS_COLLECTION_ENABLED", "True").lower() == "true"
     include_timing_header: bool = os.getenv("INCLUDE_TIMING_HEADER", "False").lower() == "true"
+    metrics_backend: str = os.getenv("METRICS_BACKEND", "statsd")  # For test compatibility (logging, statsd, prometheus)
     
     # StatsD backend settings
     metrics_statsd_enabled: bool = os.getenv("METRICS_STATSD_ENABLED", "True").lower() == "true"
@@ -85,7 +86,7 @@ class Settings(BaseSettings):
     # Metrics retention
     metrics_retention_days: int = int(os.getenv("METRICS_RETENTION_DAYS", "7"))
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()

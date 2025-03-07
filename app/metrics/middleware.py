@@ -381,3 +381,74 @@ def route_metrics_timer(
                 
         return wrapper
     return decorator
+
+
+def add_timing_header_middleware(app: FastAPI) -> None:
+    """
+    Add middleware that adds timing information to response headers.
+    
+    Args:
+        app: FastAPI application
+    """
+    if not settings.metrics_enabled:
+        logger.info("Timing header middleware is disabled (metrics disabled)")
+        return
+    
+    class TimingHeaderMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+            start_time = time.time()
+            response = await call_next(request)
+            process_time = time.time() - start_time
+            process_time_ms = process_time * 1000
+            
+            # Add timing header to response
+            response.headers["X-Process-Time"] = f"{process_time_ms:.2f}ms"
+            
+            # Report timing metric
+            if settings.metrics_enabled:
+                tags = {
+                    "method": request.method,
+                    "path": request.url.path
+                }
+                report_timing("http.request.processing_time", process_time_ms, tags)
+                
+            return response
+    
+    try:
+        app.add_middleware(TimingHeaderMiddleware)
+        logger.info("Added timing header middleware to application")
+    except Exception as e:
+        logger.error(
+            "Failed to add timing header middleware",
+            error=str(e)
+        )
+
+
+def setup_all_middleware(app: FastAPI) -> None:
+    """
+    Set up all metrics-related middleware for the application.
+    
+    This function adds all metrics middleware components to the
+    FastAPI application in the correct order.
+    
+    Args:
+        app: FastAPI application
+    """
+    if not settings.metrics_enabled:
+        logger.info("Metrics middleware setup skipped (metrics disabled)")
+        return
+    
+    try:
+        # Add standard metrics middleware
+        add_metrics_middleware(app)
+        
+        # Add timing header middleware if configured
+        if settings.include_timing_header:
+            add_timing_header_middleware(app)
+            
+        logger.info("All metrics middleware setup complete")
+    except Exception as e:
+        logger.error(
+            "Failed to set up metrics middleware",
+            error=str(e)
+        )

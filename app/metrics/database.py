@@ -440,3 +440,76 @@ def report_query_plan_metrics(
                 "Failed to report query plan metrics",
                 error=str(e)
             )
+
+
+# Aliases for backward compatibility
+track_query = sql_query_timer
+track_async_query = async_sql_query_timer
+report_connection_pool_stats = report_connection_pool_metrics
+
+# Placeholder functions for missing functionality
+def report_query_error(
+    query_name: str,
+    error: Exception,
+    tags: Optional[Dict[str, str]] = None
+) -> None:
+    """
+    Report a database query error.
+    
+    Args:
+        query_name: Name of the query
+        error: Exception that occurred
+        tags: Additional tags
+    """
+    if not settings.metrics_enabled:
+        return
+        
+    try:
+        # Create tags
+        metric_tags = {
+            "query": query_name,
+            "error_type": error.__class__.__name__
+        }
+        
+        # Add custom tags
+        if tags:
+            metric_tags.update(tags)
+            
+        # Increment error counter
+        increment_counter("db.query.error", metric_tags)
+        
+        # Log error
+        if settings.metrics_debug:
+            logger.error(
+                "Database query error",
+                query=query_name,
+                error=str(error),
+                error_type=error.__class__.__name__
+            )
+    except Exception as e:
+        if settings.metrics_debug:
+            logger.error(
+                "Failed to report query error",
+                error=str(e)
+            )
+
+def collect_mongodb_stats(
+    database_name: str,
+    tags: Optional[Dict[str, str]] = None
+) -> None:
+    """
+    Collect MongoDB database statistics.
+    
+    Args:
+        database_name: Name of the MongoDB database
+        tags: Additional tags
+    """
+    if not settings.metrics_enabled:
+        return
+        
+    # This is a placeholder function
+    # In a real implementation, we would query MongoDB for stats
+    logger.debug(
+        "MongoDB stats collection not implemented",
+        database=database_name
+    )
