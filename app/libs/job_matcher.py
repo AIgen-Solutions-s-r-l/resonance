@@ -10,6 +10,17 @@ from app.core.config import settings
 from app.log.logging import logger
 from app.schemas.location import LocationFilter
 from app.utils.data_parsers import parse_skills_string
+from app.metrics.algorithm import (
+    matching_algorithm_timer,
+    async_matching_algorithm_timer,
+    report_match_score_distribution,
+    report_algorithm_path,
+    report_match_count
+)
+from app.metrics.database import (
+    sql_query_timer,
+    async_sql_query_timer
+)
 
 
 @dataclass
@@ -150,10 +161,25 @@ class JobMatcher:
                 """)
                 tables = cursor.fetchall()
                 logger.debug("Available tables", tables=tables)
+                
+                # Report connection pool stats if metrics are enabled
+                if settings.metrics_enabled:
+                    from app.metrics.database import report_connection_pool_metrics
+                    
+                    # Get connection pool info if available
+                    if hasattr(self.conn, 'info'):
+                        conn_info = self.conn.info
+                        if hasattr(conn_info, 'used') and hasattr(conn_info, 'size'):
+                            report_connection_pool_metrics(
+                                pool_name="postgres_main",
+                                used_connections=conn_info.used,
+                                total_connections=conn_info.size
+                            )
         except psycopg.Error as e:
             logger.exception("Database connection failed")
             raise
 
+    @matching_algorithm_timer("multiple_metrics_similarity")
     def get_top_jobs_by_multiple_metrics(
         self,
         cursor: psycopg.Cursor[dict],
@@ -332,7 +358,12 @@ class JobMatcher:
                 for row in results:
                     if job_match := self._create_job_match(row):
                         job_matches.append(job_match)
-
+                
+                # Report metrics for the fallback path
+                if settings.metrics_enabled:
+                    report_algorithm_path("simple_fallback", {"reason": "few_results"})
+                    report_match_count(len(job_matches), {"path": "simple_fallback"})
+                    
                 return job_matches
 
             params = [cv_embedding, cv_embedding, cv_embedding]  # embeddings
@@ -413,6 +444,17 @@ class JobMatcher:
             for row in results:
                 if job_match := self._create_job_match(row):
                     job_matches.append(job_match)
+            
+            # Report metrics for the vector similarity path
+            if settings.metrics_enabled:
+                report_algorithm_path("vector_similarity", {"reason": "normal"})
+                report_match_count(len(job_matches), {"path": "vector_similarity"})
+                
+                # Report score distribution if we have matches
+                if job_matches:
+                    scores = [match.score for match in job_matches if match.score is not None]
+                    if scores:
+                        report_match_score_distribution(scores, {"path": "vector_similarity"})
 
             return job_matches
 
@@ -472,6 +514,7 @@ class JobMatcher:
             )
             raise
 
+    @async_matching_algorithm_timer("process_job")
     async def process_job(
         self,
         resume: dict,

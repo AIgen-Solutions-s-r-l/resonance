@@ -8,6 +8,8 @@ from jose import jwt
 from app.log.logging import logger
 from app.routers.jobs_matched_router import router as jobs_router
 from app.core.config import settings
+from app.metrics import setup_metrics
+from app.metrics.system import collect_system_metrics
 
 
 class AuthDebugMiddleware(BaseHTTPMiddleware):
@@ -83,8 +85,26 @@ async def lifespan(app: FastAPI):
 
     try:
         logger.info("Starting application")
+        
+        # Setup metrics system
+        setup_metrics(app)
+        
+        # Report initial system metrics
+        collect_system_metrics()
+        
+        logger.info("Application started successfully")
+        
         yield
+        
+        # Application shutdown
         logger.info("Shutting down application")
+        
+        # Stop metrics collection
+        from app.metrics import stop_metrics_collection
+        stop_metrics_collection()
+        
+        logger.info("Application shut down successfully")
+        
     except Exception as e:
         logger.exception("Application lifecycle error: {error}", error=str(e))
         raise
