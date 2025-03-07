@@ -49,11 +49,12 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                 max_size=settings.db_pool_max_size,
                 timeout=settings.db_pool_timeout,
                 max_idle=settings.db_pool_max_idle,
-                kwargs={"row_factory": dict_row}  # Use dictionary row factory
+                kwargs={"row_factory": dict_row},  # Use dictionary row factory
+                open=False  # Don't open in constructor to avoid deprecation warning
             )
             
-            # Initialize the pool by pre-connecting min_size connections
-            await pool.wait()
+            # Explicitly open the pool
+            await pool.open()
             
             _connection_pools[pool_name] = pool
             
@@ -160,16 +161,16 @@ async def execute_vector_similarity_query(
         -- Calculate combined score directly without CTEs for better performance
         (
             -- L2 distance (weighted 0.4)
-            (1 - (embedding <-> %s::vector) / 
+            (1.0 - (embedding <-> %s::vector)::float / 
                 CASE WHEN (SELECT MAX(embedding <-> %s::vector) FROM "Jobs" j2 {where_sql}) = 0 
-                THEN 1 ELSE (SELECT MAX(embedding <-> %s::vector) FROM "Jobs" j2 {where_sql}) END
+                THEN 1.0 ELSE (SELECT MAX(embedding <-> %s::vector)::float FROM "Jobs" j2 {where_sql}) END
             ) * 0.4
             +
             -- Cosine distance (weighted 0.4)
-            (1 - embedding <=> %s::vector) * 0.4
+            (1.0 - (embedding <=> %s::vector)::float) * 0.4
             +
             -- Inner product (weighted 0.2)
-            ((embedding <#> %s::vector) * -1 + 1) * 0.2
+            ((embedding <#> %s::vector)::float * -1.0 + 1.0) * 0.2
         ) AS score
     FROM "Jobs" j
     LEFT JOIN "Companies" c ON j.company_id = c.company_id
