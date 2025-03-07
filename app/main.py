@@ -8,6 +8,7 @@ from jose import jwt
 from app.log.logging import logger
 from app.routers.jobs_matched_router import router as jobs_router
 from app.core.config import settings
+from app.metrics.middleware import add_metrics_middleware
 
 
 class AuthDebugMiddleware(BaseHTTPMiddleware):
@@ -99,6 +100,9 @@ app = FastAPI(
 
 # Add auth debugging middleware
 app.add_middleware(AuthDebugMiddleware)
+
+# Add metrics middleware
+add_metrics_middleware(app)
 
 app.include_router(jobs_router)
 
