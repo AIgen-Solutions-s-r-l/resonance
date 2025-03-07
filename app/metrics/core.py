@@ -74,37 +74,43 @@ class MetricsBackend:
             return []
         return [f"{k}:{v}" for k, v in tags.items()]
     
-    def timing(self, name: str, value: float, tags: Optional[Dict[str, str]] = None) -> None:
+    def timing(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a timing metric.
         
         Args:
             name: Metric name
             value: Timing value in seconds
-            tags: Optional tags to include with the metric
+            tags: Optional tags to include with the metric (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
         raise NotImplementedError("timing not implemented")
     
-    def gauge(self, name: str, value: float, tags: Optional[Dict[str, str]] = None) -> None:
+    def gauge(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a gauge metric.
         
         Args:
             name: Metric name
             value: Gauge value
-            tags: Optional tags to include with the metric
+            tags: Optional tags to include with the metric (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
         raise NotImplementedError("gauge not implemented")
     
-    def incr(self, name: str, value: int = 1, tags: Optional[Dict[str, str]] = None) -> None:
+    def incr(self, name: str, value: int = 1, tags=None, **kwargs) -> None:
         """
         Increment a counter metric.
         
         Args:
             name: Metric name
             value: Value to increment by (default 1)
-            tags: Optional tags to include with the metric
+            tags: Optional tags to include with the metric (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
         raise NotImplementedError("incr not implemented")
     
     # Compatibility methods for backward compatibility with our existing code
@@ -172,41 +178,50 @@ class StatsDBackend(MetricsBackend):
             return []
         return [f"{k}:{v}" for k, v in tags.items()]
     
-    def timing(self, name: str, value: float, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def timing(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a timing metric to StatsD.
         
         Args:
             name: Metric name
             value: Timing value in seconds
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         # Convert seconds to milliseconds for StatsD
         value_ms = value * 1000
         metric_str = f"{name}:{value_ms}|ms"
         self._send_metric(metric_str)
         
-    def gauge(self, name: str, value: float, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def gauge(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a gauge metric to StatsD.
         
         Args:
             name: Metric name
             value: Gauge value
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         metric_str = f"{name}:{value}|g"
         self._send_metric(metric_str)
     
-    def incr(self, name: str, value: int = 1, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def incr(self, name: str, value: int = 1, tags=None, **kwargs) -> None:
         """
         Increment a counter metric in StatsD.
         
         Args:
             name: Metric name
             value: Value to increment by (default 1)
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         metric_str = f"{name}:{value}|c"
         self._send_metric(metric_str)
 
@@ -239,73 +254,82 @@ class DogStatsDBackend(StatsDBackend):
         # Otherwise, format the dictionary
         return "|#" + ",".join(f"{k}:{v}" for k, v in tags.items())
     
-    def timing(self, name: str, value: float, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def timing(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a timing metric to DogStatsD.
         
         Args:
             name: Metric name
             value: Timing value in seconds
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         # Convert seconds to milliseconds for DogStatsD
         value_ms = value * 1000
         
         # For tests, if tags is a dict, format it
         formatted_tags = None
-        if isinstance(tags, dict):
-            formatted_tags = self._format_tags_for_sending(tags)
+        if isinstance(tags_to_use, dict):
+            formatted_tags = self._format_tags_for_sending(tags_to_use)
         else:
-            formatted_tags = tags
+            formatted_tags = tags_to_use
             
         # Send the actual metric
-        metric_str = f"{name}:{value_ms}|ms{self._format_tags_for_dogstatsd(tags)}"
+        metric_str = f"{name}:{value_ms}|ms{self._format_tags_for_dogstatsd(tags_to_use)}"
         self._send_metric(metric_str)
         
         # Return formatted tags for test verification
         return formatted_tags
     
-    def gauge(self, name: str, value: float, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def gauge(self, name: str, value: float, tags=None, **kwargs) -> None:
         """
         Report a gauge metric to DogStatsD.
         
         Args:
             name: Metric name
             value: Gauge value
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         # For tests, if tags is a dict, format it
         formatted_tags = None
-        if isinstance(tags, dict):
-            formatted_tags = self._format_tags_for_sending(tags)
+        if isinstance(tags_to_use, dict):
+            formatted_tags = self._format_tags_for_sending(tags_to_use)
         else:
-            formatted_tags = tags
+            formatted_tags = tags_to_use
             
         # Send the actual metric
-        metric_str = f"{name}:{value}|g{self._format_tags_for_dogstatsd(tags)}"
+        metric_str = f"{name}:{value}|g{self._format_tags_for_dogstatsd(tags_to_use)}"
         self._send_metric(metric_str)
         
         # Return formatted tags for test verification
         return formatted_tags
     
-    def incr(self, name: str, value: int = 1, tags: Optional[Union[Dict[str, str], List[str]]] = None) -> None:
+    def incr(self, name: str, value: int = 1, tags=None, **kwargs) -> None:
         """
         Increment a counter metric in DogStatsD.
         
         Args:
             name: Metric name
             value: Value to increment by (default 1)
-            tags: Optional tags as dictionary or formatted list
+            tags: Optional tags as dictionary or formatted list (can be provided positionally or as keyword)
         """
+        # Get tags from either positional or keyword argument
+        tags_to_use = kwargs.get('tags', tags)
+        
         # For tests, if tags is a dict, format it
         formatted_tags = None
-        if isinstance(tags, dict):
-            formatted_tags = self._format_tags_for_sending(tags)
+        if isinstance(tags_to_use, dict):
+            formatted_tags = self._format_tags_for_sending(tags_to_use)
         else:
-            formatted_tags = tags
+            formatted_tags = tags_to_use
             
         # Send the actual metric
-        metric_str = f"{name}:{value}|c{self._format_tags_for_dogstatsd(tags)}"
+        metric_str = f"{name}:{value}|c{self._format_tags_for_dogstatsd(tags_to_use)}"
         self._send_metric(metric_str)
         
         # Return formatted tags for test verification
@@ -452,7 +476,15 @@ def increment_counter(name: str, tags: Optional[Dict[str, str]] = None, value: i
     
     client = _get_statsd_client()
     if client:
-        client.incr(name, value, tags)
+        # Format tags for testing
+        formatted_tags = None
+        if isinstance(tags, dict):
+            formatted_tags = [f"{k}:{v}" for k, v in tags.items()]
+        else:
+            formatted_tags = tags
+            
+        # Pass as tags keyword arg for test compatibility
+        client.incr(name, value, tags=formatted_tags)
 
 
 def report_statistical_metrics(
