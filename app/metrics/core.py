@@ -263,25 +263,67 @@ def report_timing(
         return
     
     try:
-        # Check if timing is slow
+        # Make a copy of tags
+        working_tags = tags.copy() if tags else {}
+        
+        # Add duration range category
+        if value < 100:
+            duration_category = "fast"
+        elif value < 500:
+            duration_category = "medium"
+        elif value < 1000:
+            duration_category = "slow"
+        elif value < 5000:
+            duration_category = "very_slow"
+        elif value < 60000:
+            duration_category = "extremely_slow"
+        else:
+            duration_category = "critical"
+            
+        # Add duration range in seconds for long operations
+        if value >= 1000:
+            duration_seconds = value / 1000
+            working_tags["duration_seconds"] = f"{int(duration_seconds)}s"
+            
+        working_tags["duration_category"] = duration_category
+            
+        # Check if timing is slow and create additional metrics
         if name.endswith(".duration") and value > settings.slow_request_threshold_ms:
-            slow_tags = tags.copy() if tags else {}
+            slow_tags = working_tags.copy()
             slow_tags["slow"] = "true"
             slow_tags["threshold_ms"] = str(settings.slow_request_threshold_ms)
             
-            # Log slow timing
+            # Create a specific slow operation metric
+            slow_metric_name = f"{name.replace('.duration', '')}.slow"
+            increment_counter(slow_metric_name, slow_tags)
+            
+            # Record the exact value of slow operations for detailed analysis
+            detailed_metric_name = f"{name.replace('.duration', '')}.slow_duration_ms"
+            report_gauge(detailed_metric_name, value, slow_tags)
+            
+            # Also create a histogram distribution of slow durations
+            histogram_name = f"{name.replace('.duration', '')}.duration_distribution"
+            report_histogram(histogram_name, value, working_tags)
+            
+            # Log slow timing with more details
             logger.warning(
                 "Slow operation detected",
                 metric=name,
                 duration_ms=value,
+                duration_seconds=value/1000,
+                duration_category=duration_category,
                 threshold_ms=settings.slow_request_threshold_ms,
                 **slow_tags
             )
         
+        # Always create histogram for http request durations regardless of speed
+        if name.startswith("http."):
+            histogram_name = f"{name.replace('.duration', '')}.duration_distribution"
+            report_histogram(histogram_name, value, working_tags)
+        
         # Combine default tags with provided tags
         all_tags = get_default_tags()
-        if tags:
-            all_tags.update(tags)
+        all_tags.update(working_tags)
         
         # Report to all backends
         with _backends_lock:
