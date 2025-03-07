@@ -51,13 +51,39 @@ class Settings(BaseSettings):
     llm_base_url: str = os.getenv("LLM_BASE_URL", "https://openrouter.ai/api/v1")
     llm_model_name: str = os.getenv("LLM_MODEL_NAME", "openai/gpt-4o-mini")
     
+    # Application name for metrics
+    app_name: str = os.getenv("APP_NAME", "matching_service")
+
     # Metrics settings
     metrics_enabled: bool = os.getenv("METRICS_ENABLED", "True").lower() == "true"
-    datadog_api_key: Optional[str] = os.getenv("DD_API_KEY")
-    datadog_app_key: Optional[str] = os.getenv("DD_APP_KEY")
+    metrics_debug: bool = os.getenv("METRICS_DEBUG", "False").lower() == "true"
+    metrics_prefix: str = os.getenv("METRICS_PREFIX", "matching_service")
+    metrics_app_name: str = os.getenv("METRICS_APP_NAME", "")
+    metrics_environment: str = os.getenv("METRICS_ENVIRONMENT", os.getenv("ENVIRONMENT", "development"))
     metrics_sample_rate: float = float(os.getenv("METRICS_SAMPLE_RATE", "1.0"))
-    metrics_host: str = os.getenv("METRICS_HOST", "127.0.0.1")
-    metrics_port: int = int(os.getenv("METRICS_PORT", "8125"))
+    metrics_collection_enabled: bool = os.getenv("METRICS_COLLECTION_ENABLED", "True").lower() == "true"
+    include_timing_header: bool = os.getenv("INCLUDE_TIMING_HEADER", "False").lower() == "true"
+    
+    # StatsD backend settings
+    metrics_statsd_enabled: bool = os.getenv("METRICS_STATSD_ENABLED", "True").lower() == "true"
+    metrics_statsd_host: str = os.getenv("METRICS_STATSD_HOST", "127.0.0.1")
+    metrics_statsd_port: int = int(os.getenv("METRICS_STATSD_PORT", "8125"))
+    
+    # Prometheus backend settings
+    metrics_prometheus_enabled: bool = os.getenv("METRICS_PROMETHEUS_ENABLED", "False").lower() == "true"
+    metrics_prometheus_port: int = int(os.getenv("METRICS_PROMETHEUS_PORT", "9091"))
+    
+    # System metrics settings
+    system_metrics_enabled: bool = os.getenv("SYSTEM_METRICS_ENABLED", "True").lower() == "true"
+    system_metrics_interval: int = int(os.getenv("SYSTEM_METRICS_INTERVAL", "60"))
+    
+    # Performance thresholds
+    slow_request_threshold_ms: float = float(os.getenv("SLOW_REQUEST_THRESHOLD_MS", "1000.0"))
+    slow_query_threshold_ms: float = float(os.getenv("SLOW_QUERY_THRESHOLD_MS", "500.0"))
+    slow_operation_threshold_ms: float = float(os.getenv("SLOW_OPERATION_THRESHOLD_MS", "2000.0"))
+    
+    # Metrics retention
+    metrics_retention_days: int = int(os.getenv("METRICS_RETENTION_DAYS", "7"))
 
     model_config = SettingsConfigDict(env_file=".env")
 

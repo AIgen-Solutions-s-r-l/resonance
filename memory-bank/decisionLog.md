@@ -136,6 +136,32 @@
 - More comprehensive metrics dashboard
 - Foundation for potential SLAs around minimum match counts
 
+## 2025-03-07 - Metrics Testing Compatibility Improvements
+
+**Context:** While implementing and testing the metrics system, we encountered inconsistencies in how tags were being handled between the production code and test mocks. This caused tests to fail even though the functionality was working correctly in production. The specific issue was that our test assertions expected tags to be passed as a keyword argument named "tags", but our implementation was passing them as a positional argument.
+
+**Decision:** Enhance the metrics backend implementation to support both positional and keyword arguments for tags, and ensure consistent tag formatting for test verification.
+
+**Rationale:**
+- Test compatibility is essential for ensuring metrics are being reported correctly
+- Supporting both argument styles provides flexibility and backward compatibility
+- Consistent tag formatting makes test assertions more reliable and easier to write
+- This approach maintains the production code's behavior while improving testability
+
+**Implementation:**
+1. Updated the MetricsBackend base class to accept both positional and keyword arguments for tags
+2. Modified the StatsD and DogStatsD backend implementations to handle both argument styles
+3. Updated the report_timing, report_gauge, and increment_counter functions to format tags consistently
+4. Modified tag formatting to ensure a standardized format (list of "key:value" strings) for test verification
+5. Ran tests to confirm all metrics functions now work correctly with test mocks
+
+**Consequences:**
+- All metrics tests now pass consistently
+- Better test coverage for metrics functionality
+- More reliable tag handling across different metrics backends
+- Improved flexibility in how metrics can be reported
+- Easier maintenance and testing of metrics code in the future
+
 ## Template for Future Decisions
 
 ## [Date] - [Decision Topic]

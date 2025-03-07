@@ -1,261 +1,201 @@
 """
-FastAPI middleware for collecting API metrics.
+FastAPI metrics middleware.
 
-This module provides middleware for FastAPI applications to automatically
-collect metrics for all API requests, including response times, request counts,
-error rates, and concurrent request tracking.
+This module provides middleware for collecting HTTP request metrics in FastAPI.
 """
 
 import time
-import re
-from typing import Dict, Callable, List, Optional
+from typing import Any, Awaitable, Callable, Dict, Optional
+
+from fastapi import FastAPI, Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import Response
 from starlette.types import ASGIApp
 
 from app.core.config import settings
 from app.log.logging import logger
-from app.metrics.core import (
-    MetricNames,
-    report_timing,
-    report_gauge,
-    increment_counter
-)
-
-
-# Track concurrent requests
-_concurrent_requests = 0
+from app.metrics.core import increment_counter, report_timing
 
 
 class MetricsMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware for collecting API metrics.
-    
-    This middleware tracks:
-    - Request duration by endpoint and method
-    - Request count by endpoint and method
-    - Error rate by endpoint, method, and status code
-    - Concurrent request count
-    """
+    """Middleware for collecting HTTP request metrics."""
     
     def __init__(
         self,
         app: ASGIApp,
-        exclude_paths: Optional[List[str]] = None
-    ):
+        exclude_paths: Optional[list[str]] = None
+    ) -> None:
         """
         Initialize the metrics middleware.
         
         Args:
-            app: The ASGI application
-            exclude_paths: Optional list of path patterns to exclude from metrics
+            app: FastAPI application
+            exclude_paths: List of paths to exclude from metrics
         """
         super().__init__(app)
-        self.exclude_patterns = []
-        if exclude_paths:
-            self.exclude_patterns = [re.compile(pattern) for pattern in exclude_paths]
-        
-        # Patterns to normalize paths with IDs
-        self.path_patterns = [
-            (re.compile(r'/jobs/[0-9a-fA-F]+(?:/|$)'), '/jobs/{id}'),
-            (re.compile(r'/users/[0-9a-fA-F]+(?:/|$)'), '/users/{id}'),
-            (re.compile(r'/companies/[0-9a-fA-F]+(?:/|$)'), '/companies/{id}'),
-            (re.compile(r'/resumes/[0-9a-fA-F]+(?:/|$)'), '/resumes/{id}'),
-            # Add more patterns as needed
-        ]
+        self.exclude_paths = exclude_paths or ["/metrics", "/health", "/ping"]
     
-    def _should_skip_path(self, path: str) -> bool:
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         """
-        Check if the path should be excluded from metrics.
+        Process a request and collect metrics.
         
         Args:
-            path: The request path
-        
+            request: FastAPI request
+            call_next: Function to call next middleware
+            
         Returns:
-            True if the path should be excluded, False otherwise
+            FastAPI response
         """
-        # Skip static files and excluded paths
-        if path.startswith(("/static/", "/docs/", "/redoc/", "/openapi.json")):
-            return True
-        
-        # Check against exclude patterns
-        for pattern in self.exclude_patterns:
-            if pattern.match(path):
-                return True
-        
-        return False
-    
-    def _normalize_path(self, path: str) -> str:
-        """
-        Normalize paths to prevent cardinality explosion.
-        
-        Converts paths like /jobs/123 to /jobs/{id}
-        
-        Args:
-            path: The original request path
-        
-        Returns:
-            Normalized path
-        """
-        normalized_path = path
-        
-        # Apply normalization patterns
-        for pattern, replacement in self.path_patterns:
-            normalized_path = pattern.sub(replacement, normalized_path)
-        
-        return normalized_path
-    
-    def _get_path_for_metrics(self, request: Request) -> str:
-        """
-        Get the normalized path for metrics reporting.
-        
-        Args:
-            request: The request object
-        
-        Returns:
-            Normalized path for metrics
-        """
-        path = request.url.path
-        return self._normalize_path(path)
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
-        """
-        Process the request and collect metrics.
-        
-        Args:
-            request: The request to process
-            call_next: Function to call the next middleware or route handler
-        
-        Returns:
-            Response from the next middleware or route handler
-        """
-        # Skip metrics for certain paths
-        if not settings.metrics_enabled or self._should_skip_path(request.url.path):
+        # Skip if metrics disabled
+        if not settings.metrics_enabled:
             return await call_next(request)
         
-        global _concurrent_requests
+        # Get request path
+        path = request.url.path
         
-        # Get normalized path for metrics
-        path = self._get_path_for_metrics(request)
-        method = request.method
+        # Skip excluded paths
+        if any(path.startswith(exclude) for exclude in self.exclude_paths):
+            return await call_next(request)
         
-        # Basic tags for all metrics
+        # Create tags
         tags = {
-            "path": path,
-            "method": method
+            "method": request.method,
+            "path": path
         }
         
-        # Track concurrent requests
-        _concurrent_requests += 1
-        report_gauge(MetricNames.API_CONCURRENT_REQUESTS, _concurrent_requests)
+        # Get route
+        route = getattr(request, "route", None)
+        route_path = getattr(route, "path", "") if route else ""
+        if route_path:
+            tags["route"] = route_path
         
-        # Time the request processing
+        # Add app name if available
+        app_name = settings.metrics_app_name or settings.app_name
+        if app_name:
+            tags["app"] = app_name
+        
+        # Start timing
         start_time = time.time()
         
+        # Increment request counter
+        increment_counter("http.requests", tags)
+        
         try:
-            # Process the request
+            # Process request
             response = await call_next(request)
             
-            # Record request duration
-            duration = time.time() - start_time
+            # Get status code
             status_code = response.status_code
             
-            # Add status code to tags
-            tags["status_code"] = str(status_code)
+            # Update tags with status code
+            tags["status"] = str(status_code)
             
-            # Log request details at debug level
-            logger.debug(
-                "API request",
-                path=path,
-                method=method,
-                status_code=status_code,
-                duration=duration
-            )
+            # Add status code range
+            status_range = f"{status_code // 100}xx"
+            tags["status_range"] = status_range
             
-            # Report timing metric
-            report_timing(MetricNames.API_REQUEST_DURATION, duration, tags)
+            # Calculate request duration
+            duration = time.time() - start_time
+            duration_ms = duration * 1000.0
             
-            # Count requests
-            increment_counter(MetricNames.API_REQUEST_COUNT, tags)
+            # Report request duration
+            report_timing("http.request.duration", duration_ms, tags)
             
-            # Count errors (4xx and 5xx responses)
-            if status_code >= 400:
-                increment_counter(MetricNames.API_ERROR_RATE, tags)
-                
-                # Log client and server errors appropriately
-                if status_code >= 500:
-                    logger.error(
-                        "Server error in API request",
-                        path=path,
-                        method=method,
-                        status_code=status_code,
-                        duration=duration
-                    )
-                else:
-                    logger.warning(
-                        "Client error in API request",
-                        path=path,
-                        method=method,
-                        status_code=status_code,
-                        duration=duration
-                    )
+            # Increment status counter
+            increment_counter("http.status", tags)
             
             return response
-        
+            
         except Exception as e:
-            # Record request duration for exceptions
+            # Calculate request duration
             duration = time.time() - start_time
+            duration_ms = duration * 1000.0
             
-            # Add error tags
-            tags["status_code"] = "500"
-            tags["error"] = str(e.__class__.__name__)
+            # Update tags for error
+            tags["status"] = "500"
+            tags["status_range"] = "5xx"
+            tags["error"] = e.__class__.__name__
             
-            # Report timing for failed requests
-            report_timing(MetricNames.API_REQUEST_DURATION, duration, tags)
+            # Report request duration with error tags
+            report_timing("http.request.duration", duration_ms, tags)
             
-            # Count requests
-            increment_counter(MetricNames.API_REQUEST_COUNT, tags)
-            
-            # Count errors
-            increment_counter(MetricNames.API_ERROR_RATE, tags)
-            
-            # Log the error
-            logger.exception(
-                "Exception in API request",
-                path=path,
-                method=method,
-                error=str(e),
-                duration=duration
-            )
+            # Increment error counter
+            increment_counter("http.errors", tags)
             
             # Re-raise the exception
             raise
-        
-        finally:
-            # Decrement concurrent requests counter
-            _concurrent_requests -= 1
-            report_gauge(MetricNames.API_CONCURRENT_REQUESTS, _concurrent_requests)
 
 
-def add_metrics_middleware(app, exclude_paths: Optional[List[str]] = None) -> None:
+def add_metrics_middleware(app: FastAPI) -> None:
     """
     Add metrics middleware to a FastAPI application.
     
     Args:
-        app: The FastAPI application
-        exclude_paths: Optional list of path patterns to exclude from metrics
-        
-    Example:
-        app = FastAPI()
-        add_metrics_middleware(app, exclude_paths=[r'^/health$'])
+        app: FastAPI application
     """
-    if settings.metrics_enabled:
-        # Log that we're adding metrics middleware
-        logger.info(
-            "Adding metrics middleware to FastAPI application",
-            exclude_paths=exclude_paths
-        )
+    if not settings.metrics_enabled:
+        return
+    
+    try:
+        # Add middleware
+        app.add_middleware(MetricsMiddleware)
         
-        # Add the middleware
-        app.add_middleware(MetricsMiddleware, exclude_paths=exclude_paths)
+        logger.info("Metrics middleware added to FastAPI application")
+        
+    except Exception as e:
+        logger.error(
+            "Failed to add metrics middleware",
+            error=str(e)
+        )
+
+
+def add_timing_header_middleware(app: FastAPI) -> None:
+    """
+    Add middleware to include request timing in response headers.
+    
+    Args:
+        app: FastAPI application
+    """
+    if not settings.metrics_enabled or not settings.include_timing_header:
+        return
+    
+    try:
+        # Create middleware
+        @app.middleware("http")
+        async def add_timing_header(request: Request, call_next: Callable) -> Response:
+            # Start timing
+            start_time = time.time()
+            
+            # Process request
+            response = await call_next(request)
+            
+            # Calculate request duration
+            duration = time.time() - start_time
+            duration_ms = duration * 1000.0
+            
+            # Add timing header
+            response.headers["X-Request-Time-Ms"] = f"{duration_ms:.2f}"
+            
+            return response
+        
+        logger.info("Timing header middleware added to FastAPI application")
+        
+    except Exception as e:
+        logger.error(
+            "Failed to add timing header middleware",
+            error=str(e)
+        )
+
+
+def setup_all_middleware(app: FastAPI) -> None:
+    """
+    Set up all metrics middleware for a FastAPI application.
+    
+    Args:
+        app: FastAPI application
+    """
+    add_metrics_middleware(app)
+    add_timing_header_middleware(app)
