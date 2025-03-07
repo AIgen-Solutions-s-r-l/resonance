@@ -135,6 +135,32 @@ def get_default_tags() -> Dict[str, str]:
 # Aliases for backward compatibility
 init_app = setup_metrics
 
+# Testing utilities
+def init_app_for_testing(app: Any) -> None:
+    """
+    Set up metrics for testing (without starting collection threads).
+    
+    This is a testing-specific version of setup_metrics that initializes
+    the metrics system without starting background collection threads.
+    
+    Args:
+        app: FastAPI application
+    """
+    from app.core.config import settings
+    
+    # Enable metrics for testing
+    settings.metrics_enabled = True
+    
+    # Initialize metrics
+    initialize_metrics()
+    
+    # Set up middleware only (without starting collection)
+    setup_all_middleware(app)
+    
+    # Set up Prometheus endpoint if enabled
+    if settings.metrics_prometheus_enabled:
+        setup_metrics_endpoint(app)
+
 # Re-export commonly used functions with simpler names
 def increment(
     name: str,
