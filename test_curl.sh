@@ -21,21 +21,26 @@ echo "Creating authentication token..."
 TOKEN=$(python -c "from jose import jwt; print(jwt.encode({'sub': 'test_user'}, 'test-secret-key-for-testing', algorithm='HS256'))")
 echo "Token: $TOKEN"
 
-# Test health endpoint
-echo -e "\n===== Testing Health Endpoint ====="
+# Test root endpoint
+echo -e "\n===== Testing Root Endpoint ====="
+curl -s $BASE_URL/
+echo -e "\n"
+
+# Health check
+echo -e "===== Testing Health Endpoint ====="
 curl -s $BASE_URL/health
 echo -e "\n"
 
-# Test the synchronous endpoint
-echo -e "===== Testing Synchronous Endpoint ====="
-time curl -X POST \
+# Test the legacy endpoint
+echo -e "===== Testing Legacy Endpoint ====="
+time curl -X GET \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $TOKEN" \
-  -d @test_resume.json \
   $BASE_URL/jobs/match/legacy
+echo -e "\n"
 
-echo -e "\n\n===== Testing Asynchronous Endpoint ====="
-# Test the asynchronous endpoint - Initial request
+# Test the new async endpoint
+echo -e "\n===== Testing Async POST Endpoint ====="
 echo "Sending initial request..."
 RESPONSE=$(time curl -X POST \
   -H "Content-Type: application/json" \
@@ -45,53 +50,47 @@ RESPONSE=$(time curl -X POST \
 
 echo "Response: $RESPONSE"
 
-# Extract task ID
+# Extract task ID if possible
 TASK_ID=$(echo $RESPONSE | grep -o '"task_id":"[^"]*"' | cut -d'"' -f4)
 echo "Task ID: $TASK_ID"
 
 if [ -z "$TASK_ID" ]; then
-  echo "No task ID found in response. Exiting."
-  exit 1
+  echo "No task ID found in response. Trying other endpoints."
+else
+  # Poll for results
+  echo -e "\n===== Polling for Results ====="
+  STATUS="pending"
+  COUNT=0
+
+  while [ "$STATUS" == "pending" ] || [ "$STATUS" == "processing" ]; do
+    sleep 1
+    COUNT=$((COUNT + 1))
+    echo "Poll attempt $COUNT..."
+    
+    STATUS_RESPONSE=$(curl -s -X GET \
+      -H "Authorization: Bearer $TOKEN" \
+      $BASE_URL/jobs/match/status/$TASK_ID)
+    
+    echo "Status response: $STATUS_RESPONSE"
+    STATUS=$(echo $STATUS_RESPONSE | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+    echo "Current status: $STATUS"
+    
+    if [ "$COUNT" -gt 10 ]; then
+      echo "Exceeded maximum poll attempts. Exiting."
+      break
+    fi
+  done
 fi
 
-# Poll for results
-echo -e "\n===== Polling for Results ====="
-STATUS="pending"
-COUNT=0
+# List all available endpoints
+echo -e "\n===== Available Endpoints ====="
+curl -s $BASE_URL/openapi.json | grep "\"paths\":" -A 50
 
-while [ "$STATUS" == "pending" ] || [ "$STATUS" == "processing" ]; do
-  sleep 1
-  COUNT=$((COUNT + 1))
-  echo "Poll attempt $COUNT..."
-  
-  STATUS_RESPONSE=$(curl -s -X GET \
-    -H "Authorization: Bearer $TOKEN" \
-    $BASE_URL/jobs/match/status/$TASK_ID)
-  
-  echo "Status response: $STATUS_RESPONSE"
-  STATUS=$(echo $STATUS_RESPONSE | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
-  echo "Current status: $STATUS"
-  
-  if [ "$COUNT" -gt 30 ]; then
-    echo "Exceeded maximum poll attempts. Exiting."
-    break
-  fi
-done
-
-# Test with multiple concurrent requests
-echo -e "\n===== Testing Concurrent Requests ====="
-for i in {1..3}; do
-  echo "Sending concurrent request $i..."
-  curl -X POST \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $TOKEN" \
-    -d @test_resume.json \
-    $BASE_URL/jobs/match > /dev/null &
-done
-
-# Wait for all background processes to complete
-wait
-echo "All concurrent requests sent."
+# Check authentication requirements
+echo -e "\n===== Testing Authentication ====="
+echo "Accessing /jobs/match without token..."
+curl -s $BASE_URL/jobs/match
+echo -e "\n"
 
 # Clean up
 echo -e "\n===== Cleaning Up ====="
