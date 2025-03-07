@@ -188,6 +188,21 @@ def add_metrics_middleware(app: FastAPI) -> None:
         
         logger.info("Added metrics middleware to application")
         
+    except RuntimeError as e:
+        # Check for the specific "app already started" error
+        if "after an application has started" in str(e):
+            logger.warning(
+                "Application has already started - metrics middleware will not be added. "
+                "This is expected during application lifecycle events.",
+                error=str(e)
+            )
+        else:
+            # Re-raise other RuntimeErrors
+            logger.error(
+                "Failed to add metrics middleware: unexpected runtime error",
+                error=str(e)
+            )
+            raise
     except Exception as e:
         logger.error(
             "Failed to add metrics middleware",
@@ -417,6 +432,21 @@ def add_timing_header_middleware(app: FastAPI) -> None:
     try:
         app.add_middleware(TimingHeaderMiddleware)
         logger.info("Added timing header middleware to application")
+    except RuntimeError as e:
+        # Check for the specific "app already started" error
+        if "after an application has started" in str(e):
+            logger.warning(
+                "Application has already started - timing header middleware will not be added. "
+                "This is expected during application lifecycle events.",
+                error=str(e)
+            )
+        else:
+            # Re-raise other RuntimeErrors
+            logger.error(
+                "Failed to add timing header middleware: unexpected runtime error",
+                error=str(e)
+            )
+            raise
     except Exception as e:
         logger.error(
             "Failed to add timing header middleware",

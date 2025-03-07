@@ -77,6 +77,7 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
 
 async def lifespan(app: FastAPI):
     """
+    Manages application startup and shutdown.
 
     Args:
         app: FastAPI application instance
@@ -84,6 +85,18 @@ async def lifespan(app: FastAPI):
 
     try:
         logger.info("Starting application")
+        
+        # Only start collection threads and report metrics
+        # (middleware already added before app creation)
+        from app.metrics.core import initialize_metrics
+        from app.metrics.tasks import start_metrics_collection
+        
+        # Initialize metrics core if needed
+        initialize_metrics()
+        
+        # Start collection threads
+        if settings.metrics_collection_enabled:
+            start_metrics_collection()
         
         # Report initial system metrics
         collect_system_metrics()
@@ -106,6 +119,10 @@ async def lifespan(app: FastAPI):
         raise
 
 
+# Create the app first before any middleware is added
+from fastapi import FastAPI
+
+# Create the app
 app = FastAPI(
     lifespan=lifespan,
     title="Job Matching API",
@@ -113,14 +130,27 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Setup metrics (must be done before other middleware)
-try:
-    setup_metrics(app)
-except Exception as e:
-    logger.error(
-        "Failed to set up metrics system",
-        error=str(e)
-    )
+# Now initialize metrics
+from app.metrics import setup_metrics, setup_all_middleware
+from app.metrics.middleware import MetricsMiddleware, add_timing_header_middleware
+from app.core.config import settings
+
+# Add metrics middleware manually
+if settings.metrics_enabled:
+    try:
+        # Add metrics middleware directly
+        app.add_middleware(MetricsMiddleware)
+        logger.info("Added metrics middleware to application")
+        
+        # Add timing header middleware if configured
+        if settings.include_timing_header:
+            # Call the function instead of directly adding the middleware class
+            add_timing_header_middleware(app)
+    except Exception as e:
+        logger.warning(
+            "Failed to add metrics middleware",
+            error=str(e)
+        )
 
 # Add auth debugging middleware
 app.add_middleware(AuthDebugMiddleware)

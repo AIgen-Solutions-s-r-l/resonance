@@ -49,9 +49,9 @@ def initialize_metrics() -> bool:
             # Initialize StatsD backend if enabled
             if settings.metrics_statsd_enabled:
                 try:
-                    from app.metrics.backends.statsd import StatsDBackend
+                    from app.metrics.backends.statsd import StatsdMetricsBackend
                     
-                    backend = StatsDBackend(
+                    backend = StatsdMetricsBackend(
                         host=settings.metrics_statsd_host,
                         port=settings.metrics_statsd_port,
                         prefix=settings.metrics_prefix,
@@ -77,9 +77,9 @@ def initialize_metrics() -> bool:
             # Initialize Prometheus backend if enabled
             if settings.metrics_prometheus_enabled:
                 try:
-                    from app.metrics.backends.prometheus import PrometheusBackend
+                    from app.metrics.backends.prometheus import PrometheusMetricsBackend
                     
-                    backend = PrometheusBackend(
+                    backend = PrometheusMetricsBackend(
                         prefix=settings.metrics_prefix
                     )
                     

@@ -203,9 +203,16 @@ def register_collection_task(
     if not settings.metrics_enabled or not settings.metrics_collection_enabled:
         return False
     
+    # Use a timeout to prevent deadlocks
+    lock_acquired = False
     try:
-        with _collection_thread_lock:
-            _collection_tasks[name] = (task_func, interval_seconds)
+        # Try to acquire the lock with a timeout
+        lock_acquired = _collection_thread_lock.acquire(timeout=1.0)
+        if not lock_acquired:
+            logger.warning("Could not acquire metrics thread lock - skipping task registration")
+            return False
+            
+        _collection_tasks[name] = (task_func, interval_seconds)
             
         logger.debug(
             "Registered collection task",
@@ -222,6 +229,10 @@ def register_collection_task(
             error=str(e)
         )
         return False
+    finally:
+        # Always release the lock if we acquired it
+        if lock_acquired:
+            _collection_thread_lock.release()
 
 
 def unregister_collection_task(name: str) -> bool:
@@ -435,20 +446,34 @@ def start_metrics_collection() -> bool:
     if not settings.metrics_enabled or not settings.metrics_collection_enabled:
         return False
     
-    with _collection_thread_lock:
+    # Use a timeout to prevent deadlocks
+    lock_acquired = False
+    try:
+        # Try to acquire the lock with a timeout
+        lock_acquired = _collection_thread_lock.acquire(timeout=2.0)
+        if not lock_acquired:
+            logger.warning("Could not acquire metrics thread lock - skipping metrics collection start")
+            return False
+            
         # Skip if already running
         if _collection_thread is not None and _collection_thread.is_alive():
             logger.debug("Metrics collection thread already running")
             return True
         
         try:
-            # Register system metrics collection
+            # Register system metrics collection - but don't block on this
             if settings.system_metrics_enabled:
-                register_collection_task(
-                    "system_metrics",
-                    collect_system_metrics,
-                    settings.system_metrics_interval
-                )
+                try:
+                    register_collection_task(
+                        "system_metrics",
+                        collect_system_metrics,
+                        settings.system_metrics_interval
+                    )
+                except Exception as task_err:
+                    logger.warning(
+                        "Failed to register system metrics collection task, continuing anyway",
+                        error=str(task_err)
+                    )
             
             # Start collection thread
             _collection_thread = threading.Thread(
@@ -470,6 +495,10 @@ def start_metrics_collection() -> bool:
                 error=str(e)
             )
             return False
+    finally:
+        # Always release the lock if we acquired it
+        if lock_acquired:
+            _collection_thread_lock.release()
 
 
 def stop_metrics_collection() -> bool:

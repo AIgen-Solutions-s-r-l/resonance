@@ -56,7 +56,7 @@ from app.core.config import settings
 from app.log.logging import logger
 
 
-class PrometheusBackend:
+class PrometheusMetricsBackend:
     """
     Backend for exposing metrics to Prometheus.
     
@@ -444,7 +444,7 @@ def setup_metrics_endpoint(app: Any) -> None:
             Response containing Prometheus metrics
         """
         return Response(
-            content=PrometheusBackend.generate_latest(),
+            content=PrometheusMetricsBackend.generate_latest(),
             media_type="text/plain"
         )
     
