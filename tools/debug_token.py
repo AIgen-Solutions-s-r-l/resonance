@@ -118,7 +118,7 @@ if __name__ == "__main__":
         # Generate a token
         print("No token provided. Generating a new token...")
         try:
-            from generate_test_token import generate_token
+            from tools.generate_test_token import generate_token
             token = generate_token()
             print(f"Generated token: {token}")
         except Exception as e:
