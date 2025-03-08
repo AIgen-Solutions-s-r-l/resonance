@@ -1,5 +1,0 @@
-### Job Description
-Job Tag:  Posted: November 14, 2024  Salary: $125, 000   We’re partnered with a long-time mid-size SaaS client (high growth +PE backed) to bring on a REMOTE Database Developer (growth role). They are looking for a seasoned individual that has the ability to act as a coach / mentor. If you are looking to make a big impact and guide teams on best practices for managing data to build products and systems this position should be to your liking.  ***Candidate must be based in the United States. No sponsorship is available. Please no 3rd Parties.***  Desired Skills And Experience  10+ years experience developing web based software and 5+ years of T-SQL and SQL Server experience * Will be responsible for providing database development guidance to 6 teams of developers that support their main platform * Planning data models, tackle complex data models + queries, some ETL + API work, Powershell, knowledge of C# and AWS is helpful * Understanding of DevOps principals, cloud environments, site reliability  
---------------------------------------------------
-### Cosine Distance
-0.7028

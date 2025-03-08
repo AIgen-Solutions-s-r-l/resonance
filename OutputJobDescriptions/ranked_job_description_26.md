@@ -1,5 +1,0 @@
-### Job Description
-We have an exciting opportunity for a Software Developer - C++ 4 with the top leading multimedia and creative software company in the world.  Responsibilities:Work on developing GPU components for the video processing pipelineWork on architecting, coding and productizing the high-performance GPU componentsWork on ensuring the highest quality, performance and scalabilityCollaborate with global teams on a regular basis.  Skills and Experience:Bachelor's or Master’s degree in Computer Science or equivalent.5+ years’ experience in Software EngineeringGPU programming skills with working knowledge of CUDA, Metal and OpenCLStrong proficiency in C++, working in large and complex codebase on Mac or WindowsStrong knowledge of high performance computing and modern GPU processing paradigmsKnowledge of video processingExcellent communication and collaboration skills, working in a global environmentAbility to think creatively to solve complex problems.  Compensation:Up to $102.11 per hour. 34203873
---------------------------------------------------
-### Cosine Distance
-0.7022

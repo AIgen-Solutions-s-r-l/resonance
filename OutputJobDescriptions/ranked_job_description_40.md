@@ -1,5 +1,0 @@
-### Job Description
-Job Title Windchill Configuration developer Must Have Technical/Functional Skills 1. 6+ Years of experience in windchill configuration2. 6+ years’ experience with Product Lifecycle Management (PLM)3. Demonstrated ability to troubleshoot and perform Break fix.4. Execute Windchill Upgrades and updates.5. Diagnosing and solving issues related to software deployment and platform interoperability. 6. Creating Business requirements documents, system configuration documents, and test plans.7. Strong Java language programming skills  Roles & Responsibilities 1. 6+ Years of experience in windchill configuration2. 6+ years’ experience with Product Lifecycle Management (PLM)3. Demonstrated ability to troubleshoot and perform Break fix.4. Execute Windchill Upgrades and updates.5. Diagnosing and solving issues related to software deployment and platform interoperability. 6. Creating Business requirements documents, system configuration documents, and test plans.7. Strong Java language programming skills
---------------------------------------------------
-### Cosine Distance
-0.7051
