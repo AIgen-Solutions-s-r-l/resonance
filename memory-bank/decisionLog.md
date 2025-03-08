@@ -162,6 +162,61 @@
 - Improved flexibility in how metrics can be reported
 - Easier maintenance and testing of metrics code in the future
 
+## 2025-03-09 - JWT Error Handling Improvement
+
+**Context:** The application was logging full stack traces for JWT authentication errors, which made the logs verbose and potentially exposed sensitive information. The error was occurring because the application was using a placeholder secret key "your-secret-key-here" for JWT validation.
+
+**Decision:** Improve the JWT error handling to log concise error messages without full stack traces while maintaining the existing authentication behavior.
+
+**Rationale:**
+- Full stack traces in logs can expose implementation details that shouldn't be public
+- More concise error messages make logs easier to read and analyze
+- Capturing the essential error information without the stack trace still provides necessary debugging context
+- The placeholder secret key was intended to be used in the current environment
+
+**Implementation:**
+1. Modified `app/core/auth.py` to use `logger.error()` instead of `logger.exception()` for JWT validation errors
+2. Updated `app/core/security.py` to use `logger.error()` with the specific error message for token decoding issues
+3. Added the error message text to the error logs to maintain the necessary context
+4. Preserved the existing authentication flow and validation logic
+
+**Consequences:**
+- Cleaner log output with focused error information
+- Reduced verbosity in logs while maintaining necessary context
+- Better security by not exposing the full stack trace
+- Improved readability of logs for operations and debugging
+- No changes to the authentication behavior or security model
+
+## 2025-03-09 - In-Memory Caching Implementation for Job Matching
+
+**Context:** The matching service performs computationally expensive vector similarity searches that can be redundant when users make identical queries in a short time period. This creates unnecessary database load and increases response times for repeated queries.
+
+**Decision:** Implement an in-memory caching system within the OptimizedJobMatcher class that stores job matching results for 5 minutes, using a combination of query parameters as cache keys.
+
+**Rationale:**
+- Vector similarity searches are CPU and database intensive
+- Many users may request the same job matches within a short timeframe
+- In-memory caching provides significant performance benefits without complex external dependencies
+- Time-based expiration ensures results don't become stale
+- Size-based limits prevent memory issues
+
+**Implementation:**
+1. Created an in-memory dictionary cache in job_matcher_optimized.py using the pattern `{cache_key: (result, timestamp)}`
+2. Implemented cache key generation based on resume ID, location filters, keyword filters, and pagination offset
+3. Added cache lookup before database queries and cache storage after successful queries
+4. Set TTL to 300 seconds (5 minutes) to balance freshness and performance
+5. Added size-based pruning that removes the oldest entries when the cache exceeds 1000 items
+6. Used asyncio.Lock() to ensure thread safety for cache operations
+
+**Consequences:**
+- Significantly reduced database load for repeated matching requests
+- Improved response times for cached queries
+- No external dependencies required (such as Redis)
+- Lightweight implementation with minimal overhead
+- Cache is not shared across instances (limitation for distributed deployments)
+- Cache entries expire after 5 minutes regardless of access frequency
+- No mechanism to manually invalidate cache when job data changes (relies on TTL)
+
 ## Template for Future Decisions
 
 ## [Date] - [Decision Topic]

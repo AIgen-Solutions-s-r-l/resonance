@@ -137,16 +137,16 @@ async def start_job_matching(
             max_attempts = 36  # 3 minutes (5 seconds * 36)
             for _ in range(max_attempts):
                 await asyncio.sleep(5)  # Check every 5 seconds
-                status, result = await TaskManager.get_task_status(task_id)
+                task_status, result = await TaskManager.get_task_status(task_id)
                 
-                if status == TaskStatus.COMPLETED and result:
+                if task_status == TaskStatus.COMPLETED and result:
                     # Return the actual results instead of the task
                     if isinstance(result, dict) and "jobs" in result:
                         job_list = result["jobs"]
                         job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
                         return job_pydantic_list
                 
-                if status in (TaskStatus.FAILED, TaskStatus.EXPIRED):
+                if task_status in (TaskStatus.FAILED, TaskStatus.EXPIRED):
                     # Task failed or expired
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

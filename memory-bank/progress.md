@@ -1,5 +1,123 @@
 # Progress Tracking: Metrics System Implementation
 
+## 2025-03-09 - In-Memory Caching Analysis
+
+### Work Done
+- Analyzed the in-memory caching implementation in `app/libs/job_matcher_optimized.py`:
+  - Reviewed the cache structure, TTL mechanism, and size-based pruning logic
+  - Examined the cache key generation that captures all query parameters
+  - Explored the concurrency protection using asyncio.Lock()
+- Tested the caching behavior in the running service:
+  - Started the service on port 9001 using uvicorn
+  - Made authenticated API requests using provided JWT token
+  - Verified consistent results across repeated identical queries
+  - Observed the asynchronous task-based architecture in action
+- Documented the caching system:
+  - Added detailed explanation to decisionLog.md
+  - Updated activeContext.md with caching analysis notes
+  - Cleaned up codebase by removing unused router file
+
+### Implementation Details
+- The caching system in `app/libs/job_matcher_optimized.py` consists of:
+  ```python
+  # Simple in-memory cache for results
+  # Structure: {cache_key: (result, timestamp)}
+  _results_cache: Dict[str, tuple] = {}
+  _cache_ttl = 300  # Cache TTL in seconds (5 minutes)
+  _cache_lock = asyncio.Lock()
+  ```
+
+- Cache key generation captures all query parameters:
+  ```python
+  async def _generate_cache_key(
+      self,
+      resume_id: str,
+      location: Optional[LocationFilter],
+      keywords: Optional[List[str]],
+      offset: int
+  ) -> str:
+      key_parts = [resume_id, offset]
+      
+      if location:
+          key_parts.append(f"loc_{location.country}_{location.city}")
+          if location.latitude and location.longitude:
+              key_parts.append(f"geo_{location.latitude}_{location.longitude}_{location.radius_km}")
+      
+      if keywords:
+          key_parts.append(f"kw_{','.join(sorted(keywords))}")
+      
+      return "_".join(str(part) for part in key_parts)
+  ```
+
+- Cache cleanup to prevent memory issues:
+  ```python
+  # Cleanup cache if it gets too large (simple approach)
+  if len(_results_cache) > 1000:  # Arbitrary limit
+      # Remove oldest entries
+      sorted_items = sorted(_results_cache.items(), key=lambda x: x[1][1])
+      to_remove = len(_results_cache) // 2  # Remove half of the entries
+      
+      for key, _ in sorted_items[:to_remove]:
+          del _results_cache[key]
+  ```
+
+- The cached data flow in `process_job()`:
+  1. Generate cache key from request parameters
+  2. Check if results exist in cache and are fresh
+  3. If found, return cached results immediately
+  4. If not found, perform database query
+  5. Store results in cache before returning
+
+### Next Steps
+1. Consider implementing cache metrics to monitor effectiveness:
+   - Cache hit/miss rates
+   - Average response time for cached vs. non-cached requests
+   - Cache entry lifetimes
+   - Cache size monitoring
+
+2. Potential enhancements to consider:
+   - Make TTL configurable via environment variables
+   - Implement distributed caching with Redis for multi-instance deployments
+   - Add explicit cache invalidation when job data changes
+   - Consider variable TTL based on query popularity
+   - Add unit tests for caching behavior
+
+3. Performance optimizations:
+   - Evaluate memory usage during peak loads
+   - Consider more sophisticated cache eviction policies
+   - Experiment with pre-warming cache for common queries
+   - Benchmark different TTL values for optimal balance
+
+## 2025-03-09 - JWT Error Handling Improvements
+
+### Work Done
+- Fixed JWT signature verification error handling to prevent stack traces from appearing in logs:
+  - Modified `app/core/auth.py` to use `logger.error()` instead of `logger.exception()` for JWT validation errors
+  - Updated `app/core/security.py` to use `logger.error()` for token decoding issues
+  - Added specific error messages to maintain necessary debugging context
+  - Preserved the existing authentication flow with the specified secret key
+
+### Implementation Details
+- In `app/core/auth.py`:
+  - Changed `logger.exception(f"JWT validation error")` to `logger.error(f"JWT validation error")`
+  - Changed `logger.exception(f"Invalid user_id format")` to `logger.error(f"Invalid user_id format: {str(e)}")`
+  - Changed `logger.exception(f"Unexpected auth error")` to `logger.error(f"Unexpected auth error: {str(e)}")`
+
+- In `app/core/security.py`:
+  - Changed `logger.exception("Could not decode token payload")` to `logger.error(f"Could not decode token payload: {str(e)}")`
+
+- This approach:
+  - Results in cleaner log output without losing important error context
+  - Improves security by not exposing implementation details in the logs
+  - Makes logs easier to read and analyze
+  - Maintains the same authentication behavior while improving error handling
+
+### Next Steps
+1. Consider implementing structured logging with error codes for easier filtering
+2. Add metrics for authentication failures to monitor trends
+3. Create alerting on authentication errors that exceed a threshold
+4. Review other areas of code for similar error handling issues
+
 ## 2025-03-07 - Fix for Missing Middleware Functions
 
 ### Work Done
@@ -290,6 +408,7 @@
 7. Fix test warning in test_schema_changes.py - use assertions instead of returning True
 8. Modernize code by addressing the deprecated datetime.utcnow() usage in job_matcher.py
 9. Update Pydantic configuration to use ConfigDict instead of class-based config
+
 # Progress Tracking: Matching Service
 
 ## Work Done

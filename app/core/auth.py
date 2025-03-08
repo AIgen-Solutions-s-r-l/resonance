@@ -46,12 +46,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     except JWTError as e:
-        logger.exception(f"JWT validation error")
-        raise credentials_exception
+            logger.error(f"JWT validation error")
+            raise credentials_exception
     except ValueError as e:
         # This might happen if int(user_id) fails
-        logger.exception(f"Invalid user_id format")
+        logger.error(f"Invalid user_id format: {str(e)}")
         raise credentials_exception
     except Exception as e:
-        logger.exception(f"Unexpected auth error")
+        logger.error(f"Unexpected auth error: {str(e)}")
         raise credentials_exception

@@ -184,6 +184,8 @@ async def execute_vector_similarity_query(
     # Update params for the optimized query (we added two more cv_embedding parameters)
     params = [cv_embedding, cv_embedding, cv_embedding, cv_embedding, cv_embedding]
     params.extend(query_params)
+    # Add query_params again for each subquery that uses the WHERE clause
+    params.extend(query_params + query_params)  # Once for CASE WHEN and once for ELSE
     params.extend([limit, offset])
     
     await cursor.execute(query, params)
