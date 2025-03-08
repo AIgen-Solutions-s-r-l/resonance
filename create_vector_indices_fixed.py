@@ -73,10 +73,10 @@ async def create_vector_indices():
                 """)
                 
                 # Set probes parameter - needs to be done after index creation
-                await cursor.execute(f"""
+                '''await cursor.execute(f"""
                     ALTER INDEX "Jobs_embedding_idx" 
                     SET (probes = {settings.vector_ivf_probes})
-                """)
+                """)'''
                 print("IVFFLAT index created successfully!")
                 
             except Exception as e:
