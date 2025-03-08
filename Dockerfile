@@ -19,7 +19,8 @@ RUN poetry install --no-root --only main
 
 # Copy the application code
 COPY ./app /app/app
-COPY simple_statsd_server.py /app/
+COPY simple_statsd_server.py /app
+COPY create_vector_indices_fixed.py /app
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
