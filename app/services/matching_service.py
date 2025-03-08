@@ -1,6 +1,6 @@
 from typing import Dict, Any, Optional
 from typing import List
-from app.libs.job_matcher import JobMatcher
+from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.core.mongodb import collection_name
 from app.log.logging import logger
 from app.schemas.job import JobSchema
@@ -54,7 +54,7 @@ async def match_jobs_with_resume(
     offset: int = 0,
 ) -> List[JobSchema]:
     try:
-        matcher = JobMatcher()
+        matcher = OptimizedJobMatcher()
 
         matched_jobs = await matcher.process_job(
             resume,

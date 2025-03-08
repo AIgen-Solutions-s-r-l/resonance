@@ -39,6 +39,21 @@ class Settings(BaseSettings):
         "postgresql://testuser:testpassword@localhost:5432/matching",
     )
     
+    # Database connection pooling settings
+    db_pool_min_size: int = int(os.getenv("DB_POOL_MIN_SIZE", "2"))
+    db_pool_max_size: int = int(os.getenv("DB_POOL_MAX_SIZE", "10"))
+    db_pool_timeout: float = float(os.getenv("DB_POOL_TIMEOUT", "30.0"))
+    db_pool_max_idle: int = int(os.getenv("DB_POOL_MAX_IDLE", "300"))
+    db_statement_timeout: int = int(os.getenv("DB_STATEMENT_TIMEOUT", "60000"))  # 60 seconds in ms
+    
+    # Vector optimization settings
+    vector_index_type: str = os.getenv("VECTOR_INDEX_TYPE", "ivfflat")  # Options: ivfflat, hnsw
+    vector_ivf_lists: int = int(os.getenv("VECTOR_IVF_LISTS", "100"))
+    vector_ivf_probes: int = int(os.getenv("VECTOR_IVF_PROBES", "10"))
+    vector_hnsw_m: int = int(os.getenv("VECTOR_HNSW_M", "16"))
+    vector_hnsw_ef_construction: int = int(os.getenv("VECTOR_HNSW_EF_CONSTRUCTION", "64"))
+    vector_hnsw_ef_search: int = int(os.getenv("VECTOR_HNSW_EF_SEARCH", "40"))
+    
     # Authentication settings
     secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-here")
     algorithm: str = os.getenv("ALGORITHM", "HS256")

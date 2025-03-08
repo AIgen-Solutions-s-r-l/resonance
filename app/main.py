@@ -6,10 +6,12 @@ import json
 from jose import jwt
 
 from app.log.logging import logger
-from app.routers.jobs_matched_router import router as jobs_router
+from app.routers.jobs_matched_router_async import router as jobs_router
 from app.core.config import settings
 from app.metrics import setup_metrics
 from app.metrics.system import collect_system_metrics
+from app.tasks.job_processor import setup_task_manager, teardown_task_manager
+from app.utils.db_utils import get_connection_pool, close_all_connection_pools
 
 
 class AuthDebugMiddleware(BaseHTTPMiddleware):
@@ -101,6 +103,15 @@ async def lifespan(app: FastAPI):
         # Report initial system metrics
         collect_system_metrics()
         
+        # Initialize task manager for background job processing
+        await setup_task_manager()
+        logger.info("Task manager initialized")
+        
+        # Initialize database connection pools
+        logger.info("Initializing database connection pools")
+        await get_connection_pool("default")  # Create the default connection pool
+        logger.info("Database connection pools initialized")
+        
         logger.info("Application started successfully")
         
         yield
@@ -111,6 +122,15 @@ async def lifespan(app: FastAPI):
         # Stop metrics collection
         from app.metrics import stop_metrics_collection
         stop_metrics_collection()
+        
+        # Cleanup task manager
+        await teardown_task_manager()
+        logger.info("Task manager shutdown completed")
+        
+        # Close database connection pools
+        logger.info("Closing database connection pools")
+        await close_all_connection_pools()
+        logger.info("Database connection pools closed")
         
         logger.info("Application shut down successfully")
         
