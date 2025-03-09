@@ -136,7 +136,21 @@ class SimilaritySearcher:
         """
         start_time = time()
         
+        # Log incoming parameters for debugging
+        logger.info(
+            "SIMILARITY: Starting vector query execution",
+            cursor_type=type(cursor).__name__,
+            embedding_length=len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown',
+            where_count=len(where_clauses),
+            params_count=len(query_params),
+            param_types=[type(p).__name__ for p in query_params],
+            param_values=str(query_params)[:100] + "..." if len(str(query_params)) > 100 else query_params,
+            limit=limit,
+            offset=offset
+        )
+        
         vector_start = time()
+        logger.info("SIMILARITY: Calling execute_vector_similarity_query")
         results = await execute_vector_similarity_query(
             cursor,
             cv_embedding,

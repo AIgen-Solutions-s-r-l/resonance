@@ -54,6 +54,7 @@ class JobMatcher:
         """
         start_time = time()
         try:
+            # Log all parameters at the start for debugging
             logger.info(
                 "Starting job processing",
                 has_location=location is not None,
@@ -62,23 +63,34 @@ class JobMatcher:
                 limit=limit,
                 use_cache=use_cache
             )
+            logger.info("RESUME CHECK: Checking resume for vector embedding")
             
             # Check for vector embedding
             if "vector" not in resume:
                 logger.warning("No vector found in resume")
                 return {"jobs": []}
+            else:
+                vector_length = len(resume['vector']) if isinstance(resume.get('vector'), list) else 'unknown'
+                logger.info(f"RESUME CHECK: Vector found in resume, length: {vector_length}")
             
             resume_id = str(resume.get("_id", "unknown"))
+            logger.info(f"RESUME CHECK: Resume ID: {resume_id}")
+            
+            # Add log to debug resume structure
+            logger.info(f"RESUME CHECK: Resume keys: {list(resume.keys())}")
             
             # Check cache if enabled
             if use_cache:
+                logger.info("CACHE CHECK: Checking cache for existing results")
                 cache_key = await cache.generate_key(
                     resume_id, 
                     offset=offset,
                     location=location.dict() if location else None,
                     keywords=keywords
                 )
+                logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
+                logger.info(f"CACHE CHECK: Cache hit: {cached_results is not None}")
                 
                 if cached_results:
                     logger.info(
@@ -89,10 +101,16 @@ class JobMatcher:
                     )
                     return cached_results
             
+            logger.info("PROCESSING: No cache hit, proceeding with matching")
+            
             # Process the match
+            logger.info("PROCESSING: Extracting CV embedding from resume")
             cv_embedding = resume["vector"]
+            vector_length = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
+            logger.info(f"PROCESSING: Starting vector similarity search with embedding length: {vector_length}")
             
             # Use the vector matcher to find matches
+            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity")
             job_matches = await vector_matcher.get_top_jobs_by_vector_similarity(
                 cv_embedding,
                 location=location,
@@ -101,16 +119,19 @@ class JobMatcher:
                 limit=limit
             )
             
+            logger.info(f"RESULTS: Received {len(job_matches)} matches from vector matcher")
             job_results = {
                 "jobs": [match.to_dict() for match in job_matches]
             }
             
             # Save matches if requested
             if save_to_mongodb:
+                logger.info("RESULTS: Saving matches to MongoDB")
                 await persistence.save_matches(job_results, resume_id, save_to_mongodb)
             
             # Store in cache if enabled
             if use_cache:
+                logger.info("RESULTS: Storing results in cache")
                 cache_key = await cache.generate_key(
                     resume_id, 
                     offset=offset,

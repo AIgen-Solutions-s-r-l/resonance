@@ -51,27 +51,32 @@ class VectorMatcher:
         """
         start_time = time()
         try:
+            logger.info(f"VECTOR_MATCH: Starting with params: loc={location != None}, keywords={keywords != None}, offset={offset}")
+            
             # Build filter conditions
+            logger.info("VECTOR_MATCH: Building filter conditions")
             where_clauses, query_params = query_builder.build_filter_conditions(
                 location, keywords
             )
             
-            logger.debug(
-                "Starting vector similarity match",
+            logger.info(
+                "VECTOR_MATCH: Filter conditions built",
                 filter_count=len(where_clauses),
-                params_count=len(query_params),
-                offset=offset,
-                limit=limit
+                params_count=len(query_params)
             )
             
+            logger.info("VECTOR_MATCH: Acquiring database cursor")
             async with get_db_cursor("default") as cursor:
+                logger.info("VECTOR_MATCH: Database cursor acquired")
+                
                 # Check row count using a lighter query
                 count_start = time()
+                logger.info("VECTOR_MATCH: Running count query")
                 row_count = await get_filtered_job_count(cursor, where_clauses, query_params)
                 count_elapsed = time() - count_start
                 
-                logger.debug(
-                    "Row count check completed",
+                logger.info(
+                    "VECTOR_MATCH: Count query completed",
                     row_count=row_count,
                     elapsed_time=f"{count_elapsed:.6f}s"
                 )
@@ -79,23 +84,53 @@ class VectorMatcher:
                 # For very small result sets, use simpler query
                 if row_count <= 5:
                     logger.info(
-                        "Using fallback strategy due to small result set",
+                        "VECTOR_MATCH: Using fallback strategy due to small result set",
                         row_count=row_count
                     )
                     
-                    return await self.similarity_searcher._execute_fallback_query(
-                        cursor, where_clauses, query_params, limit
-                    )
+                    logger.info("VECTOR_MATCH: Executing fallback query")
+                    try:
+                        result = await self.similarity_searcher._execute_fallback_query(
+                            cursor, where_clauses, query_params, limit
+                        )
+                        logger.info(f"VECTOR_MATCH: Fallback query returned {len(result)} results")
+                        return result
+                    except Exception as e:
+                        logger.error(f"VECTOR_MATCH ERROR: Fallback query failed: {str(e)}")
+                        raise
                 
                 # Execute optimized vector similarity query
-                return await self.similarity_searcher._execute_vector_query(
-                    cursor, cv_embedding, where_clauses, query_params, limit, offset
-                )
+                logger.info("VECTOR_MATCH: Executing optimized vector similarity query")
+                try:
+                    # Log embedding dimensions for troubleshooting
+                    embedding_len = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
+                    logger.info(f"VECTOR_MATCH: Using embedding of length {embedding_len}")
+                    
+                    # Detailed logging of query parameters
+                    logger.info(
+                        "VECTOR_MATCH: Query parameters detail",
+                        cursor_type=type(cursor).__name__,
+                        embedding_sample=str(cv_embedding[:3]) + "..." if isinstance(cv_embedding, list) and len(cv_embedding) > 3 else cv_embedding,
+                        where_clauses=where_clauses,
+                        query_params=query_params,
+                        query_params_types=[type(p).__name__ for p in query_params],
+                        limit=limit,
+                        offset=offset
+                    )
+                    
+                    result = await self.similarity_searcher._execute_vector_query(
+                        cursor, cv_embedding, where_clauses, query_params, limit, offset
+                    )
+                    logger.info(f"VECTOR_MATCH: Vector query returned {len(result)} results")
+                    return result
+                except Exception as e:
+                    logger.error(f"VECTOR_MATCH ERROR: Vector query failed: {str(e)}")
+                    raise
         
         except Exception as e:
             elapsed = time() - start_time
             logger.error(
-                "Error in vector similarity matching",
+                "VECTOR_MATCH ERROR: Matching failed",
                 error=str(e),
                 error_type=type(e).__name__,
                 elapsed_time=f"{elapsed:.6f}s"
