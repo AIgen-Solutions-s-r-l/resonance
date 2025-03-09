@@ -1,3 +1,56 @@
+## 2025-03-09 - Job Matcher Refactoring to Module Structure
+
+**Context:** The job matching functionality was implemented in a single monolithic file (`app/libs/job_matcher_optimized.py`) with over 500 lines of code. This created maintainability challenges, made the code difficult to understand, and limited our ability to add new features or improve performance. We also identified several critical issues in SQL parameter handling that were causing errors in production.
+
+**Decision:** Refactor the job matcher implementation into a proper module with multiple files, each with a clear single responsibility, following SOLID principles and keeping each file under 200 lines of code. Additionally, improve error handling and add comprehensive logging for performance tracking.
+
+**Rationale:**
+- Single responsibility principle suggests breaking down complex functionality into focused components
+- Smaller files are easier to understand, test, and maintain
+- A proper module structure allows for better dependency management
+- Enhanced logging helps identify performance bottlenecks
+- Structured error handling improves reliability and debugging
+- Fixing parameter handling issues addresses critical production bugs
+
+**Implementation:**
+1. Created a new `app/libs/job_matcher/` module with the following components:
+   - `models.py`: Data models (JobMatch)
+   - `exceptions.py`: Custom exception hierarchy
+   - `job_validator.py`: Data validation and JobMatch creation
+   - `query_builder.py`: SQL query construction
+   - `similarity_searcher.py`: Database query execution
+   - `vector_matcher.py`: Vector similarity matching core
+   - `matcher.py`: Main entry point and business logic
+   - `cache.py`: Caching mechanism
+   - `persistence.py`: Results persistence
+   - `utils.py`: Utility functions
+
+2. Added comprehensive logging with loguru:
+   - Separate log files for general, error, and performance logs
+   - Detailed timing logs for query execution and data processing
+   - Context-rich log messages for easier debugging
+
+3. Fixed critical bugs:
+   - Properly handled SQL parameter types in query building
+   - Fixed parameter order issues in vector similarity queries
+   - Added robust error handling with specific exceptions
+   - Improved validation for database query results
+
+4. Added backward compatibility layer:
+   - Maintained the original file as a re-export of the new module
+   - Added deprecation warning to guide developers to the new structure
+
+**Consequences:**
+- Improved maintainability through smaller, focused components
+- Better error handling with domain-specific exceptions
+- Enhanced visibility into performance through detailed logging
+- Fixed critical production bugs in SQL parameter handling
+- More testable code structure with clear component boundaries
+- Better organization allows for easier future enhancements
+- Increased development velocity for future changes
+- Minor learning curve for developers to understand the new structure
+- Potential for component-specific optimization without affecting the entire system
+
 ## 2025-03-07 - Metrics Implementation Strategy
 
 **Context:** The matching service needs performance monitoring to understand API response times, database query performance, and matching algorithm efficiency. Currently, the system has limited visibility into these aspects, which makes it difficult to identify bottlenecks and performance issues.

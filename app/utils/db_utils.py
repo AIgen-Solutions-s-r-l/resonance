@@ -134,10 +134,9 @@ async def execute_vector_similarity_query(
     if where_clauses:
         where_sql = "WHERE " + " AND ".join(where_clauses)
     
-    # Add vector embedding parameters to the beginning of params list
-    params = [cv_embedding, cv_embedding, cv_embedding]
-    params.extend(query_params)
-    params.extend([limit, offset])
+    # Create a separate sql_params list for the query
+    # This ensures we include the vector embeddings in the correct positions
+    sql_params = []
     
     # Optimized query using a direct approach for vector operations
     query = f"""
@@ -181,17 +180,52 @@ async def execute_vector_similarity_query(
     LIMIT %s OFFSET %s
     """
     
-    # Update params for the optimized query (we added two more cv_embedding parameters)
-    params = [cv_embedding, cv_embedding, cv_embedding, cv_embedding, cv_embedding]
-    params.extend(query_params)
-    # Add query_params again for each subquery that uses the WHERE clause
-    params.extend(query_params + query_params)  # Once for CASE WHEN and once for ELSE
-    params.extend([limit, offset])
+    # Build the parameter list in the correct order
+    # First, add embeddings for the vector similarity calculations
+    sql_params.append(cv_embedding)  # For <-> in score calculation
+    sql_params.append(cv_embedding)  # For first CASE WHEN
     
-    await cursor.execute(query, params)
-    results = await cursor.fetchall()
+    # Add filter params for the first WHERE clause inside CASE WHEN
+    sql_params.extend(query_params)
     
-    return results
+    # Add another embedding for CASE ELSE
+    sql_params.append(cv_embedding)
+    
+    # Add filter params for the second WHERE clause inside CASE ELSE
+    sql_params.extend(query_params)
+    
+    # Add embeddings for the remaining vector ops
+    sql_params.append(cv_embedding)  # For <=> in score calculation
+    sql_params.append(cv_embedding)  # For <#> in score calculation
+    
+    # Add filter params for the main WHERE clause
+    sql_params.extend(query_params)
+    
+    # Finally, add limit and offset
+    sql_params.append(limit)
+    sql_params.append(offset)
+    
+    # Log query for debugging
+    logger.debug(
+        "Executing vector similarity query",
+        param_count=len(sql_params),
+        where_clause_count=len(where_clauses),
+        has_filter=bool(where_clauses)
+    )
+    
+    try:
+        await cursor.execute(query, sql_params)
+        results = await cursor.fetchall()
+        return results
+    except Exception as e:
+        logger.error(
+            "Error executing vector similarity query",
+            error=str(e),
+            error_type=type(e).__name__,
+            where_clauses=where_clauses,
+            param_count=len(sql_params)
+        )
+        raise
 
 
 @async_sql_query_timer("simple_count_query")

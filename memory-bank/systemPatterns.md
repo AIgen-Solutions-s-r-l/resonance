@@ -15,6 +15,12 @@ This document outlines the architectural patterns, code organization approaches,
 - **Repository Layer**: Data access in `app/repositories/`
 - **Domain Layer**: Models in `app/models/` and schemas in `app/schemas/`
 
+### Module-Based Organization
+- Core functionality refactored into modular components following SOLID principles
+- Each component has a clear single responsibility
+- Clear separation of concerns between data validation, query building, and execution
+- Example: Job matcher module in `app/libs/job_matcher/` with specialized components
+
 ## Code Organization Patterns
 
 ### Feature-Based Organization
@@ -24,6 +30,42 @@ This document outlines the architectural patterns, code organization approaches,
 ### Core Modules Separation
 - Core infrastructure concerns separated in `app/core/` 
 - Authentication, configuration, database connections kept separate from business logic
+
+### SOLID Principles Implementation
+- **Single Responsibility**: Each module file has exactly one reason to change
+  - Example: `query_builder.py` handles only SQL query construction
+  - Example: `job_validator.py` focuses exclusively on data validation
+- **Open-Closed**: Components designed for extension without modification
+  - Example: Custom exception hierarchy allows adding new error types
+- **Interface Segregation**: Focused interfaces for specific use cases
+  - Example: Separation between vector matcher and persistence services
+
+## Design Patterns
+
+### Singleton Pattern
+- Used for components that should have only one instance
+- Examples: query_builder, job_validator, vector_matcher
+- Ensures consistent state and reduces memory overhead
+
+### Factory Pattern
+- Used for object creation with complex validation logic
+- Example: JobMatch creation in job_validator component
+- Centralizes creation logic and validation rules
+
+### Repository Pattern
+- Data access logic encapsulated in repository classes
+- Business logic interacts with data through repository interfaces
+- Example: QualityTrackingRepository separates data access from service logic
+
+### Decorator Pattern
+- Used for cross-cutting concerns like metrics and logging
+- Example: Performance timing decorators in metrics module
+- Example: Async method timing in database operations
+
+### Strategy Pattern
+- Different algorithms or approaches can be selected at runtime
+- Example: Fallback query strategy when result count is small
+- Example: Different similarity metrics combined with weighting
 
 ## Data Access Patterns
 
@@ -36,10 +78,38 @@ This document outlines the architectural patterns, code organization approaches,
   - Maintains job match results
 - Abstracted database access through repository pattern
 
-### Repository Pattern
-- Data access logic encapsulated in repository classes
-- Business logic interacts with data through repository interfaces
-- Example: QualityTrackingRepository separates data access from service logic
+### Connection Pooling
+- Optimized database access through connection pools
+- Reuses database connections to avoid overhead of establishing new connections
+- Implements proper async context managers for resource management
+
+### Caching Strategy
+- In-memory caching implemented for frequently accessed match results
+- TTL-based expiration to ensure data freshness (5-minute default)
+- Size-based pruning to prevent memory issues
+- Cache key generation based on all query parameters
+- Thread-safe implementation with asyncio.Lock()
+
+## Error Handling Patterns
+
+### Custom Exception Hierarchy
+- Domain-specific exceptions that extend base Exception class
+- Categorized by error type and source component
+- Examples: QueryBuildingError, VectorSimilarityError, ValidationError
+- Clear error messages with context information
+
+### Graceful Degradation
+- Fallback mechanisms when optimal approach fails
+- Example: Simplified query execution for small result sets
+- Example: Default values when optional parameters are missing
+
+### Comprehensive Logging
+- Structured logging with context information
+- Separate log files for different concerns:
+  - General application logs
+  - Error-specific logs with context
+  - Performance-focused logs with timing data
+- Log rotation and retention policies
 
 ## API Design Patterns
 
@@ -94,11 +164,30 @@ This document outlines the architectural patterns, code organization approaches,
 - Timestamp information for tracking match history
 - Supports retrieval of previously generated matches
 
+## Performance Optimization Patterns
+
+### Query Optimization
+- Use of optimized vector similarity operations
+- Efficient parameter handling in SQL queries
+- Early filtering to reduce dataset size before computing similarity
+
+### Metrics Collection
+- Detailed timing metrics for various operations
+- Score distribution analysis for match quality
+- Match count tracking by algorithm path
+- Response time measurement at API level
+
+### Asynchronous Processing
+- Fully asynchronous implementation with proper async/await patterns
+- Non-blocking database operations with async cursor
+- Concurrent processing where possible
+
 ## Future Pattern Considerations
 
-### Caching Strategy
-- Consider implementing caching for frequently accessed data
-- Explore Redis or in-memory caching options
+### Distributed Caching
+- Consider replacing in-memory cache with Redis for multi-instance deployments
+- Implement cache invalidation mechanisms when data changes
+- Explore variable TTL based on query popularity
 
 ### Asynchronous Processing
 - Consider moving intensive matching operations to background tasks
