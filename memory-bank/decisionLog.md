@@ -217,6 +217,33 @@
 - Cache entries expire after 5 minutes regardless of access frequency
 - No mechanism to manually invalidate cache when job data changes (relies on TTL)
 
+## 2025-03-09 - Job Matcher Implementation Consolidation
+
+**Context:** The codebase contained two implementations of the job matcher: the original in `job_matcher.py` and the optimized version in `job_matcher_optimized.py`. The production code was using the optimized version, while tests were still using the original implementation. This dual implementation approach increased maintenance overhead and could lead to confusion.
+
+**Decision:** Consolidate to a single implementation by removing the original `job_matcher.py` file and updating the test suite to use the optimized version.
+
+**Rationale:**
+- Maintaining two implementations causes confusion and increases maintenance burden
+- The optimized version has several improvements including connection pooling, caching, and better async patterns
+- Single source of truth improves code clarity and maintainability
+- Test code should align with what's being used in production
+
+**Implementation:**
+1. Updated `app/tests/test_matcher.py` to import and use `OptimizedJobMatcher` instead of `JobMatcher`
+2. Refactored test fixture to properly mock async database operations
+3. Updated test assertions to match the optimized implementation
+4. Added new test case specifically for the caching functionality
+5. Safely removed the original `job_matcher.py` file after verifying all tests pass with the optimized version
+
+**Consequences:**
+- Simplified codebase with a single implementation
+- Better test coverage with tests that accurately reflect production code
+- Reduced maintenance overhead from not having to maintain two implementations
+- Added test coverage for caching functionality
+- Improved alignment between tests and production code
+- Tests now use modern async patterns consistent with the rest of the codebase
+
 ## Template for Future Decisions
 
 ## [Date] - [Decision Topic]
