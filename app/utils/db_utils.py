@@ -183,7 +183,7 @@ async def execute_vector_similarity_query(
         l.city,
         c.company_name,
         c.logo AS company_logo,
-        'test_portal' AS portal,
+        j.portal AS portal,
         -- Simplified score calculation for better performance
         (1.0 - (embedding <=> %s::vector)::float) AS score
     FROM "Jobs" j

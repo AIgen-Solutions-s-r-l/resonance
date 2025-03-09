@@ -70,7 +70,7 @@ class SimilaritySearcher:
             l.city as city,
             c.company_name as company_name,
             c.logo as company_logo,
-            'test_portal' as portal,
+            j.portal as portal,
             0.0 as score
         FROM "Jobs" j
         LEFT JOIN "Companies" c ON j.company_id = c.company_id
