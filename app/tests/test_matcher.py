@@ -4,6 +4,7 @@ import asyncio
 import builtins
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
+from app.libs.job_matcher.models import JobMatch
 
 # Create a mock Row that supports both dict and list access
 class MockRow(dict):
@@ -14,51 +15,47 @@ class MockRow(dict):
 
 
 @pytest.fixture
-async def job_matcher(monkeypatch):
-    # Create a mock cursor
-    mock_cursor = AsyncMock()
-    
-    # Create a properly configured async context manager mock
-    mock_context = AsyncMock()
-    mock_context.__aenter__.return_value = mock_cursor
-    
-    # Mock the get_db_cursor function to return our configured mock
-    monkeypatch.setattr(
-        "app.libs.job_matcher_optimized.get_db_cursor", 
-        lambda *args, **kwargs: mock_context
-    )
-    
-    # Return a new instance of the optimized matcher and the mock cursor
-    matcher = OptimizedJobMatcher()
-    return matcher, mock_cursor
+def job_matcher():
+    """Return a new instance of the optimized matcher."""
+    return OptimizedJobMatcher()
 
 
 @pytest.mark.asyncio
-async def test_get_top_jobs_by_vector_similarity_single_result(job_matcher):
-    # Need to await the fixture
-    matcher, mock_cursor = await job_matcher
+@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_fallback_query')
+@patch('app.libs.job_matcher.vector_matcher.get_filtered_job_count')
+@patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
+async def test_get_top_jobs_by_vector_similarity_single_result(
+    mock_get_db_cursor, mock_get_filtered_job_count, mock_execute_fallback, job_matcher
+):
+    # Set up mocks
+    mock_cursor = AsyncMock()
+    mock_context = AsyncMock()
+    mock_context.__aenter__.return_value = mock_cursor
+    mock_context.__aexit__.return_value = None
+    mock_get_db_cursor.return_value = mock_context
     
-    mock_cursor.fetchone.return_value = MockRow({'count': 1})
+    mock_get_filtered_job_count.return_value = 1  # This will trigger fallback query
     
-    mock_row = MockRow({
-        'title': "Software Engineer",
-        'description': "Job description",
-        'id': "1",
-        'workplace_type': "office",
-        'short_description': "short desc",
-        'field': "IT",
-        'experience': "3 years",
-        'skills_required': "Python, Django",
-        'country': "USA",
-        'city': "New York",
-        'company_name': "TechCorp",
-        'score': 1.0
-    })
+    # Create a JobMatch instance, not just a dictionary
+    mock_result = JobMatch(
+        id="1",
+        title="Software Engineer",
+        description="Job description",
+        workplace_type="office",
+        short_description="short desc",
+        field="IT",
+        experience="3 years",
+        skills_required=["Python", "Django"],
+        country="USA",
+        city="New York",
+        company_name="TechCorp",
+        score=1.0
+    )
     
-    mock_cursor.fetchall.return_value = [mock_row]
+    mock_execute_fallback.return_value = [mock_result]
     
-    mock_embedding = [0.1, 0.2, 0.3]
-    job_matches = await matcher.get_top_jobs_by_vector_similarity(
+    mock_embedding = [0.1] * 1024  # Create a properly sized embedding vector
+    job_matches = await job_matcher.get_top_jobs_by_vector_similarity(
         mock_embedding
     )
     
@@ -68,9 +65,18 @@ async def test_get_top_jobs_by_vector_similarity_single_result(job_matcher):
 
 
 @pytest.mark.asyncio
-async def test_get_top_jobs_by_vector_similarity_multiple_results(job_matcher):
-    # Need to await the fixture
-    matcher, mock_cursor = await job_matcher
+@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query')
+@patch('app.libs.job_matcher.vector_matcher.get_filtered_job_count')
+@patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
+async def test_get_top_jobs_by_vector_similarity_multiple_results(
+    mock_get_db_cursor, mock_get_filtered_job_count, mock_execute_query, job_matcher
+):
+    # Set up mocks
+    mock_cursor = AsyncMock()
+    mock_context = AsyncMock()
+    mock_context.__aenter__.return_value = mock_cursor
+    mock_context.__aexit__.return_value = None
+    mock_get_db_cursor.return_value = mock_context
     
     # Create mock results using MockRow
     mock_results = [
@@ -90,11 +96,11 @@ async def test_get_top_jobs_by_vector_similarity_multiple_results(job_matcher):
         }) for i in range(20)
     ]
     
-    mock_cursor.fetchone.return_value = MockRow({'count': len(mock_results)})
-    mock_cursor.fetchall.return_value = mock_results
+    mock_get_filtered_job_count.return_value = len(mock_results)  # > 5, so uses regular query
+    mock_execute_query.return_value = mock_results
     
-    mock_embedding = [0.1, 0.2, 0.3]
-    job_matches = await matcher.get_top_jobs_by_vector_similarity(
+    mock_embedding = [0.1] * 1024  # Create a properly sized embedding vector
+    job_matches = await job_matcher.get_top_jobs_by_vector_similarity(
         mock_embedding
     )
     
@@ -108,9 +114,6 @@ async def test_get_top_jobs_by_vector_similarity_multiple_results(job_matcher):
 
 @pytest.mark.asyncio
 async def test_save_matches(monkeypatch, tmp_path, job_matcher):
-    # Need to await the fixture
-    matcher, _ = await job_matcher
-    
     mock_results = {"jobs": [{"id": "1", "title": "Software Engineer"}]}
     resume_id = random.randint(0, 5000)
     
@@ -121,7 +124,7 @@ async def test_save_matches(monkeypatch, tmp_path, job_matcher):
     
     monkeypatch.setattr("builtins.open", mock_open)
     
-    await matcher.save_matches(mock_results, resume_id, False)
+    await job_matcher.save_matches(mock_results, resume_id, False)
     
     file_path = tmp_path / f"job_matches_{resume_id}.json"
     
@@ -130,9 +133,6 @@ async def test_save_matches(monkeypatch, tmp_path, job_matcher):
 
 @pytest.mark.asyncio
 async def test_save_matches_also_on_mongo(monkeypatch, tmp_path, job_matcher):
-    # Need to await the fixture
-    matcher, _ = await job_matcher
-    
     mock_results = {"jobs": [{"id": "1", "title": "Software Engineer"}]}
     resume_id = random.randint(0, 5000)
     
@@ -150,7 +150,7 @@ async def test_save_matches_also_on_mongo(monkeypatch, tmp_path, job_matcher):
         "app.core.mongodb.database.get_collection", lambda _: mock_collection
     )
     
-    await matcher.save_matches(mock_results, resume_id, True)
+    await job_matcher.save_matches(mock_results, resume_id, True)
     
     file_path = tmp_path / f"job_matches_{resume_id}.json"
     
@@ -159,76 +159,91 @@ async def test_save_matches_also_on_mongo(monkeypatch, tmp_path, job_matcher):
 
 
 @pytest.mark.asyncio
-async def test_process_job_without_embeddings(job_matcher):
-    # Need to await the fixture
-    matcher, mock_cursor = await job_matcher
-    
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+async def test_process_job_without_embeddings(
+    mock_generate_key, mock_get_cached, job_matcher
+):
     resume = {"user_id": "123", "experience": "Python Developer"}
     
-    # Mock cache functions
-    matcher._generate_cache_key = AsyncMock(return_value="test_key")
-    matcher._get_cached_results = AsyncMock(return_value=None)
+    # Setup mocks
+    mock_generate_key.return_value = "test_key"
+    mock_get_cached.return_value = None
     
-    result = await matcher.process_job(resume)
+    result = await job_matcher.process_job(resume)
     
     assert "jobs" in result
     assert len(result["jobs"]) == 0
 
 
 @pytest.mark.asyncio
-async def test_process_job_success(job_matcher):
-    # Need to await the fixture
-    matcher, mock_cursor = await job_matcher
-    
+@patch('app.libs.job_matcher.cache.cache.set')
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+async def test_process_job_success(
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+):
     resume = {
         "user_id": "123",
         "experience": "Python Developer",
-        "vector": [0.1, 0.2, 0.3],
+        "vector": [0.1] * 1024,  # Create a properly sized embedding vector
     }
     
-    # Create mock results using MockRow for process_job test
+    # Create mock results for the get_top_jobs_by_vector_similarity method
     mock_results = [
-        MockRow({
-            'title': f"Software Engineer {i}",
-            'description': f"Job description {i}",
-            'id': f"{i}",
-            'workplace_type': "office",
-            'short_description': "short desc",
-            'field': "IT",
-            'experience': "3 years",
-            'skills_required': "Python, Django",
-            'country': "USA",
-            'city': "New York",
-            'company_name': "TechCorp",
-            'score': 1.0
-        }) for i in range(20)
+        JobMatch(
+            id=f"{i}",
+            title=f"Software Engineer {i}",
+            description=f"Job description {i}",
+            workplace_type="office",
+            short_description="short desc",
+            field="IT",
+            experience="3 years",
+            skills_required=["Python", "Django"],
+            country="USA",
+            city="New York",
+            company_name="TechCorp",
+            company_logo=None,
+            portal="test_portal",
+            score=1.0,
+            posted_date=None,
+            job_state="active",
+            apply_link="https://example.com",
+            location=None
+        ) for i in range(20)
     ]
     
-    mock_cursor.fetchone.return_value = MockRow({'count': len(mock_results)})
-    mock_cursor.fetchall.return_value = mock_results
+    # Setup mocks
+    mock_generate_key.return_value = "test_key"
+    mock_get_cached.return_value = None
+    mock_get_top_jobs.return_value = mock_results
     
-    # Mock cache functions
-    matcher._generate_cache_key = AsyncMock(return_value="test_key")
-    matcher._get_cached_results = AsyncMock(return_value=None)
-    matcher._store_cached_results = AsyncMock()
-    
-    result = await matcher.process_job(resume)
+    result = await job_matcher.process_job(resume)
     
     assert isinstance(result, dict)
     assert "jobs" in result.keys()
     assert len(result["jobs"]) == len(mock_results)
     assert result["jobs"][0]["title"] == "Software Engineer 0"
+    
+    # Verify cache functions were called
+    # generate_key is called twice - once to check cache, once to store result
+    assert mock_generate_key.await_count == 2
+    mock_get_cached.assert_awaited_once()
+    mock_store_cached.assert_awaited_once()
+    mock_get_top_jobs.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_process_job_with_cache(job_matcher):
-    # Need to await the fixture
-    matcher, mock_cursor = await job_matcher
-    
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+async def test_process_job_with_cache(
+    mock_generate_key, mock_get_cached, job_matcher
+):
     resume = {
         "user_id": "123",
         "experience": "Python Developer",
-        "vector": [0.1, 0.2, 0.3],
+        "vector": [0.1] * 1024,  # Create a properly sized embedding vector
         "_id": "test_resume_id"
     }
     
@@ -242,11 +257,11 @@ async def test_process_job_with_cache(job_matcher):
         ]
     }
     
-    # Mock cache functions
-    matcher._generate_cache_key = AsyncMock(return_value="test_key")
-    matcher._get_cached_results = AsyncMock(return_value=cached_results)
+    # Setup mocks
+    mock_generate_key.return_value = "test_key"
+    mock_get_cached.return_value = cached_results
     
-    result = await matcher.process_job(resume)
+    result = await job_matcher.process_job(resume)
     
     assert isinstance(result, dict)
     assert "jobs" in result.keys()
@@ -254,5 +269,5 @@ async def test_process_job_with_cache(job_matcher):
     assert result["jobs"][0]["title"] == "Cached Job"
     
     # Verify that cache functions were called correctly
-    matcher._generate_cache_key.assert_awaited_once()
-    matcher._get_cached_results.assert_awaited_once_with("test_key")
+    mock_generate_key.assert_awaited_once()
+    mock_get_cached.assert_awaited_once_with("test_key")
