@@ -38,6 +38,7 @@ ENV/
 .vscode/
 *.code-workspace
 .history/
+.devcontainer/
 
 # Cursor
 .cursor/
