@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - DarioAnalize
 
 jobs:
   test:
@@ -56,5 +57,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/aihawk-startup/matching_service:pre
             ghcr.io/aihawk-startup/matching_service:${{ env.GITHUB_SHA_SHORT }}
+            ${{ github.ref == 'refs/heads/main' && 'ghcr.io/aihawk-startup/matching_service:pre' || '' }}
