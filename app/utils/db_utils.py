@@ -135,7 +135,7 @@ async def execute_vector_similarity_query(
     cv_embedding: List[float],
     where_clauses: List[str],
     query_params: List[Any],
-    limit: int = 50,
+    limit: int = 5,
     offset: int = 0,
 ) -> List[Dict[str, Any]]:
     """

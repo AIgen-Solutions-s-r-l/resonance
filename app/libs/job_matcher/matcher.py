@@ -35,7 +35,7 @@ class JobMatcher:
         save_to_mongodb: bool = False,
         offset: int = 0,
         use_cache: bool = True,
-        limit: int = 5
+        limit: int = 50
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Process a job matching request.
