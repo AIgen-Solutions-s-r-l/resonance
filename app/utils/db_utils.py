@@ -243,6 +243,7 @@ async def execute_vector_similarity_query(
 
     try:
         logger.info("DB_UTILS: Executing database query - starting")
+        logger.info("Check1")
         logger.info(f"DB_UTILS: Query: {query}")
         query_start = time.time()
         # is relative important the consistency, important is resolve when hight concurrency
