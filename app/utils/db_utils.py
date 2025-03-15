@@ -1,7 +1,7 @@
 """
 Database utilities for optimized connection management and query execution.
 
-This module provides utilities for database connection pooling, 
+This module provides utilities for database connection pooling,
 optimized query execution, and vector similarity operations.
 """
 
@@ -18,7 +18,7 @@ from app.log.logging import logger
 from app.metrics.database import async_sql_query_timer
 
 # Type variable for generic connection pool
-T = TypeVar('T')
+T = TypeVar("T")
 
 # Global connection pool
 _connection_pools: Dict[str, AsyncConnectionPool] = {}
@@ -38,10 +38,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
     logger.debug(f"Requesting connection pool: {pool_name}")
     async with _pool_lock:
         if pool_name not in _connection_pools:
-            logger.info(
-                "Creating new connection pool",
-                pool_name=pool_name
-            )
+            logger.info("Creating new connection pool", pool_name=pool_name)
 
             try:
                 # Create connection pool with optimal settings
@@ -53,11 +50,12 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     max_idle=settings.db_pool_max_idle,
                     # Use dictionary row factory
                     kwargs={"row_factory": dict_row},
-                    open=False  # Don't open in constructor to avoid deprecation warning
+                    open=False,  # Don't open in constructor to avoid deprecation warning
                 )
 
                 logger.debug(
-                    f"Connection pool created with URL: {settings.database_url[:10]}..., now opening")
+                    f"Connection pool created with URL: {settings.database_url[:10]}..., now opening"
+                )
 
                 # Explicitly open the pool
                 await pool.open()
@@ -68,7 +66,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     "Connection pool created successfully",
                     pool_name=pool_name,
                     min_size=settings.db_pool_min_size,
-                    max_size=settings.db_pool_max_size
+                    max_size=settings.db_pool_max_size,
                 )
             except Exception as e:
                 logger.exception(f"Error creating connection pool: {str(e)}")
@@ -124,8 +122,7 @@ async def get_db_cursor(pool_name: str = "default"):
         async with get_db_connection(pool_name) as conn:
             logger.debug("Creating cursor")
             async with conn.cursor(row_factory=dict_row) as cursor:
-                logger.debug(
-                    f"Cursor created in {time.time() - start_time:.6f}s")
+                logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
                 yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
@@ -139,7 +136,7 @@ async def execute_vector_similarity_query(
     where_clauses: List[str],
     query_params: List[Any],
     limit: int = 5,
-    offset: int = 0
+    offset: int = 0,
 ) -> List[Dict[str, Any]]:
     """
     Execute an optimized vector similarity query.
@@ -215,7 +212,7 @@ async def execute_vector_similarity_query(
         embedding_count=1,
         where_params_count=len(query_params),
         total_params=len(sql_params),
-        country_filter=[p for p in query_params if isinstance(p, str)]
+        country_filter=[p for p in query_params if isinstance(p, str)],
     )
 
     # Log query for debugging
@@ -224,20 +221,24 @@ async def execute_vector_similarity_query(
         param_count=len(sql_params),
         where_clause_count=len(where_clauses),
         has_filter=bool(where_clauses),
-        embedding_length=len(cv_embedding) if isinstance(
-            cv_embedding, list) else 'unknown',
-        query_size=len(query)
+        embedding_length=(
+            len(cv_embedding) if isinstance(cv_embedding, list) else "unknown"
+        ),
+        query_size=len(query),
     )
 
     # Detailed parameter breakdown for debugging
     logger.info(
         "DB_UTILS: Parameter structure analysis",
         where_clauses=where_clauses,
-        query_params=str(query_params)[
-            :100] + "..." if len(str(query_params)) > 100 else query_params,
+        query_params=(
+            str(query_params)[:100] + "..."
+            if len(str(query_params)) > 100
+            else query_params
+        ),
         query_param_types=[type(p).__name__ for p in query_params],
         sql_params_count=len(sql_params),
-        first_few_params=str(sql_params[:2])[:50] + "..."
+        first_few_params=str(sql_params[:2])[:50] + "...",
     )
 
     try:
@@ -251,7 +252,8 @@ async def execute_vector_similarity_query(
         await cursor.execute(query, sql_params)
         query_time = time.time() - query_start
         logger.debug(
-            f"Query execution completed in {query_time:.6f}s, now fetching results")
+            f"Query execution completed in {query_time:.6f}s, now fetching results"
+        )
 
         fetch_start = time.time()
         results = await cursor.fetchall()
@@ -262,7 +264,7 @@ async def execute_vector_similarity_query(
             result_count=len(results),
             query_time=f"{query_time:.6f}s",
             fetch_time=f"{fetch_time:.6f}s",
-            total_time=f"{time.time() - start_time:.6f}s"
+            total_time=f"{time.time() - start_time:.6f}s",
         )
         return results
     except Exception as e:
@@ -272,7 +274,7 @@ async def execute_vector_similarity_query(
             error_type=type(e).__name__,
             where_clauses=where_clauses,
             param_count=len(sql_params),
-            elapsed_time=f"{time.time() - start_time:.6f}s"
+            elapsed_time=f"{time.time() - start_time:.6f}s",
         )
         raise
 
@@ -282,7 +284,7 @@ async def get_filtered_job_count(
     cursor: psycopg.AsyncCursor,
     where_clauses: List[str],
     query_params: List[Any],
-    fast: bool = False
+    fast: bool = False,
 ) -> int:
     """
     Get the count of jobs matching the filter criteria.
@@ -333,7 +335,7 @@ async def get_filtered_job_count(
         "Executing count query",
         where_clause_count=len(where_clauses),
         has_filter=bool(where_clauses),
-        param_count=len(query_params)
+        param_count=len(query_params),
     )
 
     try:
@@ -352,7 +354,7 @@ async def get_filtered_job_count(
             count=count,
             query_time=f"{query_time:.6f}s",
             fetch_time=f"{fetch_time:.6f}s",
-            total_time=f"{time.time() - start_time:.6f}s"
+            total_time=f"{time.time() - start_time:.6f}s",
         )
 
         return count
@@ -363,7 +365,7 @@ async def get_filtered_job_count(
             error_type=type(e).__name__,
             where_clauses=where_clauses,
             param_count=len(query_params),
-            elapsed_time=f"{time.time() - start_time:.6f}s"
+            elapsed_time=f"{time.time() - start_time:.6f}s",
         )
         raise
 
@@ -376,15 +378,13 @@ async def close_all_connection_pools():
     try:
         async with _pool_lock:
             for pool_name, pool in _connection_pools.items():
-                logger.info(
-                    "Closing connection pool",
-                    pool_name=pool_name
-                )
+                logger.info("Closing connection pool", pool_name=pool_name)
                 await pool.close()
 
             _connection_pools.clear()
             logger.debug(
-                f"All connection pools closed in {time.time() - start_time:.6f}s")
+                f"All connection pools closed in {time.time() - start_time:.6f}s"
+            )
     except Exception as e:
         logger.exception(f"Error closing connection pools: {str(e)}")
         raise
