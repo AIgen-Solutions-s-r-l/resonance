@@ -242,9 +242,7 @@ async def execute_vector_similarity_query(
 
     try:
         logger.info("DB_UTILS: Executing database query - starting")
-        # Log part of the query
-        logger.info(f"DB_UTILS: Query: {query[:500]}...")
-        # logger.info(f"DB_UTILS: Params sample: {str(sql_params[:5])}...")
+        logger.info(f"DB_UTILS: Query: {query}")
         query_start = time.time()
         # is relative important the consistency, important is resolve when hight concurrency
         await cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
