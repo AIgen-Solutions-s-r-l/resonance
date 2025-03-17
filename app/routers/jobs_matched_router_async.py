@@ -8,9 +8,15 @@ a non-blocking asynchronous approach for better performance and scalability.
 from typing import List, Any, Optional, Union
 from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks
 from datetime import datetime, UTC
+from sqlalchemy import select
+import re
+import uuid
 
-from app.core.auth import get_current_user
-from app.schemas.job import JobSchema
+
+from app.core.auth import get_current_user, verify_api_key
+from app.schemas.job import JobSchema, JobDetailResponse
+from app.models.job import Job
+from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
 from app.schemas.location import LocationFilter
 from app.services.matching_service import get_resume_by_user_id, match_jobs_with_resume
@@ -367,4 +373,118 @@ async def get_matched_jobs_legacy(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
+        )
+
+
+@router.get(
+    "/details",
+    response_model=JobDetailResponse,
+    summary="Get Detailed Job Information by IDs",
+    description="Returns detailed information for multiple jobs by their IDs",
+    status_code=status.HTTP_200_OK,
+)
+async def get_jobs_by_ids(
+    job_ids: Optional[List[str]] = Query(None, description="List of job IDs to retrieve"),
+    _: bool = Depends(verify_api_key),
+):
+    """
+    Get detailed information for multiple jobs by their IDs.
+    
+    Args:
+        job_ids: List of job IDs to retrieve
+        _: API key verification dependency
+        
+    Returns:
+        A structured response with job details
+    """
+    if not job_ids:
+        return JobDetailResponse(
+            jobs=[],
+            count=0,
+            status="success"
+        )
+    
+    # Filter invalid UUIDs
+    uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+    valid_job_ids = [job_id for job_id in job_ids if uuid_pattern.match(job_id)]
+    
+    if len(valid_job_ids) < len(job_ids):
+        logger.warning(
+            "Filtered {filtered_count} invalid job IDs",
+            filtered_count=len(job_ids) - len(valid_job_ids)
+        )
+    
+    if not valid_job_ids:
+        return JobDetailResponse(
+            jobs=[],
+            count=0,
+            status="success"
+        )
+    
+    try:
+        logger.info(
+            "Retrieving job details for {count} IDs",
+            count=len(valid_job_ids)
+        )
+        
+        # Get database cursor
+        async with get_db_cursor() as cursor:
+            # Build the query to get full job details including related data
+            query = """
+            SELECT
+                j.id,
+                j.title,
+                j.description,
+                j.workplace_type,
+                j.short_description,
+                j.field,
+                j.experience,
+                j.skills_required,
+                j.posted_date,
+                j.job_state,
+                j.apply_link,
+                j.portal,
+                co.country_name AS country,
+                l.city,
+                c.company_name,
+                c.logo AS company_logo
+            FROM "Jobs" j
+            LEFT JOIN "Companies" c ON j.company_id = c.company_id
+            LEFT JOIN "Locations" l ON j.location_id = l.location_id
+            LEFT JOIN "Countries" co ON l.country = co.country_id
+            WHERE j.id = ANY(%s)
+            """
+            
+            # Execute the query with validated IDs only
+            await cursor.execute(query, (valid_job_ids,))
+            
+            # Fetch all results
+            jobs = await cursor.fetchall()
+            
+            # Process jobs to convert UUIDs to strings
+            processed_jobs = []
+            for job in jobs:
+                # Convert UUID to string if needed
+                if isinstance(job['id'], uuid.UUID):
+                    job['id'] = str(job['id'])
+                processed_jobs.append(job)
+            
+            # Convert database results to Pydantic models
+            job_schemas = [JobSchema.model_validate(job) for job in processed_jobs]
+            
+            # Create the response
+            return JobDetailResponse(
+                jobs=job_schemas,
+                count=len(job_schemas),
+                status="success"
+            )
+    except Exception as e:
+        logger.exception(
+            "Error retrieving jobs by IDs",
+            error=str(e),
+            job_ids=job_ids
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving job details"
         )

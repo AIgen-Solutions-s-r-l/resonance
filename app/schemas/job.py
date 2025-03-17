@@ -61,3 +61,13 @@ class JobSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class JobDetailResponse(BaseModel):
+    """
+    Response model for job details endpoint.
+    Contains a list of jobs, count of jobs, and status.
+    """
+    jobs: List[JobSchema]
+    count: int
+    status: str

@@ -60,6 +60,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
+    internal_api_key: str = os.getenv("INTERNAL_API_KEY", "default-for-development")
 
     # OpenAI API key
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key")
