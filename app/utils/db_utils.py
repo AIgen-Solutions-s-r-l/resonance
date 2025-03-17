@@ -184,23 +184,23 @@ async def execute_vector_similarity_query(
         c.company_name,
         c.logo AS company_logo,
         j.portal AS portal,
-        0.0 AS score
-
+        --no use operation or function otherwise not use index, problem of performance
+        embedding <=> %s::vector AS score
     FROM "Jobs" j
     LEFT JOIN "Companies" c ON j.company_id = c.company_id
     LEFT JOIN "Locations" l ON j.location_id = l.location_id
     LEFT JOIN "Countries" co ON l.country = co.country_id
     {where_sql}
-    ORDER BY embedding <=> %s::vector
+    ORDER BY score -- non use desc or function otherwise not use index, problem of performance
     LIMIT %s OFFSET %s
     """
 
     # Simplified parameter handling
-    # Add filter params for the WHERE clause
-    sql_params.extend(query_params)
-
     # Just one embedding parameter for cosine similarity
     sql_params.append(cv_embedding)
+
+    # Add filter params for the WHERE clause
+    sql_params.extend(query_params)    
 
     # Add limit and offset
     sql_params.append(limit)

@@ -18,6 +18,38 @@ class JobValidator:
     
     # Required fields that must be present in database results
     REQUIRED_FIELDS = {'id', 'title'}
+
+    """
+    cosine similarity returns a value between 2 and 0, where lower is better.
+    doing min I get 0.92 and max 1.1 and documenting ourselves in the case of posgres there are no negative values
+    Score	Similarity
+    0.0	    1.0000
+    0.5	    1.0000
+    0.7	    0.9990
+    0.8	    0.9895
+    0.9	    0.9800
+    0.92	0.9480
+    0.95	0.9000
+    1.0	    0.8572
+    1.5	    0.4287
+    2.0	    0.0000
+    """
+
+    @staticmethod
+    def score_to_percentage(score):
+        if score <= 0.7:
+            return 1.0000
+        elif score <= 0.9:
+            # From 0.7 to 0.9 → 0.999 to 0.98
+            return round(0.999 - (0.095 * (score - 0.7)), 4)
+        elif score <= 0.95:
+            # From 0.9 to 0.95 → 0.98 to 0.9
+            return round(0.98 - (1.6 * (score - 0.9)), 4)
+        elif score <= 2.0:
+            # From 0.95 to 2.0 → 0.9 to 0.0
+            return round(max(0.9 - (0.857 * (score - 0.95)), 0.0), 4)
+        else:
+            return 0.0000
     
     def validate_row_data(self, row: dict) -> bool:
         """
@@ -82,7 +114,8 @@ class JobValidator:
                 company_name=row.get('company_name'),
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
-                score=float(row.get('score', 0.0)),
+                score=float(JobValidator.score_to_percentage(
+                    row.get('score', 0.0))),
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
