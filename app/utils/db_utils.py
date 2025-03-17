@@ -122,8 +122,7 @@ async def get_db_cursor(pool_name: str = "default"):
         async with get_db_connection(pool_name) as conn:
             logger.debug("Creating cursor")
             async with conn.cursor(row_factory=dict_row) as cursor:
-                logger.debug(
-                    f"Cursor created in {time.time() - start_time:.6f}s")
+                logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
                 yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
@@ -186,23 +185,22 @@ async def execute_vector_similarity_query(
         c.logo AS company_logo,
         j.portal AS portal,
         --no use operation or function otherwise not use index, problem of performance
-        0.0 AS score
+        embedding <=> %s::vector AS score
     FROM "Jobs" j
     LEFT JOIN "Companies" c ON j.company_id = c.company_id
     LEFT JOIN "Locations" l ON j.location_id = l.location_id
     LEFT JOIN "Countries" co ON l.country = co.country_id
     {where_sql}
-    ORDER BY embedding <=> %s::vector -- non use desc or function otherwise not use index, problem of performance
+    ORDER BY score -- non use desc or function otherwise not use index, problem of performance
     LIMIT %s OFFSET %s
     """
 
     # Simplified parameter handling
-
-    # Add filter params for the WHERE clause
-    sql_params.extend(query_params)
-
     # Just one embedding parameter for cosine similarity
     sql_params.append(cv_embedding)
+
+    # Add filter params for the WHERE clause
+    sql_params.extend(query_params)    
 
     # Add limit and offset
     sql_params.append(limit)

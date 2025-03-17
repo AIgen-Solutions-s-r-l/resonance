@@ -47,18 +47,18 @@ class JobValidator:
     def score_to_percentage(score):
         if score <= 0.3:
             # From 0.0 to 0.3 → 1.0 to 0.98
-            return round(1.0 - (0.067 * score), 3)
+            return round((1.0 - (0.067 * score))*100, 2)
         elif score <= 0.9:
             # From 0.3 to 0.9 → 0.98 to 0.4
-            return round(0.98 - (0.967 * (score - 0.3)), 3)
+            return round((0.98 - (0.967 * (score - 0.3)))*100, 2)
         elif score <= 1.0:
             # From 0.9 to 1.0 → 0.4 to 0.2
-            return round(0.4 - (2.0 * (score - 0.9)), 3)
+            return round((0.4 - (2.0 * (score - 0.9)))*100, 2)
         elif score <= 2.0:
             # From 1.0 to 2.0 → 0.2 to 0.0
-            return round(max(0.2 - (0.2 * (score - 1.0)), 0.0), 3)
+            return round((max(0.2 - (0.2 * (score - 1.0)), 0.0))*100, 2)
         else:
-            return 0.000
+            return 0
 
     def validate_row_data(self, row: dict) -> bool:
         """
@@ -124,8 +124,8 @@ class JobValidator:
                 company_name=row.get('company_name'),
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
-                score=float(
-                    row.get('score', 0.0)),
+                score=float(JobValidator.score_to_percentage(
+                    row.get('score', 0.0))),
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
