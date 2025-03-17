@@ -12,6 +12,7 @@ Benvenuti nella documentazione del progetto **MatchingService**. Questa document
 - [Configurazione](#configurazione)
 - [Esecuzione dei Test](#esecuzione-dei-test)
 - [Docker](#docker)
+- [API Documentation](api/index.md) - API Endpoints Documentation / Documentazione delle API
 - [Contributi](#contributi)
 - [Licenza](#licenza)
 
