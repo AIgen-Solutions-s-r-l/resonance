@@ -1,11 +1,12 @@
 # app/core/auth.py
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, ExpiredSignatureError
 import traceback
 
 from app.core.security import verify_jwt_token
 from app.log.logging import logger
+from app.core.config import settings
 
 # from app.models.user import User
 # from app.services.user_service import get_user_by_username
@@ -55,3 +56,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     except Exception as e:
         logger.error(f"Unexpected auth error: {str(e)}")
         raise credentials_exception
+
+
+async def verify_api_key(api_key: str = Header(..., alias="api-key")):
+    """
+    Verify that the provided API key is valid.
+    
+    Args:
+        api_key: The API key from the request header
+        
+    Returns:
+        True if the API key is valid
+        
+    Raises:
+        HTTPException: If the API key is invalid
+    """
+    if api_key != settings.internal_api_key:
+        logger.warning("Invalid API key used in request")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API key",
+        )
+    return True
