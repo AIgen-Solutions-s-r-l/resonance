@@ -93,4 +93,4 @@ memory-bank
 *.sqlite3
 *.sqlite
 .roo
-.roo*
+.roomodes
