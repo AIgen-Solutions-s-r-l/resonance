@@ -89,5 +89,8 @@ __pycache__/*
 poetry.lock
 
 .cline*
-memory-bank/jobs_details_endpoint_documentation_plan.md
-memory-bank/job_details_endpoint_plan.md
+memory-bank
+*.sqlite3
+*.sqlite
+.roo
+.roo*
