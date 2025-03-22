@@ -124,6 +124,12 @@ class JobMatcher:
                             
                             # Update cache with filtered results
                             await cache.set(cache_key, cached_results)
+                        else:
+                            logger.info("No applied jobs found, skipping filter")
+                            logger.info(
+                                "No applied jobs found in cache",
+                                user_id=user_id
+                            )
                     else:
                         logger.info("No user_id found in resume, skipping applied jobs filter")
                     logger.info(f"RESULTS: Final job matches count from cache: {len(cached_results.get('jobs', []))}")
