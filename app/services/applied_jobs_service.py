@@ -28,11 +28,15 @@ class AppliedJobsService:
             cursor = collection.find({"user_id": user_id})
             documents = await cursor.to_list(length=None)
             
-            # Extract job_id from each document
-            applied_job_ids = [doc.get("job_id") for doc in documents if doc.get("job_id")]
+            # Extract job_ids from each document and flatten into a single list.
+            applied_job_ids = []
+            for doc in documents:
+                job_ids = doc.get("job_ids", [])
+                if job_ids:
+                    applied_job_ids.extend(job_ids)
             
             logger.info(
-                "Retrieved applied jobs for user",
+                "Retrieved applied jobs for user {user_id} with count {count}",
                 user_id=user_id,
                 count=len(applied_job_ids)
             )
@@ -40,7 +44,7 @@ class AppliedJobsService:
             return applied_job_ids
         except Exception as e:
             logger.exception(
-                "Error retrieving applied jobs",
+                "Error retrieving applied jobs for user {user_id} with error {error_type} {error}",
                 user_id=user_id,
                 error_type=type(e).__name__,
                 error=str(e)
