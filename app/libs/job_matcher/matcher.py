@@ -171,6 +171,9 @@ class JobMatcher:
                         remaining_count=len(filtered_jobs),
                         user_id=user_id
                     )
+            else:
+                logger.info("No user_id found in resume, skipping applied jobs filter")
+            logger.info(f"RESULTS: Final job matches count: {len(job_results['jobs'])}")
             
             # Save matches if requested
             if save_to_mongodb:
