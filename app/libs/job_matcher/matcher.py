@@ -16,6 +16,7 @@ from app.libs.job_matcher.exceptions import ValidationError
 from app.libs.job_matcher.cache import cache
 from app.libs.job_matcher.persistence import persistence
 from app.libs.job_matcher.vector_matcher import vector_matcher
+from app.services.applied_jobs_service import applied_jobs_service
 
 
 class JobMatcher:
@@ -91,7 +92,6 @@ class JobMatcher:
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
                 logger.info(f"CACHE CHECK: Cache hit: {cached_results is not None}")
-                
                 if cached_results:
                     logger.info(
                         "Using cached job matches",
@@ -99,6 +99,32 @@ class JobMatcher:
                         matches_found=len(cached_results.get("jobs", [])),
                         elapsed_time=f"{time() - start_time:.6f}s"
                     )
+
+                    # Filter out jobs that the user has already applied for
+                    if "user_id" in resume:
+                        user_id = resume["user_id"]
+                        applied_jobs = await applied_jobs_service.get_applied_jobs(user_id)
+                        
+                        if applied_jobs:
+                            original_count = len(cached_results.get("jobs", []))
+                            filtered_jobs = [
+                                job for job in cached_results.get("jobs", [])
+                                if job.get("id") not in applied_jobs
+                            ]
+                            cached_results["jobs"] = filtered_jobs
+                            
+                            filtered_count = original_count - len(filtered_jobs)
+                            logger.info(
+                                "Filtered out applied jobs from cache",
+                                original_count=original_count,
+                                filtered_count=filtered_count,
+                                remaining_count=len(filtered_jobs),
+                                user_id=user_id
+                            )
+                            
+                            # Update cache with filtered results
+                            await cache.set(cache_key, cached_results)
+                    
                     return cached_results
             
             logger.info("PROCESSING: No cache hit, proceeding with matching")
@@ -123,6 +149,28 @@ class JobMatcher:
             job_results = {
                 "jobs": [match.to_dict() for match in job_matches]
             }
+            
+            # Filter out jobs that the user has already applied for
+            if "user_id" in resume:
+                user_id = resume["user_id"]
+                applied_jobs = await applied_jobs_service.get_applied_jobs(user_id)
+                
+                if applied_jobs:
+                    original_count = len(job_results["jobs"])
+                    filtered_jobs = [
+                        job for job in job_results["jobs"]
+                        if job.get("id") not in applied_jobs
+                    ]
+                    job_results["jobs"] = filtered_jobs
+                    
+                    filtered_count = original_count - len(filtered_jobs)
+                    logger.info(
+                        "Filtered out applied jobs from vector results",
+                        original_count=original_count,
+                        filtered_count=filtered_count,
+                        remaining_count=len(filtered_jobs),
+                        user_id=user_id
+                    )
             
             # Save matches if requested
             if save_to_mongodb:
