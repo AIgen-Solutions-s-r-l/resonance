@@ -94,3 +94,7 @@ memory-bank
 *.sqlite
 .roo
 .roomodes
+.rooignore
+cline_custom_modes.json
+custom-instructions.yaml
+insert-variables.sh
