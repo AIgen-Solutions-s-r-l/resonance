@@ -52,6 +52,7 @@ async def match_jobs_with_resume(
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,
     offset: int = 0,
+    experience: Optional[List[str]] = None,
 ) -> List[JobSchema]:
     try:
         matcher = OptimizedJobMatcher()

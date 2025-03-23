@@ -130,6 +130,7 @@ class TaskManager:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         offset: int = 0,
+        experience: Optional[List[str]] = None,
     ) -> None:
         """
         Process a job matching task asynchronously.
@@ -180,7 +181,6 @@ class TaskManager:
                 error=str(e),
                 error_type=type(e).__name__
             )
-    
     @classmethod
     @async_task_timer("job_matching_task_processor")
     async def process_job_matching(
@@ -190,6 +190,7 @@ class TaskManager:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         offset: int = 0,
+        experience: Optional[List[str]] = None,
     ) -> None:
         """
         Process a job matching task asynchronously with timing metrics.
@@ -200,7 +201,9 @@ class TaskManager:
             location: Optional location filters
             keywords: Optional keyword filters
             offset: Optional results offset
+            experience: Optional experience level filters
         """
+        await cls.process_task(task_id, resume, location, keywords, offset, experience)
         await cls.process_task(task_id, resume, location, keywords, offset)
     
     @classmethod

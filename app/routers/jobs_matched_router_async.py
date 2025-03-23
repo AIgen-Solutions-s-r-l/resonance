@@ -63,6 +63,9 @@ async def start_job_matching(
         description="Filter jobs containing any of these keywords in the title or description",
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
+    experience: Optional[List[str]] = Query(
+        None, description="Filter jobs by experience level. Allowed values: Intern, Entry, Mid, Executive"
+    ),
     wait: bool = Query(False, description="Wait for results (not recommended for production use)"),
     current_user: Any = Depends(get_current_user),
 ):
@@ -101,6 +104,7 @@ async def start_job_matching(
             current_user=current_user,
             location_filter=location_filter,
             keywords=keywords,
+            experience=experience,
         )
 
         # Get the resume
@@ -125,6 +129,7 @@ async def start_job_matching(
             location_filter,
             keywords,
             offset if offset is not None else 0,
+            experience,
         )
         
         # Create response
@@ -296,6 +301,9 @@ async def get_matched_jobs_legacy(
         description="Filter jobs containing any of these keywords in the title or description",
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
+    experience: Optional[List[str]] = Query(
+        None, description="Filter jobs by experience level. Allowed values: Intern, Entry, Mid, Executive"
+    ),
     current_user: Any = Depends(get_current_user),
 ):
     """
@@ -316,6 +324,7 @@ async def get_matched_jobs_legacy(
             current_user=current_user,
             location_filter=location_filter,
             keywords=keywords,
+            experience=experience,
         )
 
         resume = await get_resume_by_user_id(current_user)
@@ -333,6 +342,7 @@ async def get_matched_jobs_legacy(
             location=location_filter,
             keywords=keywords,
             offset=offset if offset is not None else 0,
+            experience=experience,
         )
 
         if isinstance(matched_jobs, list):

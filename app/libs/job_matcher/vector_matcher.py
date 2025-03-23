@@ -35,6 +35,7 @@ class VectorMatcher:
         keywords: Optional[List[str]] = None,
         offset: int = 0,
         limit: int = 5,
+        experience: Optional[List[str]] = None,
     ) -> List[JobMatch]:
         """
         Get top matching jobs using optimized vector similarity.
@@ -45,6 +46,7 @@ class VectorMatcher:
             keywords: Optional keyword filter
             offset: Results offset
             limit: Results limit
+            experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
 
         Returns:
             List of JobMatch objects
