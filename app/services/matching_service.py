@@ -63,6 +63,7 @@ async def match_jobs_with_resume(
             keywords=keywords,
             save_to_mongodb=save_to_mongodb,
             offset=offset,
+            experience=experience,
         )
         return matched_jobs
     except Exception as e:

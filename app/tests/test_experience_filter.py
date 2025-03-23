@@ -110,16 +110,20 @@ async def test_vector_matcher_with_experience_filter(
     # Call the vector matcher with experience parameter
     cv_embedding = [0.1] * 1024
     experience = ["Mid"]
-    
     await job_matcher.get_top_jobs_by_vector_similarity(
         cv_embedding,
-        experience=experience
+        experience=experience,
+        location=None,
+        keywords=None,
+        offset=0,
+        limit=5
     )
     
     # Verify build_filter_conditions was called with the experience parameter
     mock_build_filter_conditions.assert_called_once()
     args, kwargs = mock_build_filter_conditions.call_args
     assert "experience" in kwargs
+    assert kwargs["experience"] == experience
     assert kwargs["experience"] == experience
 
 
@@ -143,7 +147,8 @@ async def test_match_jobs_with_resume_integration(
     
     location = LocationFilter(
         country="USA",
-        city="New York"
+        city="New York",
+        radius_km=20.0
     )
     
     keywords = ["Python", "Django"]
@@ -183,7 +188,11 @@ async def test_match_jobs_with_resume_integration(
     # Check that get_top_jobs_by_vector_similarity was called with all parameters
     mock_get_top_jobs.assert_called_once()
     args, kwargs = mock_get_top_jobs.call_args
-    assert "experience" in kwargs
+    assert args[0] == resume["vector"]
+    assert kwargs["location"] == location
+    assert kwargs["keywords"] == keywords
+    assert kwargs["offset"] == 0
+    assert kwargs["limit"] == 50
     assert kwargs["experience"] == experience
     assert "location" in kwargs
     assert kwargs["location"] == location

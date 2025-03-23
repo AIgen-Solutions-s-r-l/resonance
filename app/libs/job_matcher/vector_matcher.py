@@ -59,7 +59,7 @@ class VectorMatcher:
             # Build filter conditions
             logger.info("VECTOR_MATCH: Building filter conditions")
             where_clauses, query_params = query_builder.build_filter_conditions(
-                location, keywords
+                location=location, keywords=keywords, experience=experience
             )
 
             logger.info(

@@ -204,7 +204,6 @@ class TaskManager:
             experience: Optional experience level filters
         """
         await cls.process_task(task_id, resume, location, keywords, offset, experience)
-        await cls.process_task(task_id, resume, location, keywords, offset)
     
     @classmethod
     async def cleanup_expired_tasks(cls) -> None:
