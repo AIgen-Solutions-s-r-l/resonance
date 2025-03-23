@@ -18,14 +18,16 @@ class JobQueryBuilder:
     def build_filter_conditions(
         self,
         location: Optional[LocationFilter] = None,
-        keywords: Optional[List[str]] = None
+        keywords: Optional[List[str]] = None,
+        experience: Optional[List[str]] = None
     ) -> Tuple[List[str], List[Any]]:
         """
-        Build SQL filter conditions based on location and keywords.
+        Build SQL filter conditions based on location, keywords, and experience.
         
         Args:
             location: Optional location filter
             keywords: Optional keyword filter
+            experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
             
         Returns:
             Tuple of (where clauses list, query parameters list)
@@ -146,6 +148,44 @@ class JobQueryBuilder:
         # Combine clauses
         if or_clauses:
             return ["(" + " OR ".join(or_clauses) + ")"], query_params
+        
+        return [], []
+    
+    def _build_experience_filters(
+        self, experience: List[str]
+    ) -> Tuple[List[str], List[Any]]:
+        """
+        Build experience filter conditions.
+        
+        Args:
+            experience: List of experience levels (Intern, Entry, Mid, Executive)
+            
+        Returns:
+            Tuple of (where clauses list, query parameters list)
+        """
+        logger.info(f"Building experience filters for: {experience}")
+        
+        # Validate experience values
+        valid_experience = ["Intern", "Entry", "Mid", "Executive"]
+        filtered_experience = [exp for exp in experience if exp in valid_experience]
+        
+        if not filtered_experience:
+            logger.warning(f"No valid experience levels found in: {experience}")
+            return [], []
+        
+        # Create OR clauses for each experience level
+        or_clauses = []
+        query_params = []
+        
+        for exp in filtered_experience:
+            or_clauses.append("(j.experience = %s)")
+            query_params.append(exp)
+        
+        # Combine clauses
+        if or_clauses:
+            combined_clause = ["(" + " OR ".join(or_clauses) + ")"]
+            logger.info(f"Experience filter clause: {combined_clause}, params: {query_params}")
+            return combined_clause, query_params
         
         return [], []
 

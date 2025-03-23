@@ -36,7 +36,8 @@ class JobMatcher:
         save_to_mongodb: bool = False,
         offset: int = 0,
         use_cache: bool = True,
-        limit: int = 50
+        limit: int = 50,
+        experience: Optional[List[str]] = None
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Process a job matching request.
@@ -151,7 +152,8 @@ class JobMatcher:
                 location=location,
                 keywords=keywords,
                 offset=offset,
-                limit=limit
+                limit=limit,
+                experience=experience
             )
             
             logger.info(f"RESULTS: Received {len(job_matches)} matches from vector matcher")
@@ -193,10 +195,11 @@ class JobMatcher:
             if use_cache:
                 logger.info("RESULTS: Storing results in cache")
                 cache_key = await cache.generate_key(
-                    resume_id, 
+                    resume_id,
                     offset=offset,
                     location=location.dict() if location else None,
-                    keywords=keywords
+                    keywords=keywords,
+                    experience=experience
                 )
                 await cache.set(cache_key, job_results)
             

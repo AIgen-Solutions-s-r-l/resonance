@@ -35,6 +35,7 @@ class VectorMatcher:
         keywords: Optional[List[str]] = None,
         offset: int = 0,
         limit: int = 5,
+        experience: Optional[List[str]] = None,
     ) -> List[JobMatch]:
         """
         Get top matching jobs using optimized vector similarity.
@@ -45,6 +46,7 @@ class VectorMatcher:
             keywords: Optional keyword filter
             offset: Results offset
             limit: Results limit
+            experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
 
         Returns:
             List of JobMatch objects
@@ -57,7 +59,7 @@ class VectorMatcher:
             # Build filter conditions
             logger.info("VECTOR_MATCH: Building filter conditions")
             where_clauses, query_params = query_builder.build_filter_conditions(
-                location, keywords
+                location=location, keywords=keywords, experience=experience
             )
 
             logger.info(
