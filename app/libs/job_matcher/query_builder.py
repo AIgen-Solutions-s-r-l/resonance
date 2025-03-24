@@ -49,6 +49,12 @@ class JobQueryBuilder:
                 where_clauses.extend(keyword_clauses)
                 query_params.extend(keyword_params)
             
+            # Add experience filters (this was missing)
+            if experience and len(experience) > 0:
+                experience_clauses, experience_params = self._build_experience_filters(experience)
+                where_clauses.extend(experience_clauses)
+                query_params.extend(experience_params)
+            
             elapsed = time() - start_time
             logger.debug(
                 "Query conditions built",

@@ -61,6 +61,7 @@ class JobMatcher:
                 "Starting job processing",
                 has_location=location is not None,
                 has_keywords=keywords is not None and len(keywords) > 0,
+                has_experience=experience is not None and len(experience) > 0,
                 offset=offset,
                 limit=limit,
                 use_cache=use_cache
@@ -85,10 +86,11 @@ class JobMatcher:
             if use_cache:
                 logger.info("CACHE CHECK: Checking cache for existing results")
                 cache_key = await cache.generate_key(
-                    resume_id, 
+                    resume_id,
                     offset=offset,
                     location=location.dict() if location else None,
-                    keywords=keywords
+                    keywords=keywords,
+                    experience=experience
                 )
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
