@@ -198,3 +198,151 @@ async def test_match_jobs_with_resume_integration(
     assert kwargs["location"] == location
     assert "keywords" in kwargs
     assert kwargs["keywords"] == keywords
+
+
+@pytest.mark.asyncio
+@patch('app.libs.job_matcher.cache.cache.set')
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+async def test_experience_filter_with_cache(
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+):
+    """Test that different experience filters use different cache keys."""
+    # Set up test data
+    resume = {
+        "user_id": "123",
+        "vector": [0.1] * 1024,
+        "_id": "test_resume_id"
+    }
+    
+    experience_1 = ["Mid"]
+    experience_2 = ["Entry"]
+    
+    # Configure mocks for experience filtering
+    mock_generate_key.return_value = "key_with_mid"  # First key
+    mock_get_cached.return_value = None  # No cache hit
+    
+    job_match = JobMatch(
+        id="1",
+        title="Mid Level Developer",
+        description="Job description",
+        workplace_type="office",
+        short_description="short desc",
+        field="IT",
+        experience="Mid",
+        skills_required=["Python"],
+        country="USA",
+        city="New York",
+        company_name="TechCorp",
+        score=1.0
+    )
+    
+    mock_get_top_jobs.return_value = [job_match]
+    
+    # First call with experience_1
+    await job_matcher.process_job(resume, experience=experience_1)
+    
+    # Verify first call generated correct cache key with experience_1
+    mock_generate_key.assert_called_with(
+        "test_resume_id",
+        offset=0,
+        location=None,
+        keywords=None,
+        experience=experience_1
+    )
+    
+    # Store what would be cached for first call
+    mock_store_cached.assert_called_once()
+    args, _ = mock_store_cached.call_args
+    cached_key_1, cached_result_1 = args
+    
+    # Store first call information for comparison
+    first_call_args = mock_generate_key.call_args
+    
+    # Change the mock return value for the second call
+    mock_generate_key.return_value = "key_with_entry"
+    
+    # Reset mocks for second call
+    mock_generate_key.reset_mock()
+    mock_get_cached.reset_mock()
+    mock_store_cached.reset_mock()
+    mock_get_top_jobs.reset_mock()
+    
+    # Second call with different experience filter
+    await job_matcher.process_job(resume, experience=experience_2)
+    
+    # Verify second call generated key with experience_2
+    mock_generate_key.assert_called_with(
+        "test_resume_id",
+        offset=0,
+        location=None,
+        keywords=None,
+        experience=experience_2
+    )
+    
+    # Verify that the experience parameter affects the cache key
+    assert "key_with_entry" != "key_with_mid"
+
+
+@pytest.mark.asyncio
+@patch('app.libs.job_matcher.cache.cache.set')
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+async def test_experience_filter_with_cache_hit(
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+):
+    """Test that cached results are correctly retrieved with experience filter."""
+    # Set up test data
+    resume = {
+        "user_id": "123",
+        "vector": [0.1] * 1024,
+        "_id": "test_resume_id"
+    }
+    
+    experience = ["Mid"]
+    
+    # Mock cache key generation
+    mock_generate_key.return_value = "key_with_mid_experience"
+    
+    # Create cached result that should be returned
+    cached_result = {
+        "jobs": [
+            {
+                "id": "1",
+                "title": "Mid Level Developer",
+                "description": "Job description",
+                "workplace_type": "office",
+                "short_description": "short desc",
+                "field": "IT",
+                "experience": "Mid",
+                "skills_required": ["Python"],
+                "country": "USA",
+                "city": "New York",
+                "company_name": "TechCorp",
+                "score": 1.0
+            }
+        ]
+    }
+    
+    # Mock cache hit
+    mock_get_cached.return_value = cached_result
+    
+    # Call process_job with experience filter
+    result = await job_matcher.process_job(resume, experience=experience)
+    
+    # Verify cache key was generated with experience parameter
+    mock_generate_key.assert_called_with(
+        "test_resume_id",
+        offset=0,
+        location=None,
+        keywords=None,
+        experience=experience
+    )
+    
+    # Verify cached result was returned
+    assert result == cached_result
+    
+    # Verify vector matcher was not called (cache hit)
+    mock_get_top_jobs.assert_not_called()

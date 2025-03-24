@@ -154,7 +154,8 @@ class TaskManager:
                 resume,
                 location=location,
                 keywords=keywords,
-                offset=offset
+                offset=offset,
+                experience=experience
             )
             
             # Update task with results
