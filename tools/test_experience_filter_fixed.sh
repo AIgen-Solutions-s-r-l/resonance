@@ -31,16 +31,20 @@ echo -e "${GREEN}# BASELINE: Test without any experience filter for comparison:$
 echo "curl -X GET 'http://localhost:9001/jobs/match/legacy' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
 echo ""
 
-echo -e "${GREEN}# Test with Mid experience level:${NC}"
-echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Mid' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
+echo -e "${GREEN}# Test with Mid-level experience:${NC}"
+echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Mid-level' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
 echo ""
 
-echo -e "${GREEN}# Test with Entry and Mid experience levels:${NC}"
-echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Entry&experience=Mid' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
+echo -e "${GREEN}# Test with Entry-level and Mid-level experience:${NC}"
+echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Entry-level&experience=Mid-level' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
 echo ""
 
-echo -e "${GREEN}# Test with Executive level:${NC}"
-echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Executive' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
+echo -e "${GREEN}# Test with Executive-level:${NC}"
+echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Executive-level' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
+echo ""
+
+echo -e "${GREEN}# Test with Senior-level:${NC}"
+echo "curl -X GET 'http://localhost:9001/jobs/match/legacy?experience=Senior-level' -H \"Authorization: Bearer $TOKEN\" | python3 -m json.tool"
 echo ""
 
 echo -e "${YELLOW}3. What to look for in the logs:${NC}"
@@ -62,10 +66,11 @@ echo '   The number of results with filters should be less than or equal to with
 echo ""
 
 echo -e "${RED}REMEMBER:${NC} Only these experience values are valid:"
+echo "- 'Entry-level'"
+echo "- 'Executive-level'"
 echo "- 'Intern'"
-echo "- 'Entry'" 
-echo "- 'Mid'"
-echo "- 'Executive'"
+echo "- 'Mid-level'"
+echo "- 'Senior-level'"
 echo ""
 
 echo -e "${GREEN}If you see logs with 'Building experience filters' and experience conditions in the SQL query,${NC}"

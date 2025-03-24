@@ -64,7 +64,7 @@ async def start_job_matching(
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
-        None, description="Filter jobs by experience level. Allowed values: Intern, Entry, Mid, Executive"
+        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
     wait: bool = Query(False, description="Wait for results (not recommended for production use)"),
     current_user: Any = Depends(get_current_user),
@@ -302,7 +302,7 @@ async def get_matched_jobs_legacy(
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
-        None, description="Filter jobs by experience level. Allowed values: Intern, Entry, Mid, Executive"
+        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
     current_user: Any = Depends(get_current_user),
 ):
