@@ -27,7 +27,7 @@ class JobQueryBuilder:
         Args:
             location: Optional location filter
             keywords: Optional keyword filter
-            experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
+            experience: Optional experience level filter. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level
             
         Returns:
             Tuple of (where clauses list, query parameters list)
@@ -164,7 +164,7 @@ class JobQueryBuilder:
         Build experience filter conditions.
         
         Args:
-            experience: List of experience levels (Intern, Entry, Mid, Executive)
+            experience: List of experience levels (Entry-level, Executive-level, Intern, Mid-level, Senior-level)
             
         Returns:
             Tuple of (where clauses list, query parameters list)
@@ -172,7 +172,7 @@ class JobQueryBuilder:
         logger.info(f"Building experience filters for: {experience}")
         
         # Validate experience values
-        valid_experience = ["Intern", "Entry", "Mid", "Executive"]
+        valid_experience = ["Entry-level", "Executive-level", "Intern", "Mid-level", "Senior-level"]
         filtered_experience = [exp for exp in experience if exp in valid_experience]
         
         if not filtered_experience:

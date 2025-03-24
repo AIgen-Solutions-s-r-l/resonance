@@ -36,10 +36,10 @@ async def test_process_job_with_experience_filter(
         "_id": "test_resume_id"
     }
     
-    experience = ["Mid", "Executive"]
+    experience = ["Mid-level", "Executive-level"]
     
     # Mock return values
-    mock_build_experience_filters.return_value = (["(j.experience = %s OR j.experience = %s)"], ["Mid", "Executive"])
+    mock_build_experience_filters.return_value = (["(j.experience = %s OR j.experience = %s)"], ["Mid-level", "Executive-level"])
     mock_generate_key.return_value = "test_key_with_experience"
     mock_get_cached.return_value = None  # No cache hit
     mock_get_top_jobs.return_value = [
@@ -50,7 +50,7 @@ async def test_process_job_with_experience_filter(
             workplace_type="office",
             short_description="short desc",
             field="IT",
-            experience="Mid",
+            experience="Mid-level",
             skills_required=["Python", "Django"],
             country="USA",
             city="New York",
@@ -105,11 +105,11 @@ async def test_vector_matcher_with_experience_filter(
     mock_get_filtered_job_count.return_value = 0  # Will return empty results
     
     # Mock filter conditions
-    mock_build_filter_conditions.return_value = (["embedding IS NOT NULL", "(j.experience = %s)"], ["Mid"])
+    mock_build_filter_conditions.return_value = (["embedding IS NOT NULL", "(j.experience = %s)"], ["Mid-level"])
     
     # Call the vector matcher with experience parameter
     cv_embedding = [0.1] * 1024
-    experience = ["Mid"]
+    experience = ["Mid-level"]
     await job_matcher.get_top_jobs_by_vector_similarity(
         cv_embedding,
         experience=experience,
@@ -152,7 +152,7 @@ async def test_match_jobs_with_resume_integration(
     )
     
     keywords = ["Python", "Django"]
-    experience = ["Entry", "Mid"]
+    experience = ["Entry-level", "Mid-level"]
     
     # Mock return values
     mock_generate_key.return_value = "test_key_with_everything"
@@ -165,7 +165,7 @@ async def test_match_jobs_with_resume_integration(
             workplace_type="office",
             short_description="short desc",
             field="IT",
-            experience="Entry",
+            experience="Entry-level",
             skills_required=["Python"],
             country="USA",
             city="New York",
@@ -216,8 +216,8 @@ async def test_experience_filter_with_cache(
         "_id": "test_resume_id"
     }
     
-    experience_1 = ["Mid"]
-    experience_2 = ["Entry"]
+    experience_1 = ["Mid-level"]
+    experience_2 = ["Entry-level"]
     
     # Configure mocks for experience filtering
     mock_generate_key.return_value = "key_with_mid"  # First key
@@ -230,7 +230,7 @@ async def test_experience_filter_with_cache(
         workplace_type="office",
         short_description="short desc",
         field="IT",
-        experience="Mid",
+        experience="Mid-level",
         skills_required=["Python"],
         country="USA",
         city="New York",
@@ -301,7 +301,7 @@ async def test_experience_filter_with_cache_hit(
         "_id": "test_resume_id"
     }
     
-    experience = ["Mid"]
+    experience = ["Mid-level"]
     
     # Mock cache key generation
     mock_generate_key.return_value = "key_with_mid_experience"
@@ -316,7 +316,7 @@ async def test_experience_filter_with_cache_hit(
                 "workplace_type": "office",
                 "short_description": "short desc",
                 "field": "IT",
-                "experience": "Mid",
+                "experience": "Mid-level",
                 "skills_required": ["Python"],
                 "country": "USA",
                 "city": "New York",

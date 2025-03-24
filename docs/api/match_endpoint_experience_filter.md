@@ -10,7 +10,7 @@ The experience parameter allows clients to prefilter job matches based on experi
 
 | Parameter  | Type        | Required | Description                                                  |
 |------------|-------------|----------|--------------------------------------------------------------|
-| experience | List[str]   | No       | Filter jobs by experience level. Allowed values: Intern, Entry, Mid, Executive |
+| experience | List[str]   | No       | Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level |
 
 ## Usage
 
@@ -20,24 +20,24 @@ The `experience` parameter can be provided as a query parameter in either the `/
 
 **Basic Usage:**
 ```
-GET /jobs/match?experience=Mid
+GET /jobs/match?experience=Mid-level
 ```
 
 **Multiple Values:**
 ```
-GET /jobs/match?experience=Entry&experience=Mid
+GET /jobs/match?experience=Entry-level&experience=Mid-level
 ```
 
 **Combined with Other Filters:**
 ```
-GET /jobs/match?experience=Executive&country=Germany&keywords=manager
+GET /jobs/match?experience=Executive-level&country=Germany&keywords=manager
 ```
 
 ## Implementation Details
 
 When the `experience` parameter is provided, the system will:
 
-1. Validate that all values are in the allowed set: "Intern", "Entry", "Mid", "Executive"
+1. Validate that all values are in the allowed set: "Entry-level", "Executive-level", "Intern", "Mid-level", "Senior-level"
 2. Add a SQL filter in the query to the jobs database to only include jobs with matching experience levels
 3. Include the experience parameter in cache keys to ensure proper caching
 4. Log the experience filter usage for monitoring and debugging purposes
@@ -80,7 +80,7 @@ The response format is the same as the standard match endpoints, but will only i
     "country": "Germany",
     "portal": "CareerPortal",
     "field": "Information Technology",
-    "experience": "Mid",
+    "experience": "Mid-level",
     "skills_required": ["Python", "Docker", "Kubernetes", "FastAPI"]
   }
 ]
@@ -90,4 +90,4 @@ The response format is the same as the standard match endpoints, but will only i
 
 - For optimal performance, consider using specific experience levels rather than all of them
 - The experience filter is combined with other filters (location, keywords) using AND logic
-- Within the experience filter, multiple values are combined with OR logic (e.g., "Mid" OR "Executive")
+- Within the experience filter, multiple values are combined with OR logic (e.g., "Mid-level" OR "Executive-level")
