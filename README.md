@@ -15,6 +15,7 @@ The **Matching Service** is a Python-based application that matches resumes with
 - [Testing](#testing)
 - [Folder Structure](#folder-structure)
 - [Quality Tracking](#quality-tracking)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -346,7 +347,10 @@ matching_service/
 │   │
 │   ├── scripts/           # Database initialization
 │   │   ├── create_quality_tracking_tables.py
-│   │   └── init_db.py
+│   │   ├── init_db.py
+│   │   ├── upgrade_diskann_index.py
+│   │   ├── fix_diskann_index.py
+│   │   └── README_diskann_fix.md
 │   │
 │   ├── services/          # Business logic
 │   │   ├── matching_service.py
@@ -398,6 +402,42 @@ The Matching Service includes a comprehensive quality tracking system that:
    - Correlation between automated scoring and user feedback
 
 For detailed information, see the documentation in the `docs/` directory.
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### DiskANN Index Error
+
+If you encounter the following error:
+
+```
+diskann index needs to be upgraded to version 2
+DETAIL: If you haven't changed vector dimension for the indexed column, and, "max_neighbors" and "l_value_ib" parameters for the index since it's created, you can use upgrade_diskann_index() function to quickly upgrade the index. Otherwise, upgrade_diskann_index() is not recommended and REINDEX is required.
+```
+
+Use the provided scripts to fix the issue:
+
+```bash
+# Quick fix (recommended if you haven't changed vector dimensions)
+python -m app.scripts.upgrade_diskann_index
+
+# Advanced options with more control
+python -m app.scripts.fix_diskann_index --mode=upgrade
+```
+
+For more details, see the documentation in `app/scripts/README_diskann_fix.md`.
+
+### General Troubleshooting
+
+If you encounter other issues:
+
+1. Check the PostgreSQL logs for more detailed error messages
+2. Verify that the pgvector extension is properly installed
+3. Ensure your database user has the necessary permissions to modify indices
+4. If all else fails, consider recreating the entire database schema and reindexing
 
 ---
 
