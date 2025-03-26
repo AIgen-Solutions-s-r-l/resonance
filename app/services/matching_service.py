@@ -67,4 +67,10 @@ async def match_jobs_with_resume(
         )
         return matched_jobs
     except Exception as e:
+        logger.exception(
+            "Error matching jobs with resume",
+            event_type="job_matching_error",
+            error_type=type(e).__name__,
+            error_details=str(e),
+        )
         raise Exception("Failed to match jobs with resume.") from e
