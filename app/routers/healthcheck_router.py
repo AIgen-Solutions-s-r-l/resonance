@@ -9,6 +9,7 @@ from app.log.logging import logger
 from fastapi import HTTPException
 
 from app.routers.healthchecks.fastapi_healthcheck_postgres.service import HealthCheckPostgres
+from app.routers.healthchecks.fastapi_healthcheck_redis.service import HealthCheckRedis
 
 router = APIRouter(tags=["healthcheck"])
 
@@ -40,6 +41,16 @@ async def health_check(withlog: bool = False):
     _healthChecks.add(
         HealthCheckMongoDB(
             connection_uri=settings.mongodb, alias="mongo db", tags=("mongo", "db")
+        )
+    )
+    _healthChecks.add(
+        HealthCheckRedis(
+            host=settings.redis_host,
+            port=settings.redis_port,
+            db=settings.redis_db,
+            password=settings.redis_password,
+            alias='redis',
+            tags=('redis', 'cache')
         )
     )
 
