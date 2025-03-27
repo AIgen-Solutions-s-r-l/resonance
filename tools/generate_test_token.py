@@ -5,23 +5,19 @@ This script creates a token that will work with the app's configured secret key.
 """
 
 import sys
-import jwt
 import datetime
 import time
 import os
+import dotenv
+from jose import jwt
 
-# Read secret key from .env file
 def get_secret_key():
-    secret_key = "your-secret-key-here"  # Default
+    # Load environment variables from .env file
+    dotenv.load_dotenv()
     
-    try:
-        with open(".env", "r") as f:
-            for line in f:
-                if line.startswith("SECRET_KEY="):
-                    secret_key = line.strip().split("=", 1)[1].strip('"')
-                    break
-    except Exception as e:
-        print(f"Error reading .env file: {e}", file=sys.stderr)
+    # Get secret key from environment variable
+    secret_key = os.getenv("SECRET_KEY", "your-secret-key-here")
+    print(f"Using secret key: {secret_key}")
     
     return secret_key
 
@@ -42,10 +38,6 @@ def generate_token():
     
     # Sign the token with our app's secret key
     token = jwt.encode(payload, secret_key, algorithm='HS256')
-    
-    # If token is bytes, decode to string (PyJWT < 2.0)
-    if isinstance(token, bytes):
-        token = token.decode('utf-8')
     
     return token
 

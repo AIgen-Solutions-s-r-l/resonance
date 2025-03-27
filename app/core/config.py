@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     # MongoDB settings
     mongodb: str = os.getenv("MONGODB", "mongodb://localhost:27017")
     mongodb_database: str = os.getenv("MONGODB_DATABASE", "resumes")
+    
+    # Redis settings
+    redis_host: str = os.getenv("REDIS_HOST", "localhost")
+    redis_port: int = os.getenv("REDIS_PORT", 6379)
+    redis_db: int = os.getenv("REDIS_DB", 0)
+    redis_password: str = os.getenv("REDIS_PASSWORD", "")
 
     # RabbitMQ settings
     rabbitmq_url: str = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
@@ -61,6 +67,14 @@ class Settings(BaseSettings):
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
     )
     internal_api_key: str = os.getenv("INTERNAL_API_KEY", "default-for-development")
+    
+    # Redis cache settings
+    redis_host: str = os.getenv("REDIS_HOST", "localhost")
+    redis_port: int = int(os.getenv("REDIS_PORT", "6379"))
+    redis_db: int = int(os.getenv("REDIS_DB", "0"))
+    redis_password: str = os.getenv("REDIS_PASSWORD", "")
+    redis_cache_ttl: int = int(os.getenv("REDIS_CACHE_TTL", "300"))
+    redis_enabled: bool = os.getenv("REDIS_ENABLED", "True").lower() == "true"
 
     # OpenAI API key
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "your-openai-api-key")

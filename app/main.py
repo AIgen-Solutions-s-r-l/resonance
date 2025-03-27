@@ -12,6 +12,8 @@ from app.metrics import setup_metrics
 from app.metrics.system import collect_system_metrics
 from app.tasks.job_processor import setup_task_manager, teardown_task_manager
 from app.utils.db_utils import get_connection_pool, close_all_connection_pools
+from app.libs.redis.factory import RedisCacheFactory
+from app.libs.job_matcher.cache import initialize_cache as initialize_job_matcher_cache
 
 
 class AuthDebugMiddleware(BaseHTTPMiddleware):
@@ -112,6 +114,16 @@ async def lifespan(app: FastAPI):
         await get_connection_pool("default")  # Create the default connection pool
         logger.info("Database connection pools initialized")
         
+        # Initialize Redis cache
+        logger.info("Initializing Redis cache")
+        try:
+            await RedisCacheFactory.initialize()
+            await initialize_job_matcher_cache()
+            logger.info("Redis cache initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize Redis cache: {str(e)}")
+            logger.info("Job matching will use in-memory cache as fallback")
+        
         logger.info("Application started successfully")
         
         yield
@@ -126,11 +138,19 @@ async def lifespan(app: FastAPI):
         # Cleanup task manager
         await teardown_task_manager()
         logger.info("Task manager shutdown completed")
-        
         # Close database connection pools
         logger.info("Closing database connection pools")
         await close_all_connection_pools()
         logger.info("Database connection pools closed")
+        
+        # Close Redis connections
+        logger.info("Closing Redis connections")
+        try:
+            await RedisCacheFactory.close()
+            logger.info("Redis connections closed")
+        except Exception as e:
+            logger.error(f"Error closing Redis connections: {str(e)}")
+        
         
         logger.info("Application shut down successfully")
         
