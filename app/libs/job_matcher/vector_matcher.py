@@ -34,7 +34,7 @@ class VectorMatcher:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         offset: int = 0,
-        limit: int = 5,
+        limit: int = 50,
         experience: Optional[List[str]] = None,
     ) -> List[JobMatch]:
         """
