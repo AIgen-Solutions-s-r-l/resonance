@@ -208,7 +208,7 @@ async def execute_vector_similarity_query(
 
     # Log parameter structure for debugging
     logger.info(
-        "DB_UTILS: Simplified parameter structure",
+        "DB_UTILS: Simplified parameter structure: {embedding_count} embeddings, {where_params_count} WHERE params, {total_params} total params, country filter: {country_filter}",
         embedding_count=1,
         where_params_count=len(query_params),
         total_params=len(sql_params),
@@ -217,7 +217,7 @@ async def execute_vector_similarity_query(
 
     # Log query for debugging
     logger.info(
-        "DB_UTILS: Executing vector similarity query",
+        "DB_UTILS: Executing vector similarity query: {param_count} parameters, {where_clause_count} WHERE clauses, {embedding_length} embedding length, {query_size} characters",
         param_count=len(sql_params),
         where_clause_count=len(where_clauses),
         has_filter=bool(where_clauses),
@@ -229,7 +229,7 @@ async def execute_vector_similarity_query(
 
     # Detailed parameter breakdown for debugging
     logger.info(
-        "DB_UTILS: Parameter structure analysis",
+        "DB_UTILS: Parameter structure analysis, where clauses: {where_clauses}, query params: {query_params}, sql params count: {sql_params_count}, first few params: {first_few_params}",
         where_clauses=where_clauses,
         query_params=(
             str(query_params)[:100] + "..."
@@ -261,7 +261,7 @@ async def execute_vector_similarity_query(
         fetch_time = time.time() - fetch_start
 
         logger.debug(
-            "Query results fetched",
+            "Query results fetched: {result_count} results\nQuery time: {query_time:.6f}s\nFetch time: {fetch_time:.6f}s\nTotal time: {total_time:.6f}s",
             result_count=len(results),
             query_time=f"{query_time:.6f}s",
             fetch_time=f"{fetch_time:.6f}s",
