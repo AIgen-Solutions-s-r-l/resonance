@@ -108,9 +108,43 @@ class VectorMatcher:
                 logger.info(
                     "VECTOR_MATCH: Executing optimized vector similarity query")
                 try:
+                    # Define the expected vector dimension
+                    EXPECTED_DIMENSION = 1024
+                    
+                    # Validate and normalize embedding format
+                    if isinstance(cv_embedding, str):
+                        logger.warning(
+                            f"VECTOR_MATCH: Received string embedding instead of list, attempting to convert")
+                        try:
+                            # Remove brackets and split by commas
+                            cleaned = cv_embedding.strip('[]').split(',')
+                            cv_embedding = [float(x.strip()) for x in cleaned if x.strip()]
+                            logger.info(f"VECTOR_MATCH: Successfully converted string to list of {len(cv_embedding)} floats")
+                        except Exception as e:
+                            logger.error(f"VECTOR_MATCH: Failed to convert string embedding: {str(e)}")
+                            raise ValueError(f"Invalid embedding format: {cv_embedding[:50]}...")
+                    
+                    # Ensure it's a list
+                    if not isinstance(cv_embedding, list):
+                        raise ValueError(f"Embedding must be a list of floats, got {type(cv_embedding).__name__}")
+                    
+                    # Check and fix vector dimensions
+                    current_dim = len(cv_embedding)
+                    if current_dim != EXPECTED_DIMENSION:
+                        logger.warning(f"VECTOR_MATCH: Vector dimension mismatch: got {current_dim}, expected {EXPECTED_DIMENSION}")
+                        
+                        if current_dim < EXPECTED_DIMENSION:
+                            # Pad with zeros if too short
+                            padding = [0.0] * (EXPECTED_DIMENSION - current_dim)
+                            cv_embedding = cv_embedding + padding
+                            logger.info(f"VECTOR_MATCH: Padded vector from {current_dim} to {EXPECTED_DIMENSION} dimensions")
+                        else:
+                            # Truncate if too long
+                            cv_embedding = cv_embedding[:EXPECTED_DIMENSION]
+                            logger.info(f"VECTOR_MATCH: Truncated vector from {current_dim} to {EXPECTED_DIMENSION} dimensions")
+                        
                     # Log embedding dimensions for troubleshooting
-                    embedding_len = len(cv_embedding) if isinstance(
-                        cv_embedding, list) else 'unknown'
+                    embedding_len = len(cv_embedding)
                     logger.info(
                         f"VECTOR_MATCH: Using embedding of length {embedding_len}")
 

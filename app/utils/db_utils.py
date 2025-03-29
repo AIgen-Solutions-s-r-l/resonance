@@ -201,6 +201,41 @@ async def execute_vector_similarity_query(
     # Simplified parameter handling
     # Just one embedding parameter for cosine similarity
     sql_params = []
+    
+    # Define the expected vector dimension
+    EXPECTED_DIMENSION = 1024
+    
+    # Ensure cv_embedding is properly formatted for vector operations
+    if isinstance(cv_embedding, str):
+        # If it's a string, try to convert it to a list of floats
+        try:
+            # Remove brackets and split by commas
+            cleaned = cv_embedding.strip('[]').split(',')
+            cv_embedding = [float(x.strip()) for x in cleaned if x.strip()]
+            logger.info(f"Converted string embedding to list of {len(cv_embedding)} floats")
+        except Exception as e:
+            logger.error(f"Failed to convert string embedding to float list: {str(e)}")
+            raise ValueError(f"Invalid embedding format: {cv_embedding[:50]}...")
+    
+    # Ensure it's a list of floats
+    if not isinstance(cv_embedding, list):
+        raise ValueError(f"Embedding must be a list of floats, got {type(cv_embedding).__name__}")
+    
+    # Check and fix vector dimensions
+    current_dim = len(cv_embedding)
+    if current_dim != EXPECTED_DIMENSION:
+        logger.warning(f"Vector dimension mismatch: got {current_dim}, expected {EXPECTED_DIMENSION}")
+        
+        if current_dim < EXPECTED_DIMENSION:
+            # Pad with zeros if too short
+            padding = [0.0] * (EXPECTED_DIMENSION - current_dim)
+            cv_embedding = cv_embedding + padding
+            logger.info(f"Padded vector from {current_dim} to {EXPECTED_DIMENSION} dimensions")
+        else:
+            # Truncate if too long
+            cv_embedding = cv_embedding[:EXPECTED_DIMENSION]
+            logger.info(f"Truncated vector from {current_dim} to {EXPECTED_DIMENSION} dimensions")
+    
     sql_params.append(cv_embedding)
 
     # Add filter params for the WHERE clause
@@ -265,11 +300,7 @@ async def execute_vector_similarity_query(
         fetch_time = time.time() - fetch_start
 
         logger.debug(
-            "Query results fetched: {result_count} results\nQuery time: {query_time:.6f}s\nFetch time: {fetch_time:.6f}s\nTotal time: {total_time:.6f}s",
-            result_count=len(results),
-            query_time=f"{query_time:.6f}s",
-            fetch_time=f"{fetch_time:.6f}s",
-            total_time=f"{time.time() - start_time:.6f}s",
+            f"Query results fetched: {len(results)} results\nQuery time: {query_time:.6f}s\nFetch time: {fetch_time:.6f}s\nTotal time: {time.time() - start_time:.6f}s"
         )
         return results
     except Exception as e:
