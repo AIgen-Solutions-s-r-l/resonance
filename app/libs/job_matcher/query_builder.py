@@ -150,7 +150,6 @@ class JobQueryBuilder:
             or_clauses.append("(j.title ILIKE '%' || %s || '%' OR j.description ILIKE '%' || %s || '%')")
             # Add each parameter separately (raw keyword)
             query_params.append(kw)
-            query_params.append(kw)
         
         # Combine clauses
         if or_clauses:
