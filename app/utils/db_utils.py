@@ -202,6 +202,7 @@ async def execute_vector_similarity_query(
 
     # Simplified parameter handling
     # Just one embedding parameter for cosine similarity
+    sql_params = []
     sql_params.append(cv_embedding)
 
     # Add filter params for the WHERE clause
