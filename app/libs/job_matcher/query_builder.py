@@ -146,10 +146,11 @@ class JobQueryBuilder:
         query_params = []
         
         for kw in keywords:
-            or_clauses.append("(j.title ILIKE %s OR j.description ILIKE %s)")
-            # Add each parameter separately
-            query_params.append(f"%{kw}%")
-            query_params.append(f"%{kw}%")
+            # Use SQL concatenation for wildcards, pass raw keyword as parameter
+            or_clauses.append("(j.title ILIKE '%' || %s || '%' OR j.description ILIKE '%' || %s || '%')")
+            # Add each parameter separately (raw keyword)
+            query_params.append(kw)
+            query_params.append(kw)
         
         # Combine clauses
         if or_clauses:
