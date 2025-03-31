@@ -192,7 +192,7 @@ async def test_match_jobs_with_resume_integration(
     assert kwargs["location"] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
-    assert kwargs["limit"] == 50
+    assert kwargs["limit"] == 25
     assert kwargs["experience"] == experience
     assert "location" in kwargs
     assert kwargs["location"] == location
