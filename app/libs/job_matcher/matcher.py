@@ -36,7 +36,7 @@ class JobMatcher:
         save_to_mongodb: bool = False,
         offset: int = 0,
         use_cache: bool = True,
-        limit: int = 50,
+        limit: int = 25,
         experience: Optional[List[str]] = None
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
