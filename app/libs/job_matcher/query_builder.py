@@ -146,10 +146,11 @@ class JobQueryBuilder:
         query_params = []
         
         for kw in keywords:
-            # Use SQL concatenation for wildcards, pass raw keyword as parameter
-            or_clauses.append("(j.title ILIKE '%' || %s || '%' OR j.description ILIKE '%' || %s || '%')")
-            # Add each parameter separately (raw keyword)
+            # Use SQL concatenation for wildcards, escape the % with double %% for psycopg
+            or_clauses.append("(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')")
+            # Add parameter twice - once for title, once for description
             query_params.append(kw)
+            query_params.append(kw)  # Need to add keyword twice (for title and description)
         
         # Combine clauses
         if or_clauses:
