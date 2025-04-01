@@ -454,8 +454,7 @@ async def get_jobs_by_ids(
                 j.job_state,
                 j.apply_link,
                 j.portal,
-                co.country_name AS country,
-                l.city,
+                co.country_name || ', ' || l.city AS location,
                 c.company_name,
                 c.logo AS company_logo
             FROM "Jobs" j
@@ -464,7 +463,7 @@ async def get_jobs_by_ids(
             LEFT JOIN "Countries" co ON l.country = co.country_id
             WHERE j.id = ANY(%s)
             """
-            
+                
             # Execute the query with validated IDs only
             await cursor.execute(query, (valid_job_ids,))
             
