@@ -52,8 +52,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     kwargs={"row_factory": dict_row},
                     open=False,  # Don't open in constructor to avoid deprecation warning
                     # Configure reconnection and reset behavior
-                    reconnect_timeout=3,  # Shorter reconnect timeout for tests
-                    check_connection=True  # Ensure connections are valid before use
+                    reconnect_timeout=3  # Shorter reconnect timeout for tests
                 )
 
                 logger.debug(
