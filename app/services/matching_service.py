@@ -53,7 +53,8 @@ async def match_jobs_with_resume(
     save_to_mongodb: bool = False,
     offset: int = 0,
     experience: Optional[List[str]] = None,
-) -> List[JobSchema]:
+    include_total_count: bool = False,
+) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
 
@@ -64,6 +65,7 @@ async def match_jobs_with_resume(
             save_to_mongodb=save_to_mongodb,
             offset=offset,
             experience=experience,
+            include_total_count=include_total_count,
         )
         return matched_jobs
     except Exception as e:

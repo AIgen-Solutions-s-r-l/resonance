@@ -155,7 +155,8 @@ class TaskManager:
                 location=location,
                 keywords=keywords,
                 offset=offset,
-                experience=experience
+                experience=experience,
+                include_total_count=True
             )
             
             # Update task with results

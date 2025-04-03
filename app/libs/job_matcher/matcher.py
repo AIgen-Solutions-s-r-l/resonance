@@ -4,7 +4,7 @@ Core job matching logic.
 This module contains the main functionality for matching jobs with resumes.
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from loguru import logger
 from time import time
 
@@ -16,6 +16,7 @@ from app.libs.job_matcher.exceptions import ValidationError
 from app.libs.job_matcher.cache import cache
 from app.libs.job_matcher.persistence import persistence
 from app.libs.job_matcher.vector_matcher import vector_matcher
+from app.libs.job_matcher.query_builder import query_builder
 from app.services.applied_jobs_service import applied_jobs_service
 
 
@@ -26,6 +27,29 @@ class JobMatcher:
         """Initialize the job matcher."""
         self.settings = settings
         logger.info("JobMatcher initialized")
+        
+    async def _get_filter_conditions(
+        self,
+        location: Optional[LocationFilter] = None,
+        keywords: Optional[List[str]] = None,
+        experience: Optional[List[str]] = None
+    ) -> Tuple[List[str], List[Any]]:
+        """
+        Get the SQL filter conditions for the job query.
+        
+        Args:
+            location: Optional location filter
+            keywords: Optional keyword filter
+            experience: Optional experience level filter
+            
+        Returns:
+            Tuple of (where clauses list, query parameters list)
+        """
+        return query_builder.build_filter_conditions(
+            location=location,
+            keywords=keywords,
+            experience=experience
+        )
     
     @async_matching_algorithm_timer("process_job_optimized")
     async def process_job(
@@ -37,8 +61,9 @@ class JobMatcher:
         offset: int = 0,
         use_cache: bool = True,
         limit: int = 25,
-        experience: Optional[List[str]] = None
-    ) -> Dict[str, List[Dict[str, Any]]]:
+        experience: Optional[List[str]] = None,
+        include_total_count: bool = True
+    ) -> Dict[str, Any]:
         """
         Process a job matching request.
         
@@ -162,6 +187,24 @@ class JobMatcher:
             job_results = {
                 "jobs": [match.to_dict() for match in job_matches]
             }
+            
+            # Add total count to response if requested
+            if include_total_count:
+                # We need to get the full count from vector_matcher's internal count logic
+                # This uses the same filter conditions but ignores offset/limit
+                # This query is already done as part of get_top_jobs_by_vector_similarity
+                # To avoid having to do it again, we'll get the count through vector_matcher
+                from app.utils.db_utils import get_db_cursor
+                # Get the filter conditions
+                where_clauses, query_params = await self._get_filter_conditions(
+                    location=location, keywords=keywords, experience=experience
+                )
+                
+                async with get_db_cursor() as cursor:
+                    from app.utils.db_utils import get_filtered_job_count
+                    total_jobs = await get_filtered_job_count(cursor, where_clauses, query_params, False)
+                    logger.info(f"RESULTS: Total job count for pagination: {total_jobs}")
+                    job_results["total_count"] = total_jobs
             
             # Filter out jobs that the user has already applied for
             if "user_id" in resume:

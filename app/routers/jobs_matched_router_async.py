@@ -15,6 +15,7 @@ import uuid
 
 from app.core.auth import get_current_user, verify_api_key
 from app.schemas.job import JobSchema, JobDetailResponse
+from app.schemas.job_match import JobsMatchedResponse
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
@@ -273,12 +274,12 @@ async def get_job_matching_status(
         )
 
 
-# Legacy endpoint for backward compatibility - returns a list directly but processes asynchronously
+# Legacy endpoint for backward compatibility - returns jobs with total count for pagination
 @router.get(
     "/match/legacy",
-    response_model=List[JobSchema],
+    response_model=JobsMatchedResponse,
     summary="Get Jobs Matching User's Resume (Legacy)",
-    description="Returns a list of jobs that match the authenticated user's resume. This is a legacy endpoint.",
+    description="Returns a list of jobs that match the authenticated user's resume along with total count for pagination.",
     status_code=status.HTTP_200_OK,
     deprecated=True,
 )
@@ -343,29 +344,37 @@ async def get_matched_jobs_legacy(
             keywords=keywords,
             offset=offset if offset is not None else 0,
             experience=experience,
+            include_total_count=True,  # Request total count for pagination
         )
 
-        if isinstance(matched_jobs, list):
-            job_list = matched_jobs
-        elif isinstance(matched_jobs, dict) and "jobs" in matched_jobs:
-            job_list = matched_jobs["jobs"]
-        else:
+        if not isinstance(matched_jobs, dict):
             logger.exception("Unexpected data structure for matched_jobs")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure for matched jobs.",
             )
 
+        # Extract jobs list
+        job_list = matched_jobs.get("jobs", [])
+        
+        # Extract total count (or use length of results if not available)
+        total_count = matched_jobs.get("total_count", len(job_list))
+
         job_count = len(job_list)
         logger.info(
-            "Found {job_count} jobs matched for user {current_user}",
+            "Found {job_count} jobs matched for user {current_user} (total: {total_count})",
             job_count=job_count,
+            total_count=total_count,
             current_user=current_user,
         )
 
         job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
 
-        return job_pydantic_list
+        # Return the new response model with both jobs and total count
+        return JobsMatchedResponse(
+            jobs=job_pydantic_list,
+            total_count=total_count
+        )
 
     except HTTPException:
         raise
