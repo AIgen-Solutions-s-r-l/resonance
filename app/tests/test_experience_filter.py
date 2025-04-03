@@ -5,7 +5,9 @@ This module contains tests specifically for the experience filtering feature in 
 """
 
 import pytest
+import asyncio
 from unittest.mock import AsyncMock, patch
+from app.utils.db_utils import close_all_connection_pools
 
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.libs.job_matcher.models import JobMatch
@@ -25,8 +27,8 @@ def job_matcher():
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_process_job_with_experience_filter(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, 
-    mock_build_experience_filters, job_matcher
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
+    mock_build_experience_filters, job_matcher, monkeypatch
 ):
     """Test that process_job correctly applies experience filtering."""
     # Set up test data
@@ -59,26 +61,40 @@ async def test_process_job_with_experience_filter(
         )
     ]
     
-    # Execute the function with experience parameter
-    result = await job_matcher.process_job(
-        resume,
-        experience=experience
-    )
+    # Create a proper async context manager mock for db_cursor
+    class MockDBCursor:
+        async def __aenter__(self):
+            return AsyncMock()
+        async def __aexit__(self, *args):
+            pass
     
-    # Verify results
-    assert isinstance(result, dict)
-    assert "jobs" in result
-    assert len(result["jobs"]) == 1
-    assert result["jobs"][0]["title"] == "Senior Software Engineer"
+    # Apply the mock to prevent actual database connections
+    monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
     
-    # Verify that the experience parameter was correctly passed
-    mock_generate_key.assert_called_with(
-        "test_resume_id",
-        offset=0,
-        location=None,
-        keywords=None,
-        experience=experience
-    )
+    try:
+        # Execute the function with experience parameter
+        result = await job_matcher.process_job(
+            resume,
+            experience=experience
+        )
+        
+        # Verify results
+        assert isinstance(result, dict)
+        assert "jobs" in result
+        assert len(result["jobs"]) == 1
+        assert result["jobs"][0]["title"] == "Senior Software Engineer"
+        
+        # Verify that the experience parameter was correctly passed
+        mock_generate_key.assert_called_with(
+            "test_resume_id",
+            offset=0,
+            location=None,
+            keywords=None,
+            experience=experience
+        )
+    finally:
+        # Ensure database connections are cleaned up
+        await close_all_connection_pools()
     
     # Verify vector matcher was called with experience
     mock_get_top_jobs.assert_called_once()
@@ -206,7 +222,7 @@ async def test_match_jobs_with_resume_integration(
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_experience_filter_with_cache(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher, monkeypatch
 ):
     """Test that different experience filters use different cache keys."""
     # Set up test data
@@ -240,37 +256,51 @@ async def test_experience_filter_with_cache(
     
     mock_get_top_jobs.return_value = [job_match]
     
-    # First call with experience_1
-    await job_matcher.process_job(resume, experience=experience_1)
+    # Create a proper async context manager mock for db_cursor
+    class MockDBCursor:
+        async def __aenter__(self):
+            return AsyncMock()
+        async def __aexit__(self, *args):
+            pass
     
-    # Verify first call generated correct cache key with experience_1
-    mock_generate_key.assert_called_with(
-        "test_resume_id",
-        offset=0,
-        location=None,
-        keywords=None,
-        experience=experience_1
-    )
+    # Apply the mock to prevent actual database connections
+    monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
     
-    # Store what would be cached for first call
-    mock_store_cached.assert_called_once()
-    args, _ = mock_store_cached.call_args
-    cached_key_1, cached_result_1 = args
-    
-    # Store first call information for comparison
-    first_call_args = mock_generate_key.call_args
-    
-    # Change the mock return value for the second call
-    mock_generate_key.return_value = "key_with_entry"
-    
-    # Reset mocks for second call
-    mock_generate_key.reset_mock()
-    mock_get_cached.reset_mock()
-    mock_store_cached.reset_mock()
-    mock_get_top_jobs.reset_mock()
-    
-    # Second call with different experience filter
-    await job_matcher.process_job(resume, experience=experience_2)
+    try:
+        # First call with experience_1
+        await job_matcher.process_job(resume, experience=experience_1)
+        
+        # Verify first call generated correct cache key with experience_1
+        mock_generate_key.assert_called_with(
+            "test_resume_id",
+            offset=0,
+            location=None,
+            keywords=None,
+            experience=experience_1
+        )
+        
+        # Store what would be cached for first call
+        mock_store_cached.assert_called_once()
+        args, _ = mock_store_cached.call_args
+        cached_key_1, cached_result_1 = args
+        
+        # Store first call information for comparison
+        first_call_args = mock_generate_key.call_args
+        
+        # Change the mock return value for the second call
+        mock_generate_key.return_value = "key_with_entry"
+        
+        # Reset mocks for second call
+        mock_generate_key.reset_mock()
+        mock_get_cached.reset_mock()
+        mock_store_cached.reset_mock()
+        mock_get_top_jobs.reset_mock()
+        
+        # Second call with different experience filter
+        await job_matcher.process_job(resume, experience=experience_2)
+    finally:
+        # Ensure database connections are cleaned up
+        await close_all_connection_pools()
     
     # Verify second call generated key with experience_2
     mock_generate_key.assert_called_with(

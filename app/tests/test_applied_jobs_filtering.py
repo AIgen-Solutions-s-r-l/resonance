@@ -6,7 +6,9 @@ are properly filtered out from job recommendations.
 """
 
 import pytest
+import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
+from app.utils.db_utils import close_all_connection_pools
 import json
 
 from app.libs.job_matcher.matcher import JobMatcher
@@ -16,7 +18,7 @@ from app.libs.job_matcher.models import JobMatch
 
 
 @pytest.mark.asyncio
-async def test_filter_applied_jobs_from_search_results():
+async def test_filter_applied_jobs_from_search_results(monkeypatch):
     """Test that applied jobs are filtered out from vector search results."""
     # Setup test data - mocked job matches
     mock_job_matches = [
@@ -55,32 +57,46 @@ async def test_filter_applied_jobs_from_search_results():
                                new_callable=AsyncMock) as mock_generate_key:
                         mock_generate_key.return_value = "test-cache-key"
                         
-                        # Initialize matcher and process job
-                        matcher = JobMatcher()
-                        result = await matcher.process_job(
-                            test_resume,
-                            use_cache=True
-                        )
+                        # Create a proper async context manager mock for db_cursor
+                        class MockDBCursor:
+                            async def __aenter__(self):
+                                return AsyncMock()
+                            async def __aexit__(self, *args):
+                                pass
                         
-                        # Verify the result - should only have job2 and job4 (2 jobs)
-                        assert len(result["jobs"]) == 2, "Should have filtered out 2 applied jobs"
-                        job_ids = [job["id"] for job in result["jobs"]]
-                        assert "job1" not in job_ids, "Applied job job1 should be filtered out"
-                        assert "job2" in job_ids, "Non-applied job job2 should be present"
-                        assert "job3" not in job_ids, "Applied job job3 should be filtered out"
-                        assert "job4" in job_ids, "Non-applied job job4 should be present"
+                        # Apply the mock to prevent actual database connections
+                        monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
                         
-                        # Verify that get_applied_jobs was called with the correct user_id
-                        mock_get_applied_jobs.assert_called_once_with(123)
-                        
-                        # Verify that cache was updated with filtered results
-                        mock_cache_set.assert_called_once()
-                        cache_arg = mock_cache_set.call_args[0][1]  # The second arg is the cache data
-                        assert len(cache_arg["jobs"]) == 2, "Cache should store filtered jobs"
+                        try:
+                            # Initialize matcher and process job
+                            matcher = JobMatcher()
+                            result = await matcher.process_job(
+                                test_resume,
+                                use_cache=True
+                            )
+                            
+                            # Verify the result - should only have job2 and job4 (2 jobs)
+                            assert len(result["jobs"]) == 2, "Should have filtered out 2 applied jobs"
+                            job_ids = [job["id"] for job in result["jobs"]]
+                            assert "job1" not in job_ids, "Applied job job1 should be filtered out"
+                            assert "job2" in job_ids, "Non-applied job job2 should be present"
+                            assert "job3" not in job_ids, "Applied job job3 should be filtered out"
+                            assert "job4" in job_ids, "Non-applied job job4 should be present"
+                            
+                            # Verify that get_applied_jobs was called with the correct user_id
+                            mock_get_applied_jobs.assert_called_once_with(123)
+                            
+                            # Verify that cache was updated with filtered results
+                            mock_cache_set.assert_called_once()
+                            cache_arg = mock_cache_set.call_args[0][1]  # The second arg is the cache data
+                            assert len(cache_arg["jobs"]) == 2, "Cache should store filtered jobs"
+                        finally:
+                            # Ensure database connections are cleaned up
+                            await close_all_connection_pools()
 
 
 @pytest.mark.asyncio
-async def test_filter_applied_jobs_from_cache():
+async def test_filter_applied_jobs_from_cache(monkeypatch):
     """Test that applied jobs are filtered out from cached results."""
     # Mock cache result with 4 jobs
     cached_result = {
@@ -117,25 +133,39 @@ async def test_filter_applied_jobs_from_cache():
                            new_callable=AsyncMock) as mock_generate_key:
                     mock_generate_key.return_value = "test-cache-key"
                     
-                    # Initialize matcher and process job
-                    matcher = JobMatcher()
-                    result = await matcher.process_job(
-                        test_resume,
-                        use_cache=True
-                    )
+                    # Create a proper async context manager mock for db_cursor
+                    class MockDBCursor:
+                        async def __aenter__(self):
+                            return AsyncMock()
+                        async def __aexit__(self, *args):
+                            pass
                     
-                    # Verify the result - should only have job2 and job4 (2 jobs)
-                    assert len(result["jobs"]) == 2, "Should have filtered out 2 applied jobs from cache"
-                    job_ids = [job["id"] for job in result["jobs"]]
-                    assert "job1" not in job_ids, "Applied job job1 should be filtered out"
-                    assert "job2" in job_ids, "Non-applied job job2 should be present"
-                    assert "job3" not in job_ids, "Applied job job3 should be filtered out"
-                    assert "job4" in job_ids, "Non-applied job job4 should be present"
+                    # Apply the mock to prevent actual database connections
+                    monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
                     
-                    # Verify that get_applied_jobs was called with the correct user_id
-                    mock_get_applied_jobs.assert_called_once_with(123)
-                    
-                    # Verify that cache was updated with filtered results
-                    mock_cache_set.assert_called_once()
-                    cache_arg = mock_cache_set.call_args[0][1]  # The second arg is the cache data
-                    assert len(cache_arg["jobs"]) == 2, "Cache should be updated with filtered jobs"
+                    try:
+                        # Initialize matcher and process job
+                        matcher = JobMatcher()
+                        result = await matcher.process_job(
+                            test_resume,
+                            use_cache=True
+                        )
+                        
+                        # Verify the result - should only have job2 and job4 (2 jobs)
+                        assert len(result["jobs"]) == 2, "Should have filtered out 2 applied jobs from cache"
+                        job_ids = [job["id"] for job in result["jobs"]]
+                        assert "job1" not in job_ids, "Applied job job1 should be filtered out"
+                        assert "job2" in job_ids, "Non-applied job job2 should be present"
+                        assert "job3" not in job_ids, "Applied job job3 should be filtered out"
+                        assert "job4" in job_ids, "Non-applied job job4 should be present"
+                        
+                        # Verify that get_applied_jobs was called with the correct user_id
+                        mock_get_applied_jobs.assert_called_once_with(123)
+                        
+                        # Verify that cache was updated with filtered results
+                        mock_cache_set.assert_called_once()
+                        cache_arg = mock_cache_set.call_args[0][1]  # The second arg is the cache data
+                        assert len(cache_arg["jobs"]) == 2, "Cache should be updated with filtered jobs"
+                    finally:
+                        # Ensure database connections are cleaned up
+                        await close_all_connection_pools()

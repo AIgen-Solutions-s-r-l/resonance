@@ -51,10 +51,16 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     # Use dictionary row factory
                     kwargs={"row_factory": dict_row},
                     open=False,  # Don't open in constructor to avoid deprecation warning
+                    # Configure reconnection and reset behavior
+                    reconnect_timeout=3,  # Shorter reconnect timeout for tests
+                    check_connection=True  # Ensure connections are valid before use
                 )
 
                 logger.debug(
                     f"Connection pool created with URL: {settings.database_url[:10]}..., now opening"
+                )
+                logger.info(
+                    f"Pool config: min={settings.db_pool_min_size}, max={settings.db_pool_max_size}, timeout={settings.db_pool_timeout}s"
                 )
 
                 # Explicitly open the pool
@@ -407,7 +413,12 @@ async def get_filtered_job_count(
 
 
 async def close_all_connection_pools():
-    """Close all connection pools."""
+    """
+    Close all connection pools.
+    
+    This function is particularly important for test cleanup to prevent
+    connection pool exhaustion between tests.
+    """
     logger.debug("Closing all connection pools")
     start_time = time.time()
 
@@ -415,12 +426,25 @@ async def close_all_connection_pools():
         async with _pool_lock:
             for pool_name, pool in _connection_pools.items():
                 logger.info("Closing connection pool", pool_name=pool_name)
-                await pool.close()
+                try:
+                    # Check if the pool is still open before closing
+                    if not pool.closed:
+                        # Close with a shorter timeout for tests
+                        await asyncio.wait_for(pool.close(), timeout=3.0)
+                    else:
+                        logger.debug(f"Pool {pool_name} already closed")
+                except asyncio.TimeoutError:
+                    logger.warning(f"Timeout while closing pool {pool_name}, forcing close")
+                    # We can't do much more if close times out
+                except Exception as e:
+                    logger.warning(f"Error closing pool {pool_name}: {str(e)}")
+                    # Continue to close other pools even if one fails
 
+            # Clear all pools
             _connection_pools.clear()
             logger.debug(
                 f"All connection pools closed in {time.time() - start_time:.6f}s"
             )
     except Exception as e:
         logger.exception(f"Error closing connection pools: {str(e)}")
-        raise
+        # Don't raise here - best effort cleanup for tests

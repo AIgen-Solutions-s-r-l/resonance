@@ -5,6 +5,7 @@ import builtins
 from unittest.mock import AsyncMock, MagicMock, patch
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.libs.job_matcher.models import JobMatch
+from app.utils.db_utils import close_all_connection_pools
 
 # Create a mock Row that supports both dict and list access
 class MockRow(dict):
@@ -182,7 +183,7 @@ async def test_process_job_without_embeddings(
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_process_job_success(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher, monkeypatch
 ):
     resume = {
         "user_id": "123",
@@ -218,19 +219,33 @@ async def test_process_job_success(
     mock_generate_key.return_value = "test_key"
     mock_get_cached.return_value = None
     mock_get_top_jobs.return_value = mock_results
+    # Create a proper async context manager mock for db_cursor
+    class MockDBCursor:
+        async def __aenter__(self):
+            return AsyncMock()
+        async def __aexit__(self, *args):
+            pass
     
-    result = await job_matcher.process_job(resume)
+    # Apply the mock to prevent actual database connections
+    monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
     
-    assert isinstance(result, dict)
-    assert "jobs" in result.keys()
-    assert len(result["jobs"]) == len(mock_results)
-    assert result["jobs"][0]["title"] == "Software Engineer 0"
-    
-    # Verify cache functions were called
-    # generate_key is called twice - once to check cache, once to store result
-    assert mock_generate_key.await_count == 2
-    mock_get_cached.assert_awaited_once()
-    mock_store_cached.assert_awaited_once()
+    try:
+        result = await job_matcher.process_job(resume)
+        
+        assert isinstance(result, dict)
+        assert "jobs" in result.keys()
+        assert len(result["jobs"]) == len(mock_results)
+        assert result["jobs"][0]["title"] == "Software Engineer 0"
+        
+        # Verify cache functions were called
+        # generate_key is called twice - once to check cache, once to store result
+        assert mock_generate_key.await_count == 2
+        mock_get_cached.assert_awaited_once()
+        mock_store_cached.assert_awaited_once()
+        mock_get_top_jobs.assert_awaited_once()
+    finally:
+        # Explicitly clean up connection pools to prevent leaks
+        await close_all_connection_pools()
     mock_get_top_jobs.assert_awaited_once()
 
 
