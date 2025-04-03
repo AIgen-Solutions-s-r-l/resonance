@@ -463,7 +463,7 @@ async def get_jobs_by_ids(
                 j.job_state,
                 j.apply_link,
                 j.portal,
-                co.country_name || ', ' || l.city AS location,
+                l.city || ', ' || co.country_name AS location,
                 c.company_name,
                 c.logo AS company_logo
             FROM "Jobs" j
