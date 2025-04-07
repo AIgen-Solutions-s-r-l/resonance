@@ -175,8 +175,8 @@ async def execute_vector_similarity_query(
     if applied_job_ids:
         # Ensure it's not an empty list before adding the clause
         if applied_job_ids:
-            all_where_clauses.append("j.id NOT IN %s")
-            applied_job_ids_tuple = tuple(applied_job_ids)
+            all_where_clauses.append("j.id <> ALL(%s)") # Use ANY/ALL for list parameter
+            # applied_job_ids_tuple = tuple(applied_job_ids) # Pass list directly now
             logger.info(f"Filtering out {len(applied_job_ids)} applied job IDs.")
         else:
             logger.info("Applied job IDs list is empty, skipping filter.")
@@ -261,9 +261,9 @@ async def execute_vector_similarity_query(
     # Add filter params for the WHERE clause
     sql_params.extend(query_params)
 
-    # Add applied job IDs tuple if it exists
-    if applied_job_ids_tuple:
-        sql_params.append(applied_job_ids_tuple)
+    # Add applied job IDs list if it exists and is not empty
+    if applied_job_ids: # Check original list, not the tuple
+        sql_params.append(applied_job_ids) # Append the list directly
 
     # Add limit and offset
     sql_params.append(limit)
