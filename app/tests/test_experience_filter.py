@@ -21,7 +21,7 @@ def job_matcher():
 
 
 @pytest.mark.asyncio
-@patch('app.libs.job_matcher.query_builder.query_builder._build_experience_filters')
+@patch('app.libs.job_matcher.vector_matcher.query_builder._build_experience_filters')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
@@ -90,7 +90,8 @@ async def test_process_job_with_experience_filter(
             offset=0,
             location=None,
             keywords=None,
-            experience=experience
+            experience=experience,
+            applied_job_ids=[]  # Added expected argument
         )
     finally:
         # Ensure database connections are cleaned up
@@ -276,7 +277,8 @@ async def test_experience_filter_with_cache(
             offset=0,
             location=None,
             keywords=None,
-            experience=experience_1
+            experience=experience_1,
+            applied_job_ids=[]  # Added expected argument
         )
         
         # Store what would be cached for first call
@@ -308,7 +310,8 @@ async def test_experience_filter_with_cache(
         offset=0,
         location=None,
         keywords=None,
-        experience=experience_2
+        experience=experience_2,
+        applied_job_ids=[]  # Added expected argument
     )
     
     # Verify that the experience parameter affects the cache key
@@ -368,7 +371,8 @@ async def test_experience_filter_with_cache_hit(
         offset=0,
         location=None,
         keywords=None,
-        experience=experience
+        experience=experience,
+        applied_job_ids=[]  # Added expected argument
     )
     
     # Verify cached result was returned
