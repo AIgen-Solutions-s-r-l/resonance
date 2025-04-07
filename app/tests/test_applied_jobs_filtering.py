@@ -41,8 +41,8 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
     
     # Mock dependencies
     # Patch the instance method directly
-    with patch.object(applied_jobs_service, "get_applied_job_ids", new_callable=AsyncMock) as mock_get_applied_job_ids:
-        mock_get_applied_job_ids.return_value = mock_applied_job_ids
+    with patch.object(applied_jobs_service, "get_applied_jobs", new_callable=AsyncMock) as mock_get_applied_jobs:
+        mock_get_applied_jobs.return_value = mock_applied_job_ids
 
         # Mock the vector matcher to return the *already filtered* results
         with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity",
@@ -84,7 +84,7 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                             assert 4 in job_ids, "Non-applied job 4 should be present"
                             
                             # Verify that get_applied_job_ids was called with the correct user_id
-                            mock_get_applied_job_ids.assert_called_once_with(user_id_to_test)
+                            mock_get_applied_jobs.assert_called_once_with(user_id_to_test)
 
                             # Verify that get_top_jobs_by_vector_similarity was called with applied_job_ids
                             mock_get_jobs.assert_called_once()
@@ -103,7 +103,7 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                             # Ensure database connections are cleaned up
                             await close_all_connection_pools()
 
-# Removed test_filter_applied_jobs_from_cache as the filtering logic
-# in the cache hit path of matcher.py was removed. Filtering now happens
-# before the DB query / cache check.
+                        # Removed test_filter_applied_jobs_from_cache as the filtering logic
+                        # in the cache hit path of matcher.py was removed. Filtering now happens
+                        # before the DB query / cache check.
                         await close_all_connection_pools()
