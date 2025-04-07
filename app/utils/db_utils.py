@@ -171,12 +171,10 @@ async def execute_vector_similarity_query(
         all_where_clauses.extend(where_clauses)
 
     # Add applied jobs filter if provided
-    applied_job_ids_tuple = None
     if applied_job_ids:
         # Ensure it's not an empty list before adding the clause
         if applied_job_ids:
             all_where_clauses.append("j.id <> ALL(%s)") # Use ANY/ALL for list parameter
-            # applied_job_ids_tuple = tuple(applied_job_ids) # Pass list directly now
             logger.info(f"Filtering out {len(applied_job_ids)} applied job IDs.")
         else:
             logger.info("Applied job IDs list is empty, skipping filter.")

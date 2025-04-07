@@ -115,6 +115,27 @@ class JobMatcher:
             # Add log to debug resume structure
             logger.info(f"RESUME CHECK: Resume keys: {list(resume.keys())}")
             
+            # Fetch applied job IDs for the user *before* cache check
+            applied_ids: Optional[List[int]] = None
+            if "user_id" in resume:
+                user_id = resume["user_id"]
+                logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
+                try:
+                    # Ensure applied_jobs_service is awaited if it's async
+                    applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
+                    if applied_ids:
+                         logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs for cache key.")
+                    else:
+                         logger.info(f"PROCESSING: No applied job IDs found for user {user_id}.")
+                except AttributeError:
+                     logger.error("AppliedJobsService does not have 'get_applied_jobs'. Cannot include in cache key.")
+                     applied_ids = None # Ensure it's None if fetch fails
+                except Exception as e:
+                    logger.error(f"Error fetching applied job IDs for cache key: {e}")
+                    applied_ids = None # Proceed without filtering on error
+            else:
+                logger.info("PROCESSING: No user_id in resume, cannot fetch applied jobs for cache key.")
+
             # Check cache if enabled
             if use_cache:
                 logger.info("CACHE CHECK: Checking cache for existing results")
@@ -123,7 +144,8 @@ class JobMatcher:
                     offset=offset,
                     location=location.dict() if location else None,
                     keywords=keywords,
-                    experience=experience
+                    experience=experience,
+                    applied_job_ids=applied_ids # Include applied IDs in cache key
                 )
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
@@ -136,39 +158,8 @@ class JobMatcher:
                         elapsed_time=f"{time() - start_time:.6f}s"
                     )
 
-                    # Filter out jobs that the user has already applied for
-                    if "user_id" in resume:
-                        user_id = resume["user_id"]
-                        applied_jobs = await applied_jobs_service.get_applied_jobs(user_id)
-                        
-                        if applied_jobs:
-                            original_count = len(cached_results.get("jobs", []))
-                            filtered_jobs = [
-                                job for job in cached_results.get("jobs", [])
-                                if job.get("id") not in applied_jobs
-                            ]
-                            cached_results["jobs"] = filtered_jobs
-                            
-                            filtered_count = original_count - len(filtered_jobs)
-                            logger.info(
-                                "Filtered out applied jobs from cache",
-                                original_count=original_count,
-                                filtered_count=filtered_count,
-                                remaining_count=len(filtered_jobs),
-                                user_id=user_id
-                            )
-                            
-                            # Update cache with filtered results
-                            await cache.set(cache_key, cached_results)
-                        else:
-                            logger.info("No applied jobs found, skipping filter")
-                            logger.info(
-                                "No applied jobs found in cache",
-                                user_id=user_id
-                            )
-                    else:
-                        logger.info("No user_id found in resume, skipping applied jobs filter")
-                    logger.info(f"RESULTS: Final job matches count from cache: {len(cached_results.get('jobs', []))}")
+                    # Post-cache filtering is removed. Cache key now includes applied_ids hash.
+                    logger.info(f"RESULTS: Final job matches count from cache (key includes applied_ids): {len(cached_results.get('jobs', []))}")
                     
                     return cached_results
             
@@ -180,28 +171,7 @@ class JobMatcher:
             vector_length = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
             logger.info(f"PROCESSING: Starting vector similarity search with embedding length: {vector_length}")
             
-            # Fetch applied job IDs for the user, if available
-            applied_ids: Optional[List[int]] = None
-            if "user_id" in resume:
-                user_id = resume["user_id"]
-                logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
-                # TODO: Ensure applied_jobs_service has a 'get_applied_job_ids' method returning List[int]
-                # Assuming it exists based on requirements. If not, it needs implementation.
-                try:
-                    applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
-                    if applied_ids:
-                         logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs to filter.")
-                    else:
-                         logger.info(f"PROCESSING: No applied job IDs found for user {user_id}.")
-                except AttributeError:
-                     logger.error("AppliedJobsService does not have 'get_applied_job_ids'. Falling back to no filtering.")
-                     # Handle the case where the method doesn't exist yet
-                     applied_ids = None
-                except Exception as e:
-                    logger.error(f"Error fetching applied job IDs: {e}")
-                    applied_ids = None # Proceed without filtering on error
-            else:
-                logger.info("PROCESSING: No user_id in resume, skipping applied jobs filter.")
+            # Applied IDs are already fetched before the cache check. This block is now redundant.
 
 
             # Use the vector matcher to find matches, passing applied IDs for filtering
@@ -250,12 +220,15 @@ class JobMatcher:
             # Store in cache if enabled
             if use_cache:
                 logger.info("RESULTS: Storing results in cache")
+                # Regenerate key including applied_ids for setting cache
+                # Note: applied_ids was fetched before the initial cache check
                 cache_key = await cache.generate_key(
                     resume_id,
                     offset=offset,
                     location=location.dict() if location else None,
                     keywords=keywords,
-                    experience=experience
+                    experience=experience,
+                    applied_job_ids=applied_ids # Include applied IDs in cache key
                 )
                 await cache.set(cache_key, job_results)
             

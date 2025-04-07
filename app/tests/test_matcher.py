@@ -286,3 +286,135 @@ async def test_process_job_with_cache(
     # Verify that cache functions were called correctly
     mock_generate_key.assert_awaited_once()
     mock_get_cached.assert_awaited_once_with("test_key")
+
+
+
+@pytest.mark.asyncio
+@patch('app.libs.job_matcher.matcher.applied_jobs_service.get_applied_jobs')
+@patch('app.libs.job_matcher.cache.cache.set')
+@patch('app.libs.job_matcher.cache.cache.get')
+@patch('app.libs.job_matcher.cache.cache.generate_key')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+async def test_process_job_cache_handles_different_applied_ids(
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, mock_get_applied_jobs, job_matcher, monkeypatch
+):
+    """Verify cache keys differ and cache hits work correctly with different applied_job_ids."""
+    resume = {
+        "user_id": "user1",
+        "experience": "Python Developer",
+        "vector": [0.1] * 1024,
+        "_id": "resume1"
+    }
+    base_params = {
+        "offset": 0,
+        "limit": 10,
+        "location": None,
+        "keywords": None,
+        "experience": None
+    }
+
+    # Mock results from vector matcher
+    mock_job_matches = [
+        JobMatch(id=f"{i}", title=f"Job {i}", score=0.9, description="Desc", workplace_type="remote", short_description="Short", field="IT", experience="Mid", skills_required=["Python"], country="UK", city="London", company_name="Test Co")
+        for i in range(5)
+    ]
+    mock_get_top_jobs.return_value = mock_job_matches
+
+    # --- First Call (User 1, applied_ids = [1, 2]) ---
+    applied_ids_user1 = [1, 2]
+    cache_key_user1 = "key_user1_applied_1_2"
+    mock_get_applied_jobs.return_value = applied_ids_user1
+    mock_generate_key.return_value = cache_key_user1
+    mock_get_cached.return_value = None # Cache miss
+
+    # Mock DB for total count (needed if cache miss)
+    class MockDBCursor:
+        async def __aenter__(self):
+            return AsyncMock()
+        async def __aexit__(self, *args):
+            pass
+    monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
+    monkeypatch.setattr("app.utils.db_utils.get_filtered_job_count", AsyncMock(return_value=5)) # Corrected path
+
+
+    result1 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+
+    # Assertions for first call
+    mock_get_applied_jobs.assert_awaited_once_with("user1")
+    mock_generate_key.assert_awaited_with(
+        resume["_id"],
+        offset=base_params["offset"],
+        location=base_params["location"],
+        keywords=base_params["keywords"],
+        experience=base_params["experience"],
+        applied_job_ids=applied_ids_user1
+    )
+    mock_get_cached.assert_awaited_once_with(cache_key_user1)
+    mock_get_top_jobs.assert_awaited_once() # Called because of cache miss
+    mock_store_cached.assert_awaited_once_with(cache_key_user1, result1) # Stored with user1's key
+    assert len(result1["jobs"]) == 5
+
+    # --- Reset mocks for second call ---
+    mock_get_applied_jobs.reset_mock()
+    mock_generate_key.reset_mock()
+    mock_get_cached.reset_mock()
+    mock_store_cached.reset_mock()
+    mock_get_top_jobs.reset_mock()
+
+    # --- Second Call (User 2, applied_ids = [3, 4]) ---
+    resume["user_id"] = "user2"
+    resume["_id"] = "resume2" # Different resume ID for clarity, though user_id drives applied jobs
+    applied_ids_user2 = [3, 4]
+    cache_key_user2 = "key_user2_applied_3_4"
+    mock_get_applied_jobs.return_value = applied_ids_user2
+    mock_generate_key.return_value = cache_key_user2
+    # Simulate cache miss for this *different* key
+    mock_get_cached.return_value = None
+
+    result2 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+
+    # Assertions for second call
+    mock_get_applied_jobs.assert_awaited_once_with("user2")
+    mock_generate_key.assert_awaited_with(
+        resume["_id"],
+        offset=base_params["offset"],
+        location=base_params["location"],
+        keywords=base_params["keywords"],
+        experience=base_params["experience"],
+        applied_job_ids=applied_ids_user2
+    )
+    mock_get_cached.assert_awaited_once_with(cache_key_user2)
+    mock_get_top_jobs.assert_awaited_once() # Called again due to cache miss for the *new* key
+    mock_store_cached.assert_awaited_once_with(cache_key_user2, result2)
+    assert len(result2["jobs"]) == 5 # Should get full results as cache was missed
+
+    # --- Third Call (User 1 again, should hit cache) ---
+    resume["user_id"] = "user1"
+    resume["_id"] = "resume1"
+    mock_get_applied_jobs.reset_mock()
+    mock_generate_key.reset_mock()
+    mock_get_cached.reset_mock()
+    mock_store_cached.reset_mock()
+    mock_get_top_jobs.reset_mock()
+
+    mock_get_applied_jobs.return_value = applied_ids_user1
+    mock_generate_key.return_value = cache_key_user1 # Use the first key again
+    # Simulate cache hit for user 1's key
+    mock_get_cached.return_value = result1 # Return the previously stored result
+
+    result3 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+
+    # Assertions for third call (cache hit)
+    mock_get_applied_jobs.assert_awaited_once_with("user1")
+    mock_generate_key.assert_awaited_once_with(
+        resume["_id"],
+        offset=base_params["offset"],
+        location=base_params["location"],
+        keywords=base_params["keywords"],
+        experience=base_params["experience"],
+        applied_job_ids=applied_ids_user1
+    )
+    mock_get_cached.assert_awaited_once_with(cache_key_user1)
+    mock_get_top_jobs.assert_not_awaited() # Should NOT be called due to cache hit
+    mock_store_cached.assert_not_awaited() # Should NOT be called due to cache hit
+    assert result3 == result1 # Should get the exact cached result

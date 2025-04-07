@@ -8,8 +8,9 @@ is unavailable.
 
 import asyncio
 import warnings
+import hashlib # Added for hashing applied job IDs
 from time import time
-from typing import Dict, Any, Optional, Tuple, Union
+from typing import Dict, Any, Optional, Tuple, Union, List # Added List
 from loguru import logger
 
 # Import Redis cache implementation
@@ -124,15 +125,43 @@ class ResultsCache:
             if arg is not None:
                 key_parts.append(str(arg))
         
-        # Add keyword args
-        for k, v in sorted(kwargs.items()):
-            if v is not None:
-                if isinstance(v, list):
-                    v = sorted(v)
-                key_parts.append(f"{k}_{v}")
-        
+        # Add keyword args, handling applied_job_ids specially
+        applied_ids_hash = None
+        processed_kwargs = {}
+        for k, v in kwargs.items():
+            if k == 'applied_job_ids' and v is not None:
+                # Sort, stringify, join, hash
+                sorted_ids = sorted([str(id) for id in v])
+                ids_string = ",".join(sorted_ids)
+                applied_ids_hash = hashlib.sha256(ids_string.encode('utf-8')).hexdigest()
+            elif v is not None:
+                processed_kwargs[k] = v
+
+        for k, v in sorted(processed_kwargs.items()):
+            # Sort lists within other kwargs for consistency
+            if isinstance(v, list):
+                try:
+                    # Attempt to sort - might fail for complex objects
+                    v_sorted = sorted(v)
+                    key_parts.append(f"{k}_{v_sorted}")
+                except TypeError:
+                     # If sorting fails (e.g., list of dicts), use original order string representation
+                     logger.warning(f"Could not sort list for key part '{k}', using original order.")
+                     key_parts.append(f"{k}_{v}")
+            else:
+                 key_parts.append(f"{k}_{v}")
+
+        # Add the hash if it was generated
+        if applied_ids_hash:
+            key_parts.append(f"applied_ids_hash_{applied_ids_hash}")
+
         key = "_".join(str(part) for part in key_parts)
-        logger.trace(f"Generated cache key: {key}")
+        # Limit key length for safety (Redis key limits) - hashing helps a lot here
+        if len(key) > 250:
+             key = hashlib.sha256(key.encode('utf-8')).hexdigest() # Hash the whole key if too long
+             logger.warning(f"Generated cache key exceeded 250 chars, hashed to: {key}")
+        else:
+             logger.trace(f"Generated cache key: {key}")
         return key
 
 
