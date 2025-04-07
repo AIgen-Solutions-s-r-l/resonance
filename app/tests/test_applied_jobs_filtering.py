@@ -103,7 +103,7 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                             # Ensure database connections are cleaned up
                             await close_all_connection_pools()
 
-# Removed test_filter_applied_jobs_from_cache as the filtering logic
-# in the cache hit path of matcher.py was removed. Filtering now happens
-# before the DB query / cache check.
+                        # Removed test_filter_applied_jobs_from_cache as the filtering logic
+                        # in the cache hit path of matcher.py was removed. Filtering now happens
+                        # before the DB query / cache check.
                         await close_all_connection_pools()
