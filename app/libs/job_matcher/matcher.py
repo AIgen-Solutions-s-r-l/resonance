@@ -188,7 +188,7 @@ class JobMatcher:
                 # TODO: Ensure applied_jobs_service has a 'get_applied_job_ids' method returning List[int]
                 # Assuming it exists based on requirements. If not, it needs implementation.
                 try:
-                    applied_ids = await applied_jobs_service.get_applied_job_ids(user_id)
+                    applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
                     if applied_ids:
                          logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs to filter.")
                     else:

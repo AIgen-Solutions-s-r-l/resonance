@@ -13,7 +13,7 @@ from datetime import datetime
 class JobMatch:
     """Data class for job matching results, aligned with JobSchema."""
     
-    id: str
+    id: int
     title: str
     description: Optional[str] = None
     workplace_type: Optional[str] = None
@@ -35,7 +35,7 @@ class JobMatch:
     def to_dict(self) -> dict:
         """Convert JobMatch to dictionary format."""
         return {
-            "id": str(self.id),
+            "id": self.id,
             "title": self.title,
             "description": self.description,
             "workplace_type": self.workplace_type,
