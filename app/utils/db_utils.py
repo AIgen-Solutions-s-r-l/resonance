@@ -142,6 +142,7 @@ async def execute_vector_similarity_query(
     query_params: List[Any],
     limit: int = 25,
     offset: int = 0,
+    applied_job_ids: Optional[List[int]] = None,
 ) -> List[Dict[str, Any]]:
     """
     Execute an optimized vector similarity query.
@@ -155,6 +156,8 @@ async def execute_vector_similarity_query(
         query_params: Query parameters
         limit: Maximum number of results to return
         offset: Number of results to skip
+        applied_job_ids: Optional list of job IDs to exclude
+        offset: Number of results to skip
 
     Returns:
         List of matched job results
@@ -167,10 +170,22 @@ async def execute_vector_similarity_query(
     if where_clauses:
         all_where_clauses.extend(where_clauses)
 
+    # Add applied jobs filter if provided
+    applied_job_ids_tuple = None
+    if applied_job_ids:
+        # Ensure it's not an empty list before adding the clause
+        if applied_job_ids:
+            all_where_clauses.append("j.id NOT IN %s")
+            applied_job_ids_tuple = tuple(applied_job_ids)
+            logger.info(f"Filtering out {len(applied_job_ids)} applied job IDs.")
+        else:
+            logger.info("Applied job IDs list is empty, skipping filter.")
+
+
     # Construct the final WHERE string
     where_sql = ""
     if all_where_clauses:
-        where_sql = "WHERE " + " AND ".join(all_where_clauses) # e.g., "WHERE embedding IS NOT NULL AND co.country_name = %s AND j.experience = %s"
+        where_sql = "WHERE " + " AND ".join(all_where_clauses) # e.g., "WHERE embedding IS NOT NULL AND co.country_name = %s AND j.experience = %s AND j.id NOT IN %s"
 
 
     # Define the query using the constructed where_sql
@@ -244,7 +259,11 @@ async def execute_vector_similarity_query(
     sql_params.append(cv_embedding)
 
     # Add filter params for the WHERE clause
-    sql_params.extend(query_params)    
+    sql_params.extend(query_params)
+
+    # Add applied job IDs tuple if it exists
+    if applied_job_ids_tuple:
+        sql_params.append(applied_job_ids_tuple)
 
     # Add limit and offset
     sql_params.append(limit)

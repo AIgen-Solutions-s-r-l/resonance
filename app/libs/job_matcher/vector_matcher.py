@@ -36,6 +36,7 @@ class VectorMatcher:
         offset: int = 0,
         limit: int = 25,
         experience: Optional[List[str]] = None,
+        applied_job_ids: Optional[List[int]] = None,  # Added parameter
     ) -> List[JobMatch]:
         """
         Get top matching jobs using optimized vector similarity.
@@ -47,6 +48,7 @@ class VectorMatcher:
             offset: Results offset
             limit: Results limit
             experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
+            applied_job_ids: Optional list of job IDs to exclude.
 
         Returns:
             List of JobMatch objects
@@ -163,7 +165,7 @@ class VectorMatcher:
                     )
 
                     result = await self.similarity_searcher._execute_vector_query(
-                        cursor, cv_embedding, where_clauses, query_params, limit, offset
+                        cursor, cv_embedding, where_clauses, query_params, limit, offset, applied_job_ids=applied_job_ids  # Pass parameter
                     )
                     logger.info(
                         f"VECTOR_MATCH: Vector query returned {len(result)} results")
