@@ -118,7 +118,8 @@ class SimilaritySearcher:
         where_clauses: List[str],
         query_params: List[Any],
         limit: int,
-        offset: int
+        offset: int,
+        applied_job_ids: Optional[List[int]] = None, # Added parameter
     ) -> List[JobMatch]:
         """
         Execute vector similarity query.
@@ -130,7 +131,8 @@ class SimilaritySearcher:
             query_params: Query parameters
             limit: Results limit
             offset: Results offset
-            
+            applied_job_ids: Optional list of job IDs to exclude.
+
         Returns:
             List of JobMatch objects
         """
@@ -192,7 +194,8 @@ class SimilaritySearcher:
             where_clauses,
             query_params,
             limit,
-            offset
+            offset,
+            applied_job_ids=applied_job_ids # Pass parameter
         )
         vector_elapsed = time() - vector_start
         

@@ -180,15 +180,40 @@ class JobMatcher:
             vector_length = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
             logger.info(f"PROCESSING: Starting vector similarity search with embedding length: {vector_length}")
             
-            # Use the vector matcher to find matches
-            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity")
+            # Fetch applied job IDs for the user, if available
+            applied_ids: Optional[List[int]] = None
+            if "user_id" in resume:
+                user_id = resume["user_id"]
+                logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
+                # TODO: Ensure applied_jobs_service has a 'get_applied_job_ids' method returning List[int]
+                # Assuming it exists based on requirements. If not, it needs implementation.
+                try:
+                    applied_ids = await applied_jobs_service.get_applied_job_ids(user_id)
+                    if applied_ids:
+                         logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs to filter.")
+                    else:
+                         logger.info(f"PROCESSING: No applied job IDs found for user {user_id}.")
+                except AttributeError:
+                     logger.error("AppliedJobsService does not have 'get_applied_job_ids'. Falling back to no filtering.")
+                     # Handle the case where the method doesn't exist yet
+                     applied_ids = None
+                except Exception as e:
+                    logger.error(f"Error fetching applied job IDs: {e}")
+                    applied_ids = None # Proceed without filtering on error
+            else:
+                logger.info("PROCESSING: No user_id in resume, skipping applied jobs filter.")
+
+
+            # Use the vector matcher to find matches, passing applied IDs for filtering
+            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity with filtering")
             job_matches = await vector_matcher.get_top_jobs_by_vector_similarity(
                 cv_embedding,
                 location=location,
                 keywords=keywords,
                 offset=offset,
                 limit=limit,
-                experience=experience
+                experience=experience,
+                applied_job_ids=applied_ids # Pass the fetched IDs
             )
             
             logger.info(f"RESULTS: Received {len(job_matches)} matches from vector matcher")
@@ -214,30 +239,8 @@ class JobMatcher:
                     logger.info(f"RESULTS: Total job count for pagination: {total_jobs}")
                     job_results["total_count"] = total_jobs
             
-            # Filter out jobs that the user has already applied for
-            if "user_id" in resume:
-                user_id = resume["user_id"]
-                applied_jobs = await applied_jobs_service.get_applied_jobs(user_id)
-                
-                if applied_jobs:
-                    original_count = len(job_results["jobs"])
-                    filtered_jobs = [
-                        job for job in job_results["jobs"]
-                        if job.get("id") not in applied_jobs
-                    ]
-                    job_results["jobs"] = filtered_jobs
-                    
-                    filtered_count = original_count - len(filtered_jobs)
-                    logger.info(
-                        "Filtered out applied jobs from vector results",
-                        original_count=original_count,
-                        filtered_count=filtered_count,
-                        remaining_count=len(filtered_jobs),
-                        user_id=user_id
-                    )
-            else:
-                logger.info("No user_id found in resume, skipping applied jobs filter")
-            logger.info(f"RESULTS: Final job matches count: {len(job_results['jobs'])}")
+            # Post-filtering logic removed as filtering is now done in the DB query
+            logger.info(f"RESULTS: Final job matches count after DB filtering: {len(job_results['jobs'])}")
             
             # Save matches if requested
             if save_to_mongodb:
