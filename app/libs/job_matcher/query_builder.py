@@ -118,8 +118,8 @@ class JobQueryBuilder:
                 radius_meters = float(location.radius_km)
                 use_km_multiplier = True
             else:
-                # Default to 10km if no radius is specified
-                radius_meters = 10.0
+                # Use default radius from settings if no radius is specified
+                radius_meters = float(settings.default_geo_radius_meters / 1000)  # Convert from meters to km
                 use_km_multiplier = True
             
             # Build the geo filter clause

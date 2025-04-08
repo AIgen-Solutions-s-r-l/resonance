@@ -126,6 +126,13 @@ class TestGeoMatching:
         # Verify that the geo filter is not included
         assert len(where_clauses) == 0
         assert len(query_params) == 0
+    def test_default_radius_in_settings(self):
+        """Test that the default radius in settings is 50 km."""
+        from app.core.config import settings
+        
+        # Verify the default radius is 50000 meters (50 km)
+        assert settings.default_geo_radius_meters == 50000
+
 
     def test_radius_precedence(self, query_builder):
         """Test that radius in meters takes precedence over radius_km."""

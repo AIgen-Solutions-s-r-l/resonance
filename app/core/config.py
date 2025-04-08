@@ -117,7 +117,7 @@ class Settings(BaseSettings):
     metrics_retention_days: int = int(os.getenv("METRICS_RETENTION_DAYS", "7"))
     
     # Geographic matching settings
-    default_geo_radius_meters: int = int(os.getenv("DEFAULT_GEO_RADIUS_METERS", "10000"))  # 10 km in meters
+    default_geo_radius_meters: int = int(os.getenv("DEFAULT_GEO_RADIUS_METERS", "50000"))  # 50 km in meters
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
