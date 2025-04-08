@@ -106,36 +106,37 @@ class JobQueryBuilder:
             where_clauses.append("(l.city = %s OR l.city = 'remote')")
             query_params.append(location.city)
         
-        # Geo filter from location parameter
-        if (
-            location.latitude is not None
-            and location.longitude is not None
-            and location.radius_km is not None
-        ):
-            where_clauses.append(
-                """
-                (
-                    l.city = 'remote'
-                    OR ST_DWithin(
-                        ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
-                        ST_MakePoint(%s, %s)::geography,
-                        %s * 1000
+        # Geo filter - check if we have both latitude and longitude
+        if location.latitude is not None and location.longitude is not None:
+            # Determine which radius to use (radius in meters takes precedence over radius_km)
+            if hasattr(location, 'radius') and location.radius is not None:
+                # Use radius in meters directly
+                radius_meters = float(location.radius)
+                use_km_multiplier = False
+            elif location.radius_km is not None:
+                # Use radius in km, will be multiplied by 1000 in the query
+                radius_meters = float(location.radius_km)
+                use_km_multiplier = True
+            else:
+                # Default to 10km if no radius is specified
+                radius_meters = 10.0
+                use_km_multiplier = True
+            
+            # Build the geo filter clause
+            if use_km_multiplier:
+                where_clauses.append(
+                    """
+                    (
+                        l.city = 'remote'
+                        OR ST_DWithin(
+                            ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
+                            ST_MakePoint(%s, %s)::geography,
+                            %s * 1000
+                        )
                     )
+                    """
                 )
-                """
-            )
-            # Convert to float to ensure proper parameter handling
-            query_params.append(float(location.longitude))
-            query_params.append(float(location.latitude))
-            query_params.append(float(location.radius_km))
-        # Legacy geo matching - only when both latitude and longitude are not null
-        elif hasattr(location, 'legacy_latitude') and hasattr(location, 'legacy_longitude'):
-            if location.legacy_latitude is not None and location.legacy_longitude is not None:
-                # Determine radius in meters
-                radius_meters = getattr(location, 'radius', None)
-                if radius_meters is None:
-                    radius_meters = settings.default_geo_radius_meters
-                
+            else:
                 where_clauses.append(
                     """
                     (
@@ -152,10 +153,11 @@ class JobQueryBuilder:
                     )
                     """
                 )
-                # Convert to float to ensure proper parameter handling
-                query_params.append(float(location.legacy_longitude))
-                query_params.append(float(location.legacy_latitude))
-                query_params.append(float(radius_meters))
+            
+            # Convert to float to ensure proper parameter handling
+            query_params.append(float(location.longitude))
+            query_params.append(float(location.latitude))
+            query_params.append(radius_meters)
         
         return where_clauses, query_params
     

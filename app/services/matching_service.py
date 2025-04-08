@@ -59,16 +59,14 @@ async def match_jobs_with_resume(
     try:
         matcher = OptimizedJobMatcher()
         
-        # If location is provided and resume has geolocation data, add it to the location filter
+        # If location is provided, ensure it's properly configured
         if location is None:
             location = LocationFilter()
         
-        # Check if resume has geolocation data from legacy matching
-        if resume and "latitude" in resume and "longitude" in resume:
-            location.legacy_latitude = resume.get("latitude")
-            location.legacy_longitude = resume.get("longitude")
-            
-            # If radius is provided, use it
+        # If frontend provided coordinates and radius, use them for geospatial filtering
+        if location.latitude is not None and location.longitude is not None:
+            # These are already set in the LocationFilter from the API parameters
+            # If radius is provided separately, use it (in meters)
             if radius is not None:
                 location.radius = radius
         

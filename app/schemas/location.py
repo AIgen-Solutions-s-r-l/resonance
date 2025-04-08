@@ -5,11 +5,7 @@ from typing import Optional
 class LocationFilter(BaseModel):
     country: str | None = None
     city: str | None = None
-    latitude: float | None = None
-    longitude: float | None = None
-    radius_km: float = 10.0  # Default to 10 km
-    
-    # Legacy matching fields
-    legacy_latitude: Optional[float] = Field(None, description="Latitude from legacy matching")
-    legacy_longitude: Optional[float] = Field(None, description="Longitude from legacy matching")
-    radius: Optional[int] = Field(None, description="Radius in meters for geographic search")
+    latitude: float | None = Field(None, description="Latitude for geographic filtering of job listings")
+    longitude: float | None = Field(None, description="Longitude for geographic filtering of job listings")
+    radius_km: float = Field(10.0, description="Radius in kilometers for geographic filtering")
+    radius: Optional[int] = Field(None, description="Radius in meters for geographic search (takes precedence over radius_km)")
