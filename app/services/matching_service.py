@@ -54,10 +54,24 @@ async def match_jobs_with_resume(
     offset: int = 0,
     experience: Optional[List[str]] = None,
     include_total_count: bool = False,
+    radius: Optional[int] = None,
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
-
+        
+        # If location is provided and resume has geolocation data, add it to the location filter
+        if location is None:
+            location = LocationFilter()
+        
+        # Check if resume has geolocation data from legacy matching
+        if resume and "latitude" in resume and "longitude" in resume:
+            location.legacy_latitude = resume.get("latitude")
+            location.legacy_longitude = resume.get("longitude")
+            
+            # If radius is provided, use it
+            if radius is not None:
+                location.radius = radius
+        
         matched_jobs = await matcher.process_job(
             resume,
             location=location,

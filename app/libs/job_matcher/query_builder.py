@@ -6,6 +6,7 @@ This module handles SQL query construction for job matching operations.
 
 from typing import List, Optional, Tuple, Dict, Any
 from loguru import logger
+from app.core.config import settings
 from time import time
 
 from app.schemas.location import LocationFilter
@@ -105,7 +106,7 @@ class JobQueryBuilder:
             where_clauses.append("(l.city = %s OR l.city = 'remote')")
             query_params.append(location.city)
         
-        # Geo filter
+        # Geo filter from location parameter
         if (
             location.latitude is not None
             and location.longitude is not None
@@ -127,6 +128,34 @@ class JobQueryBuilder:
             query_params.append(float(location.longitude))
             query_params.append(float(location.latitude))
             query_params.append(float(location.radius_km))
+        # Legacy geo matching - only when both latitude and longitude are not null
+        elif hasattr(location, 'legacy_latitude') and hasattr(location, 'legacy_longitude'):
+            if location.legacy_latitude is not None and location.legacy_longitude is not None:
+                # Determine radius in meters
+                radius_meters = getattr(location, 'radius', None)
+                if radius_meters is None:
+                    radius_meters = settings.default_geo_radius_meters
+                
+                where_clauses.append(
+                    """
+                    (
+                        l.city = 'remote'
+                        OR (
+                            l.latitude IS NOT NULL
+                            AND l.longitude IS NOT NULL
+                            AND ST_DWithin(
+                                ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
+                                ST_MakePoint(%s, %s)::geography,
+                                %s
+                            )
+                        )
+                    )
+                    """
+                )
+                # Convert to float to ensure proper parameter handling
+                query_params.append(float(location.legacy_longitude))
+                query_params.append(float(location.legacy_latitude))
+                query_params.append(float(radius_meters))
         
         return where_clauses, query_params
     
