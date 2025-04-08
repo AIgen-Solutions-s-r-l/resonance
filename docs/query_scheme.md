@@ -5,18 +5,18 @@ This diagram illustrates the flow of SQL queries in the matching service project
 ```mermaid
 flowchart TD
     %% Main components
-    API[API Endpoints\napp/routers/jobs_matched_router_async.py]
-    MS[Matching Service\napp/services/matching_service.py]
-    OJM[OptimizedJobMatcher\napp/libs/job_matcher/__init__.py]
-    JM[JobMatcher\napp/libs/job_matcher/matcher.py]
-    QB[Query Builder\napp/libs/job_matcher/query_builder.py]
-    VM[Vector Matcher\napp/libs/job_matcher/vector_matcher.py]
-    Cache[Cache\napp/libs/job_matcher/cache.py]
-    Persist[Persistence\napp/libs/job_matcher/persistence.py]
-    SS[Similarity Searcher\napp/libs/job_matcher/similarity_searcher.py]
-    JV[Job Validator\napp/libs/job_matcher/job_validator.py]
-    DBUtils[DB Utils\napp/utils/db_utils.py]
-    DB[(PostgreSQL\nDatabase)]
+    API[API Endpoints<br/>app/routers/jobs_matched_router_async.py]
+    MS[Matching Service<br/>app/services/matching_service.py]
+    OJM[OptimizedJobMatcher<br/>app/libs/job_matcher/__init__.py]
+    JM[JobMatcher<br/>app/libs/job_matcher/matcher.py]
+    QB[Query Builder<br/>app/libs/job_matcher/query_builder.py]
+    VM[Vector Matcher<br/>app/libs/job_matcher/vector_matcher.py]
+    Cache[Cache<br/>app/libs/job_matcher/cache.py]
+    Persist[Persistence<br/>app/libs/job_matcher/persistence.py]
+    SS[Similarity Searcher<br/>app/libs/job_matcher/similarity_searcher.py]
+    JV[Job Validator<br/>app/libs/job_matcher/job_validator.py]
+    DBUtils[DB Utils<br/>app/utils/db_utils.py]
+    DB[(PostgreSQL<br/>Database)]
 
     %% Connections
     API -->|"Request for job matching"| MS
@@ -38,25 +38,25 @@ flowchart TD
     SS -->|"Validates job matches"| JV
     
     %% DB Utils connections
-    DBUtils -->|"1. Connection pooling\n2. SQL execution\n3. Vector similarity ops"| DB
+    DBUtils -->|"1. Connection pooling<br/>2. SQL execution<br/>3. Vector similarity ops"| DB
     
     %% SQL Query Flow subgraph with detailed query paths
     subgraph "SQL Query Flow"
         direction TB
-        step1[1. Build filter conditions\n(location, keywords, experience)]
+        step1[1. Build filter conditions<br/>(location, keywords, experience)]
         
         %% Fast Count Query
-        fastCount[Fast Count Query\nget_filtered_job_count(fast=True)\nWITH clause + LIMIT 6]
+        fastCount[Fast Count Query<br/>get_filtered_job_count(fast=True)<br/>WITH clause + LIMIT 6]
         
         %% Decision based on Fast Count
         countDecision{Count ≤ 5?}
         
         %% Query paths
-        fallbackQuery[Fallback Query\n_execute_fallback_query()\nSimpler query without vector ops]
-        vectorQuery[Vector Similarity Query\n_execute_vector_query()\nUses vector similarity with embedding <=> operator]
+        fallbackQuery[Fallback Query<br/>_execute_fallback_query()<br/>Simpler query without vector ops]
+        vectorQuery[Vector Similarity Query<br/>_execute_vector_query()<br/>Uses vector similarity with embedding <=> operator]
         
         %% Full Count Query (when needed for pagination)
-        fullCount[Full Count Query\nget_filtered_job_count(fast=False)\nComplete COUNT(*) without LIMIT]
+        fullCount[Full Count Query<br/>get_filtered_job_count(fast=False)<br/>Complete COUNT(*) without LIMIT]
         
         %% Final steps
         step3[3. Filter out already applied jobs]
