@@ -156,3 +156,32 @@ class TestGeoMatching:
         assert query_params[0] == -74.0060  # longitude
         assert query_params[1] == 40.7128   # latitude
         assert query_params[2] == 5000.0    # radius in meters (as float)
+        
+    def test_geo_coordinates_prioritized_over_city(self, query_builder):
+        """Test that latitude and longitude coordinates are prioritized over city names."""
+        # Create a LocationFilter with both geo parameters and city
+        location = LocationFilter(
+            latitude=40.7128,
+            longitude=-74.0060,
+            radius=5000,  # 5 km in meters
+            city="New York"  # This should be ignored when geo coordinates are provided
+        )
+        
+        # Build the location filters
+        where_clauses, query_params = query_builder._build_location_filters(location)
+        
+        # Verify that the geo filter is included
+        assert len(where_clauses) == 1
+        assert "ST_DWithin" in where_clauses[0]
+        
+        # Verify that the city filter is NOT included
+        assert all("l.city = %s" not in clause for clause in where_clauses)
+        
+        # Verify the parameters - should only include geo parameters, not city
+        assert len(query_params) == 3
+        assert query_params[0] == -74.0060  # longitude
+        assert query_params[1] == 40.7128   # latitude
+        assert query_params[2] == 5000.0    # radius in meters (as float)
+        
+        # Verify that "New York" is not in the parameters
+        assert "New York" not in query_params

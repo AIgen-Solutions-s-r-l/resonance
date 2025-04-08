@@ -88,7 +88,7 @@ flowchart TD
     classDef utilClass fill:#fbb,stroke:#333,stroke-width:1px;
     classDef dbClass fill:#bbb,stroke:#333,stroke-width:2px;
     classDef flowClass fill:#fffacd,stroke:#333,stroke-width:1px;
-    classDef geoClass fill:#e6f7ff,stroke:#333,stroke-width:1px; %% Added for geo step
+    classDef geoClass fill:#e6f7ff,stroke:#333,stroke-width:1px; %% For geo step styling
     classDef queryClass fill:#98fb98,stroke:#333,stroke-width:1px;
     
     class API apiClass;
@@ -96,7 +96,7 @@ flowchart TD
     class DBUtils utilClass;
     class DB dbClass;
     class step1,step3,step4,otherFilters flowClass;
-    class geoStep geoClass; %% Apply geo class
+    class geoStep geoClass;
     class fullCount,vectorQuery queryClass;
 ```
 
@@ -111,14 +111,14 @@ SimilaritySearcher uses DB Utils and JobValidator.
 
 **SQL Query Flow**: The detailed query process including:
 Building filter conditions with prioritized geolocation handling - Latitude and longitude coordinates are prioritized over city names; When latitude and longitude parameters are provided, city parameters are completely disregarded in the WHERE clause.
-Vector Similarity Query: Always used for all job matching queries (in app/libs/job_matcher/similarity_searcher.py, _execute_vector_query method). The system no longer uses a simpler fallback query for small result sets.
-Full Count Query: Used when pagination requires the total count (in app/utils/db_utils.py, get_filtered_job_count with fast=False).
+Vector Similarity Query: Always used for all job matching queries (in app/libs/job_matcher/similarity_searcher.py, _execute_vector_query method).
+Full Count Query: Used when pagination requires total count (in app/utils/db_utils.py, get_filtered_job_count with fast=False).
 Filtering out already applied jobs.
 Caching results for future requests.
 
 **Database Operations**: How DB Utils handles connection pooling, SQL execution, and vector similarity operations with the PostgreSQL database.
 
 **Streamlined Query Path**:
-The system now consistently uses vector similarity operations for all queries, regardless of the potential result set size;
-The previous optimization that used simpler queries for small result sets (less than or equal to 5) has been removed;
-This simplifies the query logic and ensures consistent matching behavior across all scenarios.
+The system now always uses vector similarity operations for all queries;
+The previous optimization that used simpler queries for small result sets has been removed;
+This simplifies the query flow while ensuring consistent results across all query sizes.

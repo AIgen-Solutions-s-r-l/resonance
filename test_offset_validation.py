@@ -1,14 +1,25 @@
 import asyncio
 import sys
+import pytest
 from typing import Dict, Any, Optional, List
 from app.libs.job_matcher.matcher import JobMatcher
 from app.schemas.location import LocationFilter
 from loguru import logger
 
 # Configure logger to output to console
-logger.remove()
-logger.configure(handlers=[{"sink": sys.stdout, "level": "INFO"}])
+try:
+    logger.remove()  # This might fail if logger is mocked
+except AttributeError:
+    # If logger is mocked and doesn't have remove method, skip this step
+    pass
 
+try:
+    logger.configure(handlers=[{"sink": sys.stdout, "level": "INFO"}])
+except AttributeError:
+    # If logger is mocked and doesn't have configure method, skip this step
+    pass
+
+@pytest.mark.asyncio
 async def test_offset_validation():
     """Test the offset validation logic in JobMatcher"""
     print("\n=== Testing JobMatcher Offset Validation ===\n")
@@ -41,10 +52,14 @@ async def test_offset_validation():
                 """Test the offset validation logic"""
                 # Same validation logic as in process_job
                 if offset > 1500:
-                    logger.warning(
-                        "Offset exceeds maximum allowed value (1500), resetting to 0",
-                        original_offset=offset
-                    )
+                    try:
+                        logger.warning(
+                            "Offset exceeds maximum allowed value (1500), resetting to 0",
+                            original_offset=offset
+                        )
+                    except AttributeError:
+                        # If logger is mocked and doesn't have warning method, just print
+                        print(f"WARNING: Offset exceeds maximum allowed value (1500), resetting to 0. Original offset: {offset}")
                     return 0
                 return offset
         

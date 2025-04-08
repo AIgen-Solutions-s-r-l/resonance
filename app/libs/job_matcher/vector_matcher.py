@@ -86,25 +86,15 @@ class VectorMatcher:
                     elapsed_time=f"{count_elapsed:.6f}s"
                 )
 
-                # For very small result sets, use simpler query
-                if row_count <= 5:
+                # Check if we need to use fallback query due to low row count
+                if row_count <= 1:
                     logger.info(
-                        "VECTOR_MATCH: Using fallback strategy due to small result set",
+                        "VECTOR_MATCH: Using fallback query due to low row count",
                         row_count=row_count
                     )
-
-                    logger.info("VECTOR_MATCH: Executing fallback query")
-                    try:
-                        result = await self.similarity_searcher._execute_fallback_query(
-                            cursor, where_clauses, query_params, limit
-                        )
-                        logger.info(
-                            f"VECTOR_MATCH: Fallback query returned {len(result)} results")
-                        return result
-                    except Exception as e:
-                        logger.error(
-                            f"VECTOR_MATCH ERROR: Fallback query failed: {str(e)}")
-                        raise
+                    return await self.similarity_searcher._execute_fallback_query(
+                        cursor, where_clauses, query_params, limit
+                    )
 
                 # Execute optimized vector similarity query
                 logger.info(

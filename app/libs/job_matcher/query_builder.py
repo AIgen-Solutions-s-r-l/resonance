@@ -101,13 +101,16 @@ class JobQueryBuilder:
                 where_clauses.append("(co.country_name = %s)")
                 query_params.append(location.country)
         
-        # City filter
-        if location.city:
+        # Check if we have both latitude and longitude
+        has_geo_coordinates = location.latitude is not None and location.longitude is not None
+        
+        # City filter - only add if geo coordinates are NOT provided
+        if location.city and not has_geo_coordinates:
             where_clauses.append("(l.city = %s OR l.city = 'remote')")
             query_params.append(location.city)
         
-        # Geo filter - check if we have both latitude and longitude
-        if location.latitude is not None and location.longitude is not None:
+        # Geo filter - if we have both latitude and longitude
+        if has_geo_coordinates:
             # Determine which radius to use (radius in meters takes precedence over radius_km)
             if hasattr(location, 'radius') and location.radius is not None:
                 # Use radius in meters directly
