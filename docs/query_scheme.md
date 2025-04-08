@@ -43,20 +43,20 @@ flowchart TD
     %% SQL Query Flow subgraph with detailed query paths
     subgraph "SQL Query Flow"
         direction TB
-        step1[1. Build filter conditions<br/>(location, keywords, experience)]
+        step1[1. Build filter conditions<br/>location, keywords, experience]
         
         %% Fast Count Query
-        fastCount[Fast Count Query<br/>get_filtered_job_count(fast=True)<br/>WITH clause + LIMIT 6]
+        fastCount[Fast Count Query<br/>get_filtered_job_count with fast=True<br/>WITH clause + LIMIT 6]
         
         %% Decision based on Fast Count
         countDecision{Count ≤ 5?}
         
         %% Query paths
-        fallbackQuery[Fallback Query<br/>_execute_fallback_query()<br/>Simpler query without vector ops]
-        vectorQuery[Vector Similarity Query<br/>_execute_vector_query()<br/>Uses vector similarity with embedding <=> operator]
+        fallbackQuery[Fallback Query<br/>_execute_fallback_query<br/>Simpler query without vector ops]
+        vectorQuery[Vector Similarity Query<br/>_execute_vector_query<br/>Uses vector similarity with embedding]
         
         %% Full Count Query (when needed for pagination)
-        fullCount[Full Count Query<br/>get_filtered_job_count(fast=False)<br/>Complete COUNT(*) without LIMIT]
+        fullCount[Full Count Query<br/>get_filtered_job_count with fast=False<br/>Complete COUNT without LIMIT]
         
         %% Final steps
         step3[3. Filter out already applied jobs]
