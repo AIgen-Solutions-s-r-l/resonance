@@ -131,6 +131,7 @@ class TaskManager:
         keywords: Optional[List[str]] = None,
         offset: int = 0,
         experience: Optional[List[str]] = None,
+        radius: Optional[int] = None,
     ) -> None:
         """
         Process a job matching task asynchronously.
@@ -156,7 +157,8 @@ class TaskManager:
                 keywords=keywords,
                 offset=offset,
                 experience=experience,
-                include_total_count=True
+                include_total_count=True,
+                radius=radius
             )
             
             # Update task with results
@@ -193,6 +195,7 @@ class TaskManager:
         keywords: Optional[List[str]] = None,
         offset: int = 0,
         experience: Optional[List[str]] = None,
+        radius: Optional[int] = None,
     ) -> None:
         """
         Process a job matching task asynchronously with timing metrics.
@@ -205,7 +208,7 @@ class TaskManager:
             offset: Optional results offset
             experience: Optional experience level filters
         """
-        await cls.process_task(task_id, resume, location, keywords, offset, experience)
+        await cls.process_task(task_id, resume, location, keywords, offset, experience, radius)
     
     @classmethod
     async def cleanup_expired_tasks(cls) -> None:

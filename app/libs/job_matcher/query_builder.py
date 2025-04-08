@@ -6,6 +6,7 @@ This module handles SQL query construction for job matching operations.
 
 from typing import List, Optional, Tuple, Dict, Any
 from loguru import logger
+from app.core.config import settings
 from time import time
 
 from app.schemas.location import LocationFilter
@@ -105,28 +106,58 @@ class JobQueryBuilder:
             where_clauses.append("(l.city = %s OR l.city = 'remote')")
             query_params.append(location.city)
         
-        # Geo filter
-        if (
-            location.latitude is not None
-            and location.longitude is not None
-            and location.radius_km is not None
-        ):
-            where_clauses.append(
-                """
-                (
-                    l.city = 'remote'
-                    OR ST_DWithin(
-                        ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
-                        ST_MakePoint(%s, %s)::geography,
-                        %s * 1000
+        # Geo filter - check if we have both latitude and longitude
+        if location.latitude is not None and location.longitude is not None:
+            # Determine which radius to use (radius in meters takes precedence over radius_km)
+            if hasattr(location, 'radius') and location.radius is not None:
+                # Use radius in meters directly
+                radius_meters = float(location.radius)
+                use_km_multiplier = False
+            elif location.radius_km is not None:
+                # Use radius in km, will be multiplied by 1000 in the query
+                radius_meters = float(location.radius_km)
+                use_km_multiplier = True
+            else:
+                # Use default radius from settings if no radius is specified
+                radius_meters = float(settings.default_geo_radius_meters / 1000)  # Convert from meters to km
+                use_km_multiplier = True
+            
+            # Build the geo filter clause
+            if use_km_multiplier:
+                where_clauses.append(
+                    """
+                    (
+                        l.city = 'remote'
+                        OR ST_DWithin(
+                            ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
+                            ST_MakePoint(%s, %s)::geography,
+                            %s * 1000
+                        )
                     )
+                    """
                 )
-                """
-            )
+            else:
+                where_clauses.append(
+                    """
+                    (
+                        l.city = 'remote'
+                        OR (
+                            l.latitude IS NOT NULL
+                            AND l.longitude IS NOT NULL
+                            AND ST_DWithin(
+                                ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
+                                ST_MakePoint(%s, %s)::geography,
+                                %s
+                            )
+                        )
+                    )
+                    """
+                )
+            
             # Convert to float to ensure proper parameter handling
             query_params.append(float(location.longitude))
             query_params.append(float(location.latitude))
-            query_params.append(float(location.radius_km))
+            query_params.append(radius_meters)
         
         return where_clauses, query_params
     

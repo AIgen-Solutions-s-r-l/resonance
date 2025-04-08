@@ -57,7 +57,10 @@ async def start_job_matching(
         None, description="Filter jobs by longitude (soft filter)"
     ),
     radius_km: Optional[float] = Query(
-        None, description="Filter jobs within the radius"
+        None, description="Filter jobs within the radius in kilometers"
+    ),
+    radius: Optional[int] = Query(
+        None, description="Filter jobs within the radius in meters (for geographic matching)"
     ),
     keywords: Optional[List[str]] = Query(
         None,
@@ -131,6 +134,7 @@ async def start_job_matching(
             keywords,
             offset if offset is not None else 0,
             experience,
+            radius,
         )
         
         # Create response
@@ -295,7 +299,10 @@ async def get_matched_jobs_legacy(
         None, description="Filter jobs by longitude (soft filter)"
     ),
     radius_km: Optional[float] = Query(
-        None, description="Filter jobs within the radius"
+        None, description="Filter jobs within the radius in kilometers"
+    ),
+    radius: Optional[int] = Query(
+        None, description="Filter jobs within the radius in meters (for geographic matching)"
     ),
     keywords: Optional[List[str]] = Query(
         None,
@@ -345,6 +352,7 @@ async def get_matched_jobs_legacy(
             offset=offset if offset is not None else 0,
             experience=experience,
             include_total_count=True,  # Request total count for pagination
+            radius=radius,
         )
 
         if not isinstance(matched_jobs, dict):
