@@ -125,8 +125,9 @@ class ResultsCache:
             if arg is not None:
                 key_parts.append(str(arg))
         
-        # Add keyword args, handling applied_job_ids specially
+        # Add keyword args, handling applied_job_ids and cooled_job_ids specially
         applied_ids_hash = None
+        cooled_ids_hash = None
         processed_kwargs = {}
         for k, v in kwargs.items():
             if k == 'applied_job_ids' and v is not None:
@@ -134,6 +135,11 @@ class ResultsCache:
                 sorted_ids = sorted([str(id) for id in v])
                 ids_string = ",".join(sorted_ids)
                 applied_ids_hash = hashlib.sha256(ids_string.encode('utf-8')).hexdigest()
+            elif k == 'cooled_job_ids' and v is not None:
+                # Sort, stringify, join, hash
+                sorted_ids = sorted([str(id) for id in v])
+                ids_string = ",".join(sorted_ids)
+                cooled_ids_hash = hashlib.sha256(ids_string.encode('utf-8')).hexdigest()
             elif v is not None:
                 processed_kwargs[k] = v
 
@@ -151,9 +157,12 @@ class ResultsCache:
             else:
                  key_parts.append(f"{k}_{v}")
 
-        # Add the hash if it was generated
+        # Add the hashes if they were generated
         if applied_ids_hash:
             key_parts.append(f"applied_ids_hash_{applied_ids_hash}")
+        
+        if cooled_ids_hash:
+            key_parts.append(f"cooled_ids_hash_{cooled_ids_hash}")
 
         key = "_".join(str(part) for part in key_parts)
         # Limit key length for safety (Redis key limits) - hashing helps a lot here

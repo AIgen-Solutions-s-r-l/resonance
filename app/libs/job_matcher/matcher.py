@@ -18,6 +18,7 @@ from app.libs.job_matcher.persistence import persistence
 from app.libs.job_matcher.vector_matcher import vector_matcher
 from app.libs.job_matcher.query_builder import query_builder
 from app.services.applied_jobs_service import applied_jobs_service
+from app.services.cooled_jobs_service import cooled_jobs_service
 
 
 class JobMatcher:
@@ -116,7 +117,7 @@ class JobMatcher:
             logger.info(f"RESUME CHECK: Resume keys: {list(resume.keys())}")
             
             # Fetch applied job IDs for the user *before* cache check
-            applied_ids: Optional[List[int]] = None
+            applied_ids: Optional[List[str]] = None
             if "user_id" in resume:
                 user_id = resume["user_id"]
                 logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
@@ -135,6 +136,22 @@ class JobMatcher:
                     applied_ids = None # Proceed without filtering on error
             else:
                 logger.info("PROCESSING: No user_id in resume, cannot fetch applied jobs for cache key.")
+                
+            # Fetch cooled job IDs *before* cache check
+            cooled_ids: Optional[List[str]] = None
+            try:
+                logger.info("PROCESSING: Fetching cooled job IDs")
+                cooled_ids = await cooled_jobs_service.get_cooled_jobs()
+                if cooled_ids:
+                    logger.info(f"PROCESSING: Found {len(cooled_ids)} cooled job IDs for cache key.")
+                else:
+                    logger.info("PROCESSING: No cooled job IDs found.")
+            except AttributeError:
+                logger.error("CooledJobsService does not have 'get_cooled_jobs'. Cannot include in cache key.")
+                cooled_ids = None # Ensure it's None if fetch fails
+            except Exception as e:
+                logger.error(f"Error fetching cooled job IDs for cache key: {e}")
+                cooled_ids = None # Proceed without filtering on error
 
             # Check cache if enabled
             if use_cache:
@@ -145,7 +162,8 @@ class JobMatcher:
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
-                    applied_job_ids=applied_ids # Include applied IDs in cache key
+                    applied_job_ids=applied_ids, # Include applied IDs in cache key
+                    cooled_job_ids=cooled_ids # Include cooled IDs in cache key
                 )
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
@@ -171,10 +189,21 @@ class JobMatcher:
             vector_length = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
             logger.info(f"PROCESSING: Starting vector similarity search with embedding length: {vector_length}")
             
-            # Applied IDs are already fetched before the cache check. This block is now redundant.
+            # Applied IDs and cooled IDs are already fetched before the cache check.
+            
+            # Combine applied and cooled job IDs for filtering
+            filtered_job_ids = []
+            if applied_ids:
+                filtered_job_ids.extend(applied_ids)
+            if cooled_ids:
+                filtered_job_ids.extend(cooled_ids)
+                
+            if filtered_job_ids:
+                logger.info(f"PROCESSING: Combined {len(filtered_job_ids)} job IDs for filtering (applied + cooled)")
+            else:
+                logger.info("PROCESSING: No job IDs to filter (neither applied nor cooled)")
 
-
-            # Use the vector matcher to find matches, passing applied IDs for filtering
+            # Use the vector matcher to find matches, passing combined IDs for filtering
             logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity with filtering")
             job_matches = await vector_matcher.get_top_jobs_by_vector_similarity(
                 cv_embedding,
@@ -183,7 +212,7 @@ class JobMatcher:
                 offset=offset,
                 limit=limit,
                 experience=experience,
-                applied_job_ids=applied_ids # Pass the fetched IDs
+                applied_job_ids=filtered_job_ids # Pass the combined IDs
             )
             
             logger.info(f"RESULTS: Received {len(job_matches)} matches from vector matcher")
@@ -228,7 +257,8 @@ class JobMatcher:
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
-                    applied_job_ids=applied_ids # Include applied IDs in cache key
+                    applied_job_ids=applied_ids, # Include applied IDs in cache key
+                    cooled_job_ids=cooled_ids # Include cooled IDs in cache key
                 )
                 await cache.set(cache_key, job_results)
             
