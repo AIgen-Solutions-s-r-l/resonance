@@ -2,6 +2,8 @@
 
 This document details the edge cases encountered in the job matching system and how they are handled to ensure robustness and reliability.
 
+> **Note:** This document has been updated to include edge cases related to the new cooled jobs filtering feature. For more information on this feature, see [Cooled Jobs Filtering](./cooled_jobs_filtering.md).
+
 ## Resume Vector Validation
 
 ### Empty or Missing Vector
@@ -224,6 +226,29 @@ except Exception as e:
 
 **Rationale**: Persistence errors are logged but don't cause the entire operation to fail, as persistence is often a non-critical operation.
 
+### Applied and Cooled Jobs Retrieval Failures
+
+**Edge Case**: Failures when retrieving applied or cooled job IDs from MongoDB.
+
+**Handling**:
+```python
+# For applied jobs
+try:
+    applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
+except Exception as e:
+    logger.error(f"Error fetching applied job IDs: {e}")
+    applied_ids = None # Proceed without filtering on error
+
+# For cooled jobs
+try:
+    cooled_ids = await cooled_jobs_service.get_cooled_jobs()
+except Exception as e:
+    logger.error(f"Error fetching cooled job IDs: {e}")
+    cooled_ids = None # Proceed without filtering on error
+```
+
+**Rationale**: Failures in retrieving filtering data should not prevent the core job matching functionality from working. The system gracefully degrades by proceeding without filtering when necessary.
+
 ### File System Errors
 
 **Edge Case**: Failures when saving results to the file system.
@@ -284,6 +309,7 @@ The system implements graceful degradation strategies:
 2. **Caching for Resilience**: Serves cached results when database operations fail
 3. **Partial Results**: Returns partial results when some but not all operations succeed
 4. **Default Values**: Uses sensible defaults when specific data is missing
+5. **Filtering Bypass**: Continues without filtering when applied or cooled job IDs cannot be retrieved
 
 ### Comprehensive Logging
 

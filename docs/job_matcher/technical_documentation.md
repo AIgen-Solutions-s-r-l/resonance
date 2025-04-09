@@ -37,6 +37,8 @@ graph TD
     C --> E[SimilaritySearcher]
     E --> F[JobValidator]
     A --> G[Persistence]
+    A --> H[AppliedJobsService]
+    A --> I[CooledJobsService]
     
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style B fill:#bbf,stroke:#333,stroke-width:2px
@@ -45,6 +47,8 @@ graph TD
     style E fill:#bbf,stroke:#333,stroke-width:2px
     style F fill:#bbf,stroke:#333,stroke-width:2px
     style G fill:#bbf,stroke:#333,stroke-width:2px
+    style H fill:#bbf,stroke:#333,stroke-width:2px
+    style I fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 #### Component Descriptions
@@ -53,6 +57,7 @@ graph TD
    - Primary entry point for job matching operations
    - Orchestrates the entire matching process
    - Handles caching and result persistence
+   - Coordinates filtering of applied and cooled jobs
 
 2. **Cache (cache.py)**
    - Provides caching functionality for job matching results
@@ -83,6 +88,16 @@ graph TD
    - Handles saving results to various storage systems
    - Supports JSON file and MongoDB persistence
    - Provides error handling and logging
+
+8. **AppliedJobsService (applied_jobs_service.py)**
+   - Retrieves lists of job IDs a user has already applied for
+   - Interacts with the MongoDB `already_applied_jobs` collection
+   - Provides filtering data for job matching
+
+9. **CooledJobsService (cooled_jobs_service.py)**
+   - Retrieves lists of job IDs that are in the cooling period
+   - Interacts with the MongoDB `cooled_jobs` collection
+   - Provides filtering data for job matching
 
 ## Algorithmic Approach
 
@@ -178,6 +193,8 @@ The following diagram illustrates the data flow through the job matching system:
 sequenceDiagram
     participant Client
     participant JobMatcher
+    participant AppliedJobsService
+    participant CooledJobsService
     participant Cache
     participant VectorMatcher
     participant QueryBuilder
@@ -187,7 +204,16 @@ sequenceDiagram
     participant Persistence
     
     Client->>JobMatcher: process_job(resume, location, keywords)
-    JobMatcher->>Cache: check cache
+    
+    alt User ID Present
+        JobMatcher->>AppliedJobsService: get_applied_jobs(user_id)
+        AppliedJobsService-->>JobMatcher: applied_job_ids
+    end
+    
+    JobMatcher->>CooledJobsService: get_cooled_jobs()
+    CooledJobsService-->>JobMatcher: cooled_job_ids
+    
+    JobMatcher->>Cache: check cache (with applied_ids and cooled_ids in key)
     
     alt Cache Hit
         Cache-->>JobMatcher: return cached results
@@ -213,7 +239,7 @@ sequenceDiagram
         SimilaritySearcher-->>VectorMatcher: job matches
         VectorMatcher-->>JobMatcher: job matches
         
-        JobMatcher->>Cache: store results
+        JobMatcher->>Cache: store results (with applied_ids and cooled_ids in key)
         
         alt Save to MongoDB
             JobMatcher->>Persistence: save_matches
@@ -255,6 +281,18 @@ The system implements retry logic for database operations to handle transient co
 ### Invalid Job Data
 
 The JobValidator component ensures that only valid job data is processed and returned, filtering out incomplete or malformed records.
+
+### Applied and Cooled Jobs Retrieval Failures
+
+If there are errors retrieving applied or cooled job IDs, the system continues without filtering:
+
+```python
+try:
+    cooled_ids = await cooled_jobs_service.get_cooled_jobs()
+except Exception as e:
+    logger.error(f"Error fetching cooled job IDs: {e}")
+    cooled_ids = None # Proceed without filtering on error
+```
 
 ### Cache Management
 
@@ -334,8 +372,10 @@ async def process_job(
     save_to_mongodb: bool = False,
     offset: int = 0,
     use_cache: bool = True,
-    limit: int = 5
-) -> Dict[str, List[Dict[str, Any]]]
+    limit: int = 25,
+    experience: Optional[List[str]] = None,
+    include_total_count: bool = True
+) -> Dict[str, Any]
 ```
 
 Primary entry point for job matching operations.
@@ -349,7 +389,9 @@ async def get_top_jobs_by_vector_similarity(
     location: Optional[LocationFilter] = None,
     keywords: Optional[List[str]] = None,
     offset: int = 0,
-    limit: int = 5,
+    limit: int = 25,
+    experience: Optional[List[str]] = None,
+    applied_job_ids: Optional[List[str]] = None
 ) -> List[JobMatch]
 ```
 
@@ -406,10 +448,26 @@ Provides caching functionality for job matching results.
 ```python
 async def save_matches(
     self,
-    job_results: Dict[str, Any], 
-    resume_id: str, 
+    job_results: Dict[str, Any],
+    resume_id: str,
     save_to_mongodb: bool = False
 ) -> None
 ```
 
 Handles saving job matches to various storage systems.
+
+### AppliedJobsService
+
+```python
+async def get_applied_jobs(user_id: str) -> List[str]
+```
+
+Retrieves list of job IDs that a user has already applied for.
+
+### CooledJobsService
+
+```python
+async def get_cooled_jobs() -> List[str]
+```
+
+Retrieves list of job IDs that are in the cooling period.

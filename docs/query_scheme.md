@@ -54,7 +54,7 @@ flowchart TD
         vectorQuery[Vector Similarity Query<br/>_execute_vector_query<br/>Always uses vector similarity with embedding]
         
         %% Final steps
-        step3[Step 3: Filter out already applied jobs]
+        step3[Step 3: Filter out already applied and cooled jobs]
         step4[Step 4: Cache results for future requests]
         
         %% Flow connections
@@ -113,7 +113,7 @@ SimilaritySearcher uses DB Utils and JobValidator.
 Building filter conditions with prioritized geolocation handling - Latitude and longitude coordinates are prioritized over city names; When latitude and longitude parameters are provided, city parameters are completely disregarded in the WHERE clause.
 Vector Similarity Query: Always used for all job matching queries (in app/libs/job_matcher/similarity_searcher.py, _execute_vector_query method). The system no longer uses a simpler fallback query for small result sets.
 Full Count Query: Used when pagination requires the total count (in app/utils/db_utils.py, get_filtered_job_count with fast=False).
-Filtering out already applied jobs.
+Filtering out already applied jobs and jobs in cooling period.
 Caching results for future requests.
 
 **Database Operations**: How DB Utils handles connection pooling, SQL execution, and vector similarity operations with the PostgreSQL database.

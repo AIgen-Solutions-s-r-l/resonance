@@ -4,6 +4,8 @@
 
 This feature enhances the job recommendation system by filtering out jobs that a user has already applied for from their recommendations. This improves the user experience by ensuring they don't see the same jobs repeatedly after applying.
 
+> **Note:** For information on the related "Cooled Jobs Filtering" feature, which filters out jobs in a cooling period, see [Cooled Jobs Filtering](./cooled_jobs_filtering.md).
+
 ## Implementation Details
 
 ### Architecture
@@ -88,3 +90,4 @@ Potential future enhancements could include:
 1. Add metrics to track how many jobs are being filtered out
 2. Implement a configurable "time window" for filtering (e.g., don't show jobs applied for in the last 30 days)
 3. Add an option for users to reset their applied jobs filter
+4. Create a comprehensive `JobFilteringService` that handles all types of job filtering (applied, cooled, etc.)
