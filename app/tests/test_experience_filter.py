@@ -21,6 +21,7 @@ def job_matcher():
 
 
 @pytest.mark.asyncio
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
 @patch('app.libs.job_matcher.vector_matcher.query_builder._build_experience_filters')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
@@ -28,7 +29,7 @@ def job_matcher():
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_process_job_with_experience_filter(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
-    mock_build_experience_filters, job_matcher, monkeypatch
+    mock_build_experience_filters, mock_get_cooled_jobs, job_matcher, monkeypatch
 ):
     """Test that process_job correctly applies experience filtering."""
     # Set up test data
@@ -44,6 +45,7 @@ async def test_process_job_with_experience_filter(
     mock_build_experience_filters.return_value = (["(j.experience = %s OR j.experience = %s)"], ["Mid-level", "Executive-level"])
     mock_generate_key.return_value = "test_key_with_experience"
     mock_get_cached.return_value = None  # No cache hit
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
     mock_get_top_jobs.return_value = [
         JobMatch(
             id="1",
@@ -91,7 +93,8 @@ async def test_process_job_with_experience_filter(
             location=None,
             keywords=None,
             experience=experience,
-            applied_job_ids=[]  # Added expected argument
+            applied_job_ids=[],  # Added expected argument
+            cooled_job_ids=[]  # Added expected argument for cooled jobs
         )
     finally:
         # Ensure database connections are cleaned up
@@ -218,12 +221,14 @@ async def test_match_jobs_with_resume_integration(
 
 
 @pytest.mark.asyncio
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_experience_filter_with_cache(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher, monkeypatch
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
+    mock_get_cooled_jobs, job_matcher, monkeypatch
 ):
     """Test that different experience filters use different cache keys."""
     # Set up test data
@@ -235,10 +240,11 @@ async def test_experience_filter_with_cache(
     
     experience_1 = ["Mid-level"]
     experience_2 = ["Entry-level"]
-    
     # Configure mocks for experience filtering
     mock_generate_key.return_value = "key_with_mid"  # First key
     mock_get_cached.return_value = None  # No cache hit
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
+    
     
     job_match = JobMatch(
         id="1",
@@ -278,7 +284,8 @@ async def test_experience_filter_with_cache(
             location=None,
             keywords=None,
             experience=experience_1,
-            applied_job_ids=[]  # Added expected argument
+            applied_job_ids=[],  # Added expected argument
+            cooled_job_ids=[]  # Added expected argument for cooled jobs
         )
         
         # Store what would be cached for first call
@@ -311,7 +318,8 @@ async def test_experience_filter_with_cache(
         location=None,
         keywords=None,
         experience=experience_2,
-        applied_job_ids=[]  # Added expected argument
+        applied_job_ids=[],  # Added expected argument
+        cooled_job_ids=[]  # Added expected argument for cooled jobs
     )
     
     # Verify that the experience parameter affects the cache key
@@ -319,12 +327,14 @@ async def test_experience_filter_with_cache(
 
 
 @pytest.mark.asyncio
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_experience_filter_with_cache_hit(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
+    mock_get_cooled_jobs, job_matcher
 ):
     """Test that cached results are correctly retrieved with experience filter."""
     # Set up test data
@@ -338,6 +348,7 @@ async def test_experience_filter_with_cache_hit(
     
     # Mock cache key generation
     mock_generate_key.return_value = "key_with_mid_experience"
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
     
     # Create cached result that should be returned
     cached_result = {
@@ -372,7 +383,8 @@ async def test_experience_filter_with_cache_hit(
         location=None,
         keywords=None,
         experience=experience,
-        applied_job_ids=[]  # Added expected argument
+        applied_job_ids=[],  # Added expected argument
+        cooled_job_ids=[]  # Added expected argument for cooled jobs
     )
     
     # Verify cached result was returned

@@ -290,13 +290,15 @@ async def test_process_job_with_cache(
 
 
 @pytest.mark.asyncio
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
 @patch('app.libs.job_matcher.matcher.applied_jobs_service.get_applied_jobs')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
 async def test_process_job_cache_handles_different_applied_ids(
-    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, mock_get_applied_jobs, job_matcher, monkeypatch
+    mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
+    mock_get_applied_jobs, mock_get_cooled_jobs, job_matcher, monkeypatch
 ):
     """Verify cache keys differ and cache hits work correctly with different applied_job_ids."""
     resume = {
@@ -324,6 +326,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     applied_ids_user1 = [1, 2]
     cache_key_user1 = "key_user1_applied_1_2"
     mock_get_applied_jobs.return_value = applied_ids_user1
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
     mock_generate_key.return_value = cache_key_user1
     mock_get_cached.return_value = None # Cache miss
 
@@ -347,7 +350,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         location=base_params["location"],
         keywords=base_params["keywords"],
         experience=base_params["experience"],
-        applied_job_ids=applied_ids_user1
+        applied_job_ids=applied_ids_user1,
+        cooled_job_ids=[]  # Added expected argument for cooled jobs
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user1)
     mock_get_top_jobs.assert_awaited_once() # Called because of cache miss
@@ -367,6 +371,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     applied_ids_user2 = [3, 4]
     cache_key_user2 = "key_user2_applied_3_4"
     mock_get_applied_jobs.return_value = applied_ids_user2
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
     mock_generate_key.return_value = cache_key_user2
     # Simulate cache miss for this *different* key
     mock_get_cached.return_value = None
@@ -381,7 +386,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         location=base_params["location"],
         keywords=base_params["keywords"],
         experience=base_params["experience"],
-        applied_job_ids=applied_ids_user2
+        applied_job_ids=applied_ids_user2,
+        cooled_job_ids=[]  # Added expected argument for cooled jobs
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user2)
     mock_get_top_jobs.assert_awaited_once() # Called again due to cache miss for the *new* key
@@ -398,6 +404,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     mock_get_top_jobs.reset_mock()
 
     mock_get_applied_jobs.return_value = applied_ids_user1
+    mock_get_cooled_jobs.return_value = []  # No cooled jobs
     mock_generate_key.return_value = cache_key_user1 # Use the first key again
     # Simulate cache hit for user 1's key
     mock_get_cached.return_value = result1 # Return the previously stored result
@@ -412,7 +419,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         location=base_params["location"],
         keywords=base_params["keywords"],
         experience=base_params["experience"],
-        applied_job_ids=applied_ids_user1
+        applied_job_ids=applied_ids_user1,
+        cooled_job_ids=[]  # Added expected argument for cooled jobs
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user1)
     mock_get_top_jobs.assert_not_awaited() # Should NOT be called due to cache hit
