@@ -20,15 +20,17 @@ class JobQueryBuilder:
         self,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
-        experience: Optional[List[str]] = None
+        experience: Optional[List[str]] = None,
+        company: Optional[str] = None
     ) -> Tuple[List[str], List[Any]]:
         """
-        Build SQL filter conditions based on location, keywords, and experience.
+        Build SQL filter conditions based on location, keywords, experience, and company.
         
         Args:
-            location: Optional location filter
-            keywords: Optional keyword filter
-            experience: Optional experience level filter. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level
+            location: Optional location filter.
+            keywords: Optional keyword filter.
+            experience: Optional experience level filter. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level.
+            company: Optional company name filter.
             
         Returns:
             Tuple of (where clauses list, query parameters list)
@@ -55,7 +57,13 @@ class JobQueryBuilder:
                 experience_clauses, experience_params = self._build_experience_filters(experience)
                 where_clauses.extend(experience_clauses)
                 query_params.extend(experience_params)
-            
+        
+            # Add company filter
+            if company:
+                company_clause, company_param = self._build_company_filter(company)
+                where_clauses.extend(company_clause)
+                query_params.extend(company_param)
+                    
             elapsed = time() - start_time
             logger.debug(
                 "Query conditions built",
@@ -221,6 +229,26 @@ class JobQueryBuilder:
         for exp in filtered_experience:
             or_clauses.append("(j.experience = %s)")
             query_params.append(exp)
+
+    def _build_company_filter(
+        self, company: str
+    ) -> Tuple[List[str], List[Any]]:
+        """
+        Build company filter condition.
+        
+        Args:
+            company: Company name to filter by.
+            
+        Returns:
+            Tuple of (where clauses list, query parameters list)
+        """
+        logger.debug(f"Building company filter for: {company}")
+        # Use ILIKE for case-insensitive matching
+        # Assuming the company name column is 'company_name' in the jobs table (aliased as j)
+        clause = "(j.company_name ILIKE %s)"
+        params = [company]  # Use parameterization
+        return [clause], params
+
         
         # Combine clauses
         if or_clauses:
