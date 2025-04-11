@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # Matching Service
+  matching-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: matching-service
+    ports:
+      - "8002:8002"
+    environment:
+      # Use host.docker.internal to connect to services on the host machine
+      - DATABASE_URL=postgresql://testuser:testpassword@host.docker.internal:5432/matching
+      - MONGODB=mongodb://host.docker.internal:27017
+      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=6379
+      - RABBITMQ_URL=amqp://guest:guest@host.docker.internal:5672/
+      - METRICS_STATSD_HOST=host.docker.internal
+    network_mode: "host"  # Use host network mode to easily access host services
+    restart: unless-stopped

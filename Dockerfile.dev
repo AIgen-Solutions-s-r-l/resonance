@@ -1,0 +1,39 @@
+FROM python:3.11-slim
+
+# Install poetry
+RUN pip install poetry
+
+# Copy the Poetry configuration files
+COPY pyproject.toml /app/
+
+# Set the working directory
+WORKDIR /app
+
+# Installs the project dependencies
+# Configures Poetry to not create a virtual environment for the project,
+# ensuring that dependencies are installed directly in the system environment.
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root --only main
+
+# Copy the application code
+COPY ./app /app/app
+COPY ./tools/simple_statsd_server.py /app
+COPY .env.docker /app/.env
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Set environment variables for host connections
+ENV DATABASE_URL="postgresql://testuser:testpassword@localhost:5432/matching" \
+    MONGODB="mongodb://localhost:27017" \
+    REDIS_HOST="localhost" \
+    REDIS_PORT=6379 \
+    RABBITMQ_URL="amqp://guest:guest@localhost:5672/" \
+    METRICS_STATSD_HOST="localhost"
+
+# Expose port 8002
+EXPOSE 8002
+
+# Command to run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8002"]
