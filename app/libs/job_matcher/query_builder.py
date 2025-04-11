@@ -229,6 +229,14 @@ class JobQueryBuilder:
         for exp in filtered_experience:
             or_clauses.append("(j.experience = %s)")
             query_params.append(exp)
+        
+        # Combine clauses
+        if or_clauses:
+            combined_clause = ["(" + " OR ".join(or_clauses) + ")"]
+            logger.info(f"Experience filter clause: {combined_clause}, params: {query_params}")
+            return combined_clause, query_params
+        
+        return [], [] # Return empty lists if no valid experience levels were processed or filtered
 
     def _build_company_filter(
         self, company: str
@@ -250,13 +258,6 @@ class JobQueryBuilder:
         return [clause], params
 
         
-        # Combine clauses
-        if or_clauses:
-            combined_clause = ["(" + " OR ".join(or_clauses) + ")"]
-            logger.info(f"Experience filter clause: {combined_clause}, params: {query_params}")
-            return combined_clause, query_params
-        
-        return [], []
 
 
 # Singleton instance
