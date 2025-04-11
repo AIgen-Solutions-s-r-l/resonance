@@ -340,7 +340,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     monkeypatch.setattr("app.utils.db_utils.get_filtered_job_count", AsyncMock(return_value=5)) # Corrected path
 
 
-    result1 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+    result1 = await job_matcher.process_job(resume, **base_params, use_cache=True, is_remote_only=None) # Add missing param
 
     # Assertions for first call
     mock_get_applied_jobs.assert_awaited_once_with("user1")
@@ -351,7 +351,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         keywords=base_params["keywords"],
         experience=base_params["experience"],
         applied_job_ids=applied_ids_user1,
-        cooled_job_ids=[]  # Added expected argument for cooled jobs
+        cooled_job_ids=[],
+        is_remote_only=None # Add missing param assertion
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user1)
     mock_get_top_jobs.assert_awaited_once() # Called because of cache miss
@@ -376,7 +377,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     # Simulate cache miss for this *different* key
     mock_get_cached.return_value = None
 
-    result2 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+    result2 = await job_matcher.process_job(resume, **base_params, use_cache=True, is_remote_only=None) # Add missing param
 
     # Assertions for second call
     mock_get_applied_jobs.assert_awaited_once_with("user2")
@@ -387,7 +388,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         keywords=base_params["keywords"],
         experience=base_params["experience"],
         applied_job_ids=applied_ids_user2,
-        cooled_job_ids=[]  # Added expected argument for cooled jobs
+        cooled_job_ids=[],
+        is_remote_only=None # Add missing param assertion
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user2)
     mock_get_top_jobs.assert_awaited_once() # Called again due to cache miss for the *new* key
@@ -409,7 +411,7 @@ async def test_process_job_cache_handles_different_applied_ids(
     # Simulate cache hit for user 1's key
     mock_get_cached.return_value = result1 # Return the previously stored result
 
-    result3 = await job_matcher.process_job(resume, **base_params, use_cache=True)
+    result3 = await job_matcher.process_job(resume, **base_params, use_cache=True, is_remote_only=None) # Add missing param
 
     # Assertions for third call (cache hit)
     mock_get_applied_jobs.assert_awaited_once_with("user1")
@@ -420,7 +422,8 @@ async def test_process_job_cache_handles_different_applied_ids(
         keywords=base_params["keywords"],
         experience=base_params["experience"],
         applied_job_ids=applied_ids_user1,
-        cooled_job_ids=[]  # Added expected argument for cooled jobs
+        cooled_job_ids=[],
+        is_remote_only=None # Add missing param assertion
     )
     mock_get_cached.assert_awaited_once_with(cache_key_user1)
     mock_get_top_jobs.assert_not_awaited() # Should NOT be called due to cache hit

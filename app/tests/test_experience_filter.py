@@ -77,7 +77,8 @@ async def test_process_job_with_experience_filter(
         # Execute the function with experience parameter
         result = await job_matcher.process_job(
             resume,
-            experience=experience
+            experience=experience,
+            is_remote_only=None # Add missing param
         )
         
         # Verify results
@@ -93,8 +94,9 @@ async def test_process_job_with_experience_filter(
             location=None,
             keywords=None,
             experience=experience,
-            applied_job_ids=[],  # Added expected argument
-            cooled_job_ids=[]  # Added expected argument for cooled jobs
+            applied_job_ids=[],
+            cooled_job_ids=[],
+            is_remote_only=None # Add missing param assertion
         )
     finally:
         # Ensure database connections are cleaned up
@@ -105,6 +107,8 @@ async def test_process_job_with_experience_filter(
     args, kwargs = mock_get_top_jobs.call_args
     assert "experience" in kwargs
     assert kwargs["experience"] == experience
+    assert "is_remote_only" in kwargs # Add check for new param
+    assert kwargs["is_remote_only"] is None # Check default value
 
 
 @pytest.mark.asyncio
@@ -133,7 +137,7 @@ async def test_vector_matcher_with_experience_filter(
     await job_matcher.get_top_jobs_by_vector_similarity(
         cv_embedding,
         experience=experience,
-        location=None,
+        location=None, # Keep existing params
         keywords=None,
         offset=0,
         limit=5
@@ -144,7 +148,8 @@ async def test_vector_matcher_with_experience_filter(
     args, kwargs = mock_build_filter_conditions.call_args
     assert "experience" in kwargs
     assert kwargs["experience"] == experience
-    assert kwargs["experience"] == experience
+    assert "is_remote_only" in kwargs # Add check for new param
+    assert kwargs["is_remote_only"] is None # Check default value
 
 
 @pytest.mark.asyncio
@@ -198,7 +203,7 @@ async def test_match_jobs_with_resume_integration(
     result = await match_jobs_with_resume(
         resume,
         location=location,
-        keywords=keywords,
+        keywords=keywords, # Keep existing params
         experience=experience
     )
     
@@ -214,6 +219,8 @@ async def test_match_jobs_with_resume_integration(
     assert kwargs["offset"] == 0
     assert kwargs["limit"] == 25
     assert kwargs["experience"] == experience
+    assert "is_remote_only" in kwargs # Add check for new param
+    assert kwargs["is_remote_only"] is None # Check default value
     assert "location" in kwargs
     assert kwargs["location"] == location
     assert "keywords" in kwargs
@@ -275,7 +282,7 @@ async def test_experience_filter_with_cache(
     
     try:
         # First call with experience_1
-        await job_matcher.process_job(resume, experience=experience_1)
+        await job_matcher.process_job(resume, experience=experience_1, is_remote_only=None) # Add missing param
         
         # Verify first call generated correct cache key with experience_1
         mock_generate_key.assert_called_with(
@@ -284,8 +291,9 @@ async def test_experience_filter_with_cache(
             location=None,
             keywords=None,
             experience=experience_1,
-            applied_job_ids=[],  # Added expected argument
-            cooled_job_ids=[]  # Added expected argument for cooled jobs
+            applied_job_ids=[],
+            cooled_job_ids=[],
+            is_remote_only=None # Add missing param assertion
         )
         
         # Store what would be cached for first call
@@ -306,7 +314,7 @@ async def test_experience_filter_with_cache(
         mock_get_top_jobs.reset_mock()
         
         # Second call with different experience filter
-        await job_matcher.process_job(resume, experience=experience_2)
+        await job_matcher.process_job(resume, experience=experience_2, is_remote_only=None) # Add missing param
     finally:
         # Ensure database connections are cleaned up
         await close_all_connection_pools()
@@ -318,8 +326,9 @@ async def test_experience_filter_with_cache(
         location=None,
         keywords=None,
         experience=experience_2,
-        applied_job_ids=[],  # Added expected argument
-        cooled_job_ids=[]  # Added expected argument for cooled jobs
+        applied_job_ids=[],
+        cooled_job_ids=[],
+        is_remote_only=None # Add missing param assertion
     )
     
     # Verify that the experience parameter affects the cache key
@@ -374,7 +383,7 @@ async def test_experience_filter_with_cache_hit(
     mock_get_cached.return_value = cached_result
     
     # Call process_job with experience filter
-    result = await job_matcher.process_job(resume, experience=experience)
+    result = await job_matcher.process_job(resume, experience=experience, is_remote_only=None) # Add missing param
     
     # Verify cache key was generated with experience parameter
     mock_generate_key.assert_called_with(
@@ -383,8 +392,9 @@ async def test_experience_filter_with_cache_hit(
         location=None,
         keywords=None,
         experience=experience,
-        applied_job_ids=[],  # Added expected argument
-        cooled_job_ids=[]  # Added expected argument for cooled jobs
+        applied_job_ids=[],
+        cooled_job_ids=[],
+        is_remote_only=None # Add missing param assertion
     )
     
     # Verify cached result was returned
