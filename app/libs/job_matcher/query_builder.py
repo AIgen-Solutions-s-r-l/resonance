@@ -69,7 +69,7 @@ class JobQueryBuilder:
             # Add remote only filter
             if is_remote_only:
                 # Assuming 'l' is the alias for the Locations table
-                where_clauses.append("(LOWER(l.city) LIKE '%remote%')")
+                where_clauses.append("(LOWER(l.city) LIKE '%%remote%%')") # Escape % for psycopg
                 # No parameter needed for this specific clause
                     
             elapsed = time() - start_time
