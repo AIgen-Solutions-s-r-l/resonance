@@ -33,7 +33,8 @@ class JobMatcher:
         self,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
-        experience: Optional[List[str]] = None
+        experience: Optional[List[str]] = None,
+        is_remote_only: Optional[bool] = None # Add parameter
     ) -> Tuple[List[str], List[Any]]:
         """
         Get the SQL filter conditions for the job query.
@@ -49,7 +50,8 @@ class JobMatcher:
         return query_builder.build_filter_conditions(
             location=location,
             keywords=keywords,
-            experience=experience
+            experience=experience,
+            is_remote_only=is_remote_only # Pass parameter
         )
     
     @async_matching_algorithm_timer("process_job_optimized")
@@ -63,7 +65,8 @@ class JobMatcher:
         use_cache: bool = True,
         limit: int = 25,
         experience: Optional[List[str]] = None,
-        include_total_count: bool = True
+        include_total_count: bool = True,
+        is_remote_only: Optional[bool] = None # Add parameter
     ) -> Dict[str, Any]:
         """
         Process a job matching request.
@@ -98,7 +101,8 @@ class JobMatcher:
                 has_experience=experience is not None and len(experience) > 0,
                 offset=offset,
                 limit=limit,
-                use_cache=use_cache
+                use_cache=use_cache,
+                is_remote_only=is_remote_only # Log parameter
             )
             logger.info("RESUME CHECK: Checking resume for vector embedding")
             
@@ -162,8 +166,9 @@ class JobMatcher:
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
-                    applied_job_ids=applied_ids, # Include applied IDs in cache key
-                    cooled_job_ids=cooled_ids # Include cooled IDs in cache key
+                    applied_job_ids=applied_ids,
+                    cooled_job_ids=cooled_ids,
+                    is_remote_only=is_remote_only # Include in cache key
                 )
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
                 cached_results = await cache.get(cache_key)
@@ -212,7 +217,8 @@ class JobMatcher:
                 offset=offset,
                 limit=limit,
                 experience=experience,
-                applied_job_ids=filtered_job_ids # Pass the combined IDs
+                applied_job_ids=filtered_job_ids, # Pass the combined IDs
+                is_remote_only=is_remote_only # Pass new parameter
             )
             
             logger.info(f"RESULTS: Received {len(job_matches)} matches from vector matcher")
@@ -227,9 +233,9 @@ class JobMatcher:
                 # This query is already done as part of get_top_jobs_by_vector_similarity
                 # To avoid having to do it again, we'll get the count through vector_matcher
                 from app.utils.db_utils import get_db_cursor
-                # Get the filter conditions
+                # Get the filter conditions (including the new one)
                 where_clauses, query_params = await self._get_filter_conditions(
-                    location=location, keywords=keywords, experience=experience
+                    location=location, keywords=keywords, experience=experience, is_remote_only=is_remote_only
                 )
                 
                 async with get_db_cursor() as cursor:
@@ -257,8 +263,9 @@ class JobMatcher:
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
-                    applied_job_ids=applied_ids, # Include applied IDs in cache key
-                    cooled_job_ids=cooled_ids # Include cooled IDs in cache key
+                    applied_job_ids=applied_ids,
+                    cooled_job_ids=cooled_ids,
+                    is_remote_only=is_remote_only # Include in cache key
                 )
                 await cache.set(cache_key, job_results)
             

@@ -55,6 +55,7 @@ async def match_jobs_with_resume(
     experience: Optional[List[str]] = None,
     include_total_count: bool = False,
     radius: Optional[int] = None,
+    is_remote_only: Optional[bool] = None, # Add new parameter
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
@@ -78,6 +79,7 @@ async def match_jobs_with_resume(
             offset=offset,
             experience=experience,
             include_total_count=include_total_count,
+            is_remote_only=is_remote_only, # Pass new parameter
         )
         return matched_jobs
     except Exception as e:

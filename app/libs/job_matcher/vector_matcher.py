@@ -36,7 +36,8 @@ class VectorMatcher:
         offset: int = 0,
         limit: int = 25,
         experience: Optional[List[str]] = None,
-        applied_job_ids: Optional[List[int]] = None,  # Added parameter
+        applied_job_ids: Optional[List[int]] = None,
+        is_remote_only: Optional[bool] = None, # Add new parameter
     ) -> List[JobMatch]:
         """
         Get top matching jobs using optimized vector similarity.
@@ -49,6 +50,7 @@ class VectorMatcher:
             limit: Results limit
             experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
             applied_job_ids: Optional list of job IDs to exclude.
+            is_remote_only: Optional filter for remote jobs only.
 
         Returns:
             List of JobMatch objects
@@ -61,7 +63,7 @@ class VectorMatcher:
             # Build filter conditions
             logger.info("VECTOR_MATCH: Building filter conditions")
             where_clauses, query_params = query_builder.build_filter_conditions(
-                location=location, keywords=keywords, experience=experience
+                location=location, keywords=keywords, experience=experience, is_remote_only=is_remote_only # Pass new parameter
             )
 
             logger.info(

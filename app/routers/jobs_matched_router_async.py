@@ -70,6 +70,7 @@ async def start_job_matching(
     experience: Optional[List[str]] = Query(
         None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
+    is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
     wait: bool = Query(False, description="Wait for results (not recommended for production use)"),
     current_user: Any = Depends(get_current_user),
 ):
@@ -135,6 +136,7 @@ async def start_job_matching(
             offset if offset is not None else 0,
             experience,
             radius,
+            is_remote_only, # Pass the new parameter
         )
         
         # Create response
@@ -285,7 +287,7 @@ async def get_job_matching_status(
     summary="Get Jobs Matching User's Resume (Legacy)",
     description="Returns a list of jobs that match the authenticated user's resume along with total count for pagination.",
     status_code=status.HTTP_200_OK,
-    deprecated=True,
+    deprecated=False,
 )
 async def get_matched_jobs_legacy(
     country: Optional[str] = Query(
@@ -312,6 +314,7 @@ async def get_matched_jobs_legacy(
     experience: Optional[List[str]] = Query(
         None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
+    is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
     current_user: Any = Depends(get_current_user),
 ):
     """
@@ -353,6 +356,7 @@ async def get_matched_jobs_legacy(
             experience=experience,
             include_total_count=True,  # Request total count for pagination
             radius=radius,
+            is_remote_only=is_remote_only, # Pass the new parameter
         )
 
         if not isinstance(matched_jobs, dict):

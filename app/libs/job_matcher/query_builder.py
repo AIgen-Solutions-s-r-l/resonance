@@ -21,7 +21,8 @@ class JobQueryBuilder:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         experience: Optional[List[str]] = None,
-        company: Optional[str] = None
+        company: Optional[str] = None,
+        is_remote_only: Optional[bool] = None # Add new parameter
     ) -> Tuple[List[str], List[Any]]:
         """
         Build SQL filter conditions based on location, keywords, experience, and company.
@@ -31,6 +32,7 @@ class JobQueryBuilder:
             keywords: Optional keyword filter.
             experience: Optional experience level filter. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level.
             company: Optional company name filter.
+            is_remote_only: Optional filter for remote jobs only.
             
         Returns:
             Tuple of (where clauses list, query parameters list)
@@ -52,7 +54,7 @@ class JobQueryBuilder:
                 where_clauses.extend(keyword_clauses)
                 query_params.extend(keyword_params)
             
-            # Add experience filters (this was missing)
+            # Add experience filters
             if experience and len(experience) > 0:
                 experience_clauses, experience_params = self._build_experience_filters(experience)
                 where_clauses.extend(experience_clauses)
@@ -63,6 +65,12 @@ class JobQueryBuilder:
                 company_clause, company_param = self._build_company_filter(company)
                 where_clauses.extend(company_clause)
                 query_params.extend(company_param)
+           
+            # Add remote only filter
+            if is_remote_only:
+                # Assuming 'l' is the alias for the Locations table
+                where_clauses.append("(LOWER(l.city) LIKE '%remote%')")
+                # No parameter needed for this specific clause
                     
             elapsed = time() - start_time
             logger.debug(
