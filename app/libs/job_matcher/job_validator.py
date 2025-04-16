@@ -22,6 +22,24 @@ class JobValidator:
     """
     cosine similarity returns a value between 2 and 0, where lower is better.
     doing min I get 0.92 and max 1.1 and documenting ourselves in the case of posgres there are no negative values
+
+    previous algorithm:
+
+    if score <= 0.3:
+        # From 0.0 to 0.3 → 1.0 to 0.98
+        return round((1.0 - (0.067 * score))*100, 2)
+    elif score <= 0.9:
+        # From 0.3 to 0.9 → 0.98 to 0.4
+        return round((0.98 - (0.967 * (score - 0.3)))*100, 2)
+    elif score <= 1.0:
+        # From 0.9 to 1.0 → 0.4 to 0.2
+        return round((0.4 - (2.0 * (score - 0.9)))*100, 2)
+    elif score <= 2.0:
+        # From 1.0 to 2.0 → 0.2 to 0.0
+        return round((max(0.2 - (0.2 * (score - 1.0)), 0.0))*100, 2)
+    else:
+        return 0
+
     Score	Similarity
     0.0	    1.000
     0.1	    0.993
@@ -45,20 +63,33 @@ class JobValidator:
 
     @staticmethod
     def score_to_percentage(score):
-        if score <= 0.3:
-            # From 0.0 to 0.3 → 1.0 to 0.98
-            return round((1.0 - (0.067 * score))*100, 2)
-        elif score <= 0.9:
-            # From 0.3 to 0.9 → 0.98 to 0.4
-            return round((0.98 - (0.967 * (score - 0.3)))*100, 2)
-        elif score <= 1.0:
-            # From 0.9 to 1.0 → 0.4 to 0.2
-            return round((0.4 - (2.0 * (score - 0.9)))*100, 2)
-        elif score <= 2.0:
-            # From 1.0 to 2.0 → 0.2 to 0.0
-            return round((max(0.2 - (0.2 * (score - 1.0)), 0.0))*100, 2)
+        """
+        Score	Similarity (/100)
+        0.0	    1.000
+        0.1	    0.903
+        0.2	    0.810
+        0.3	    0.723
+        0.4	    0.640
+        0.5	    0.563
+        0.6	    0.490
+        0.7	    0.423
+        0.8	    0.360
+        0.9	    0.303
+        0.95    0.276
+        1.0	    0.250
+        1.2	    0.160
+        1.4	    0.090
+        1.6	    0.040
+        1.8	    0.010
+        2.0	    0.000
+        >2.0	0.000
+        """
+        
+        if score > 2.0:
+            return round(0.0, 2)
         else:
-            return 0
+            return round(25 * ((score - 2)**2), 2)
+        
 
     def validate_row_data(self, row: dict) -> bool:
         """
