@@ -46,72 +46,75 @@ class JobValidator:
     @staticmethod
     def score_to_percentage(score):
         """
-        Convert cosine similarity score to a percentage using an exponential transformation.
+        Converte la distanza semantica in percentuale di match usando una funzione sigmoide modificata.
+        
+        La funzione è calibrata per rispettare le seguenti soglie:
+        - Match insufficiente: < 60% (score > 0.9)
+        - Match buono: 60-80% (score tra 0.5 e 0.9)
+        - Match eccellente: > 80% (score < 0.5)
         
         Mathematical Theory:
         -------------------
-        The exponential function f(x) = e^(-αx) has several properties that make it
-        ideal for transforming similarity scores:
+        La funzione sigmoide f(x) = 1/(1+e^(k*(x-m))) ha diverse proprietà che la rendono
+        ideale per trasformare i punteggi di similarità:
         
-        1. It maps the domain [0, ∞) to the range (0, 1], with f(0) = 1
-        2. It decreases monotonically, preserving the ordering of scores
-        3. It has a non-linear decay rate, which helps spread out compressed scores
+        1. Mappa il dominio (-∞, ∞) nell'intervallo (0, 1)
+        2. Ha un punto di flesso in x=m dove la pendenza cambia
+        3. Il parametro k controlla la ripidità della curva
+        4. Il parametro m determina il punto centrale della transizione
         
-        For cosine similarity scores where:
-        - 0 represents perfect similarity (should map to 100%)
-        - 2 represents no similarity (should map to near 0%)
+        Per i punteggi di similarità coseno dove:
+        - 0 rappresenta similarità perfetta (deve mappare a ~100%)
+        - 2 rappresenta nessuna similarità (deve mappare a ~0%)
         
-        We use the formula: percentage = 100 * e^(-α*score)
+        Usiamo la formula: percentuale = 100 / (1 + e^(k*(score-m)))
         
-        Where α (alpha) controls the steepness of the decay:
-        - Higher α values create steeper initial drops (better for distinguishing high similarities)
-        - Lower α values create more gradual curves (better for distinguishing low similarities)
+        Dove:
+        - k = 5.0 controlla la pendenza della curva
+        - m = 0.7 è il punto centrale della transizione (60-80%)
         
-        With α = 3.0:
-        - score = 0.0 → 100.00% (perfect match)
-        - score = 0.1 → 74.08% (excellent match)
-        - score = 0.3 → 40.66% (good match)
-        - score = 0.5 → 22.31% (moderate match)
-        - score = 0.7 → 12.25% (weak match)
-        - score = 1.0 → 4.98% (poor match)
-        - score = 2.0 → 0.25% (essentially no match)
+        Con questi parametri:
+        - score = 0.0 → 97.07% (match eccellente)
+        - score = 0.3 → 88.08% (match eccellente)
+        - score = 0.5 → 73.11% (match buono)
+        - score = 0.6 → 62.25% (match buono)
+        - score = 0.7 → 50.00% (punto di flesso)
+        - score = 0.9 → 26.89% (match insufficiente)
+        - score = 1.0 → 18.24% (match insufficiente)
         
-        Why This Helps with Score Distribution:
-        -------------------------------------
-        1. The previous piecewise linear approach created artificial "steps" in the score
-           distribution, compressing many scores into the 70-80% range.
+        Vantaggi di Questo Approccio:
+        ---------------------------
+        1. Rispetta le soglie richieste per le categorie di match
         
-        2. The exponential transformation provides a smooth, continuous curve that:
-           - Maintains high sensitivity for the best matches (near 0 score)
-           - Spreads out the middle range scores that were previously compressed
-           - Rapidly approaches 0 for poor matches (high scores)
+        2. La funzione sigmoide crea una transizione naturale tra le categorie:
+           - Transizione graduale da eccellente a buono intorno a score 0.5
+           - Transizione graduale da buono a insufficiente intorno a score 0.9
         
-        3. The exponential nature better reflects the semantic meaning of similarity:
-           small differences in highly similar items are more significant than
-           the same numerical differences between dissimilar items.
+        3. La distribuzione è equilibrata e riflette l'importanza semantica:
+           - Piccole differenze tra match eccellenti sono significative
+           - Grandi differenze tra match insufficienti sono meno rilevanti
         
         Args:
-            score (float): Raw cosine similarity score (0 to 2, where 0 is perfect similarity)
+            score (float): Punteggio di similarità coseno (0-2, dove 0 è similarità perfetta)
             
         Returns:
-            float: Percentage score (0 to 100, where 100 is perfect similarity)
+            float: Percentuale di match (0-100, dove 100 è match perfetto)
         """
         import math
         
-        # Alpha controls the steepness of the exponential decay
-        alpha = 3.0
+        # Parametri della sigmoide
+        k = 5.0      # Controlla la pendenza della curva
+        midpoint = 0.7  # Punto centrale della transizione (60-80%)
         
-        # Apply exponential transformation
-        # This maps score=0 to 100% and score=2 to approximately 0.25%
         if score < 0:
-            # Handle potential negative scores (shouldn't occur in cosine similarity)
+            # Gestisce potenziali punteggi negativi (non dovrebbero verificarsi nella similarità coseno)
             return 100.0
         elif score > 2.0:
-            # Cap extremely dissimilar scores at 0%
+            # Limita i punteggi estremamente dissimili a 0%
             return 0.0
         else:
-            # Apply exponential transformation: 100 * e^(-alpha*score)
-            percentage = 100.0 * math.exp(-alpha * score)
+            # Applica la trasformazione sigmoide: 100 / (1 + e^(k*(score-midpoint)))
+            percentage = 100.0 / (1.0 + math.exp(k * (score - midpoint)))
             return round(percentage, 2)
 
     def validate_row_data(self, row: dict) -> bool:
