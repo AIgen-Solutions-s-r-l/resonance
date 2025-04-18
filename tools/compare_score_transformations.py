@@ -156,6 +156,20 @@ def main():
     
     # Print key points
     print_key_points(raw_scores, original_scores, sigmoid_scores)
+    
+    # Print information about the updated sigmoid parameters
+    print("\nUpdated Sigmoid Parameters:")
+    print("=" * 60)
+    print("The sigmoid function has been updated with new parameters:")
+    print("- k = 13.0 (controls the slope of the curve)")
+    print("- midpoint = 0.357 (center point of the transition)")
+    print("\nWith these parameters:")
+    print("- score = 0.0 → 99.04% (match eccellente)")
+    print("- score = 0.1 → 96.58% (match eccellente)")
+    print("- score = 0.25 → 80.08% (match eccellente)")
+    print("- score = 0.3 → 67.72% (match buono)")
+    print("- score = 0.4 → 36.38% (match insufficiente)")
+    print("- score = 0.5 → 13.48% (match insufficiente)")
 
 
 if __name__ == "__main__":

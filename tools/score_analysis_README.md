@@ -9,9 +9,9 @@ In our job matching system, we use cosine similarity to measure the distance bet
 - 2 represents no similarity (0% match)
 
 We've implemented a sigmoid transformation function to convert these raw scores into more intuitive match percentages that better align with our desired thresholds:
-- Excellent match: > 85% (raw score < 0.1)
-- Good match: 60-85% (raw score between 0.1 and 0.25)
-- Insufficient match: < 60% (raw score > 0.25)
+- Excellent match: > 80% (raw score < 0.25)
+- Good match: 60-80% (raw score between 0.25 and 0.3)
+- Insufficient match: < 60% (raw score > 0.3)
 
 ## Tools
 
@@ -61,7 +61,7 @@ def score_to_percentage(score):
     
     # Sigmoid parameters
     k = 13.0      # Controls the slope of the curve
-    midpoint = 0.281  # Center point of the transition (60% at score 0.25)
+    midpoint = 0.357  # Center point of the transition (80% at score 0.25)
     
     if score < 0:
         return 100.0
@@ -74,19 +74,21 @@ def score_to_percentage(score):
 ```
 
 With these parameters:
-- score = 0.0 → 97.47% (match eccellente)
-- score = 0.1 → 91.32% (match eccellente)
-- score = 0.25 → 59.94% (match buono)
-- score = 0.5 → 5.48% (match insufficiente)
-- score = 0.7 → 0.43% (match insufficiente)
-- score = 0.9 → 0.03% (match insufficiente)
-- score = 1.0 → 0.01% (match insufficiente)
+- score = 0.0 → 99.04% (match eccellente)
+- score = 0.1 → 96.58% (match eccellente)
+- score = 0.25 → 80.08% (match eccellente)
+- score = 0.3 → 67.72% (match buono)
+- score = 0.4 → 36.38% (match insufficiente)
+- score = 0.5 → 13.48% (match insufficiente)
+- score = 0.7 → 1.14% (match insufficiente)
+- score = 0.9 → 0.09% (match insufficiente)
+- score = 1.0 → 0.02% (match insufficiente)
 
 ## Analysis Results
 
 The analysis shows that the sigmoid transformation provides a more intuitive distribution of match percentages compared to the original linear transformation:
 
-1. **Threshold Alignment**: The sigmoid function creates clear thresholds at the desired points (85% at score 0.1, 60% at score 0.25)
+1. **Threshold Alignment**: The sigmoid function creates clear thresholds at the desired points (80% at score 0.25, 60% at score 0.3)
 
 2. **Distribution Shaping**: The sigmoid function creates a more meaningful separation between excellent, good, and insufficient matches
 
