@@ -13,6 +13,7 @@ import csv
 import math
 import sys
 import os
+from scipy.stats import norm
 
 # Add app directory to path to import modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -60,12 +61,24 @@ def visualize_distributions(raw_scores, original_scores, sigmoid_scores):
     """Create a comprehensive visualization of score distributions."""
     plt.figure(figsize=(15, 12))
     
-    # 1. Raw Score Distribution (Histogram)
+    # 1. Raw Score Distribution (Histogram) with Gaussian Fit
     plt.subplot(3, 2, 1)
-    plt.hist(raw_scores, bins=30, alpha=0.7, color='blue')
-    plt.title("Raw Score Distribution")
+    
+    # Plot histogram
+    n, bins, patches = plt.hist(raw_scores, bins=30, alpha=0.7, color='blue', density=True)
+    
+    # Fit Gaussian distribution
+    mu, sigma = norm.fit(raw_scores)
+    x = np.linspace(min(raw_scores), max(raw_scores), 100)
+    y = norm.pdf(x, mu, sigma)
+    
+    # Plot Gaussian fit
+    plt.plot(x, y, 'r--', linewidth=2, label=f'Gaussian Fit\nμ={mu:.2f}, σ={sigma:.2f}')
+    plt.legend()
+    
+    plt.title("Raw Score Distribution with Gaussian Fit")
     plt.xlabel("Raw Score (lower is better)")
-    plt.ylabel("Frequency")
+    plt.ylabel("Density")
     plt.grid(True, alpha=0.3)
     
     # Add vertical lines for key thresholds
@@ -76,12 +89,24 @@ def visualize_distributions(raw_scores, original_scores, sigmoid_scores):
         plt.axvline(x=threshold, color=color, linestyle='--', alpha=0.5)
         plt.text(threshold, 0, f"{threshold}", ha='center', va='bottom', color=color)
     
-    # 2. Original Transformation Distribution (Histogram)
+    # 2. Original Transformation Distribution (Histogram) with Gaussian Fit
     plt.subplot(3, 2, 2)
-    plt.hist(original_scores, bins=30, alpha=0.7, color='green')
-    plt.title("Original Transformation Distribution")
+    
+    # Plot histogram
+    n, bins, patches = plt.hist(original_scores, bins=30, alpha=0.7, color='green', density=True)
+    
+    # Fit Gaussian distribution
+    mu, sigma = norm.fit(original_scores)
+    x = np.linspace(min(original_scores), max(original_scores), 100)
+    y = norm.pdf(x, mu, sigma)
+    
+    # Plot Gaussian fit
+    plt.plot(x, y, 'r--', linewidth=2, label=f'Gaussian Fit\nμ={mu:.2f}, σ={sigma:.2f}')
+    plt.legend()
+    
+    plt.title("Original Transformation Distribution with Gaussian Fit")
     plt.xlabel("Match Percentage (%)")
-    plt.ylabel("Frequency")
+    plt.ylabel("Density")
     plt.grid(True, alpha=0.3)
     
     # Add vertical lines for key thresholds
@@ -90,12 +115,24 @@ def visualize_distributions(raw_scores, original_scores, sigmoid_scores):
         plt.axvline(x=pct, color='red', linestyle='--', alpha=0.5)
         plt.text(pct, 0, f"{pct}%", ha='center', va='bottom', color='red')
     
-    # 3. Sigmoid Transformation Distribution (Histogram)
+    # 3. Sigmoid Transformation Distribution (Histogram) with Gaussian Fit
     plt.subplot(3, 2, 3)
-    plt.hist(sigmoid_scores, bins=30, alpha=0.7, color='red')
-    plt.title("Sigmoid Transformation Distribution")
+    
+    # Plot histogram
+    n, bins, patches = plt.hist(sigmoid_scores, bins=30, alpha=0.7, color='red', density=True)
+    
+    # Fit Gaussian distribution
+    mu, sigma = norm.fit(sigmoid_scores)
+    x = np.linspace(min(sigmoid_scores), max(sigmoid_scores), 100)
+    y = norm.pdf(x, mu, sigma)
+    
+    # Plot Gaussian fit
+    plt.plot(x, y, 'r--', linewidth=2, label=f'Gaussian Fit\nμ={mu:.2f}, σ={sigma:.2f}')
+    plt.legend()
+    
+    plt.title("Sigmoid Transformation Distribution with Gaussian Fit")
     plt.xlabel("Match Percentage (%)")
-    plt.ylabel("Frequency")
+    plt.ylabel("Density")
     plt.grid(True, alpha=0.3)
     
     # Add vertical lines for key thresholds
