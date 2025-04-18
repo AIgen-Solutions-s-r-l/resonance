@@ -98,3 +98,5 @@ memory-bank
 cline_custom_modes.json
 custom-instructions.yaml
 insert-variables.sh
+score_transformation_comparison_all.png
+score_transformation_comparison.png

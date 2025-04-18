@@ -45,20 +45,74 @@ class JobValidator:
 
     @staticmethod
     def score_to_percentage(score):
-        if score <= 0.3:
-            # From 0.0 to 0.3 → 1.0 to 0.98
-            return round((1.0 - (0.067 * score))*100, 2)
-        elif score <= 0.9:
-            # From 0.3 to 0.9 → 0.98 to 0.4
-            return round((0.98 - (0.967 * (score - 0.3)))*100, 2)
-        elif score <= 1.0:
-            # From 0.9 to 1.0 → 0.4 to 0.2
-            return round((0.4 - (2.0 * (score - 0.9)))*100, 2)
-        elif score <= 2.0:
-            # From 1.0 to 2.0 → 0.2 to 0.0
-            return round((max(0.2 - (0.2 * (score - 1.0)), 0.0))*100, 2)
+        """
+        Convert cosine similarity score to a percentage using an exponential transformation.
+        
+        Mathematical Theory:
+        -------------------
+        The exponential function f(x) = e^(-αx) has several properties that make it
+        ideal for transforming similarity scores:
+        
+        1. It maps the domain [0, ∞) to the range (0, 1], with f(0) = 1
+        2. It decreases monotonically, preserving the ordering of scores
+        3. It has a non-linear decay rate, which helps spread out compressed scores
+        
+        For cosine similarity scores where:
+        - 0 represents perfect similarity (should map to 100%)
+        - 2 represents no similarity (should map to near 0%)
+        
+        We use the formula: percentage = 100 * e^(-α*score)
+        
+        Where α (alpha) controls the steepness of the decay:
+        - Higher α values create steeper initial drops (better for distinguishing high similarities)
+        - Lower α values create more gradual curves (better for distinguishing low similarities)
+        
+        With α = 3.0:
+        - score = 0.0 → 100.00% (perfect match)
+        - score = 0.1 → 74.08% (excellent match)
+        - score = 0.3 → 40.66% (good match)
+        - score = 0.5 → 22.31% (moderate match)
+        - score = 0.7 → 12.25% (weak match)
+        - score = 1.0 → 4.98% (poor match)
+        - score = 2.0 → 0.25% (essentially no match)
+        
+        Why This Helps with Score Distribution:
+        -------------------------------------
+        1. The previous piecewise linear approach created artificial "steps" in the score
+           distribution, compressing many scores into the 70-80% range.
+        
+        2. The exponential transformation provides a smooth, continuous curve that:
+           - Maintains high sensitivity for the best matches (near 0 score)
+           - Spreads out the middle range scores that were previously compressed
+           - Rapidly approaches 0 for poor matches (high scores)
+        
+        3. The exponential nature better reflects the semantic meaning of similarity:
+           small differences in highly similar items are more significant than
+           the same numerical differences between dissimilar items.
+        
+        Args:
+            score (float): Raw cosine similarity score (0 to 2, where 0 is perfect similarity)
+            
+        Returns:
+            float: Percentage score (0 to 100, where 100 is perfect similarity)
+        """
+        import math
+        
+        # Alpha controls the steepness of the exponential decay
+        alpha = 3.0
+        
+        # Apply exponential transformation
+        # This maps score=0 to 100% and score=2 to approximately 0.25%
+        if score < 0:
+            # Handle potential negative scores (shouldn't occur in cosine similarity)
+            return 100.0
+        elif score > 2.0:
+            # Cap extremely dissimilar scores at 0%
+            return 0.0
         else:
-            return 0
+            # Apply exponential transformation: 100 * e^(-alpha*score)
+            percentage = 100.0 * math.exp(-alpha * score)
+            return round(percentage, 2)
 
     def validate_row_data(self, row: dict) -> bool:
         """
