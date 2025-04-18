@@ -88,17 +88,17 @@ class JobValidator:
         Usiamo la formula: percentuale = 100 / (1 + e^(k*(score-m)))
         
         Dove:
-        - k = 5.0 controlla la pendenza della curva
-        - m = 0.7 è il punto centrale della transizione (60-80%)
+        - k = 13.0 controlla la pendenza della curva
+        - m = 0.281 è il punto centrale della transizione
         
         Con questi parametri:
-        - score = 0.0 → 97.07% (match eccellente)
-        - score = 0.3 → 88.08% (match eccellente)
-        - score = 0.5 → 73.11% (match buono)
-        - score = 0.6 → 62.25% (match buono)
-        - score = 0.7 → 50.00% (punto di flesso)
-        - score = 0.9 → 26.89% (match insufficiente)
-        - score = 1.0 → 18.24% (match insufficiente)
+        - score = 0.0 → 97.47% (match eccellente)
+        - score = 0.1 → 91.31% (match eccellente)
+        - score = 0.25 → 59.94% (match buono)
+        - score = 0.5 → 10.92% (match insufficiente)
+        - score = 0.7 → 1.76% (match insufficiente)
+        - score = 0.9 → 0.28% (match insufficiente)
+        - score = 1.0 → 0.11% (match insufficiente)
         
         Vantaggi di Questo Approccio:
         ---------------------------
@@ -121,8 +121,8 @@ class JobValidator:
         import math
         
         # Parametri della sigmoide
-        k = 5.0      # Controlla la pendenza della curva
-        midpoint = 0.7  # Punto centrale della transizione (60-80%)
+        k = 13.0      # Controlla la pendenza della curva
+        midpoint = 0.281  # Punto centrale della transizione (60% at score 0.25)
         
         if score < 0:
             # Gestisce potenziali punteggi negativi (non dovrebbero verificarsi nella similarità coseno)

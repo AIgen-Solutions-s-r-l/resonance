@@ -45,13 +45,17 @@ def sigmoid_score_to_percentage(score):
     Converts semantic distance to match percentage using a modified sigmoid function.
     
     The function is calibrated to respect the following thresholds:
-    - Insufficient match: < 60% (score > 0.9)
-    - Good match: 60-80% (score between 0.5 and 0.9)
-    - Excellent match: > 80% (score < 0.5)
+    - Insufficient match: < 60% (score > 0.25)
+    - Good match: 60-85% (score between 0.1 and 0.25)
+    - Excellent match: > 85% (score < 0.1)
+    
+    Key points:
+    - At score 0.25, the match percentage is around 60%
+    - Between scores 0.00 and 0.1, the match percentage is between 100% and 85%
     """
     # Sigmoid parameters
-    k = 5.0      # Controls the slope of the curve
-    midpoint = 0.7  # Center point of the transition (60-80%)
+    k = 13.0      # Controls the slope of the curve
+    midpoint = 0.281  # Center point of the transition (60% at score 0.25)
     
     if score < 0:
         return 100.0
@@ -75,16 +79,16 @@ def main():
     plt.figure(figsize=(12, 8))
     plt.plot(scores, original_percentages, label='Original (Piecewise Linear)', linewidth=2, color='blue')
     plt.plot(scores, exponential_percentages, label='Exponential (α=3.0)', linewidth=2, linestyle='--', color='green')
-    plt.plot(scores, sigmoid_percentages, label='Sigmoid (k=5.0, midpoint=0.7)', linewidth=2, linestyle='-.', color='red')
+    plt.plot(scores, sigmoid_percentages, label='Sigmoid (k=13.0, midpoint=0.281)', linewidth=2, linestyle='-.', color='red')
     
     # Add vertical lines at key score points
-    key_scores = [0.3, 0.5, 0.9, 1.0]
+    key_scores = [0.1, 0.25, 0.5, 0.9, 1.0]
     for score in key_scores:
         plt.axvline(x=score, color='gray', linestyle=':', alpha=0.7)
     
-    # Add horizontal lines at 60% and 80% thresholds
+    # Add horizontal lines at 60% and 85% thresholds
     plt.axhline(y=60, color='orange', linestyle='--', alpha=0.7, label='Threshold: 60%')
-    plt.axhline(y=80, color='purple', linestyle='--', alpha=0.7, label='Threshold: 80%')
+    plt.axhline(y=85, color='purple', linestyle='--', alpha=0.7, label='Threshold: 85%')
     
     # Add labels and title
     plt.xlabel('Semantic Distance Score (0=perfect, 2=no similarity)')
@@ -103,17 +107,18 @@ def main():
     print(f"{'Score':<10} {'Original %':<15} {'Exponential %':<15} {'Sigmoid %':<15}")
     print("-" * 80)
     
-    sample_scores = [0.0, 0.1, 0.3, 0.5, 0.6, 0.7, 0.9, 1.0, 1.5, 2.0]
+    sample_scores = [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.5, 0.7, 0.9, 1.0, 1.5, 2.0]
+    
     for score in sample_scores:
         orig = original_score_to_percentage(score)
         expo = exponential_score_to_percentage(score)
         sigm = sigmoid_score_to_percentage(score)
-        print(f"{score:<10.1f} {orig:<15.2f} {expo:<15.2f} {sigm:<15.2f}")
+        print(f"{score:<10.2f} {orig:<15.2f} {expo:<15.2f} {sigm:<15.2f}")
     
     print("\nThreshold Analysis:")
-    print("- Excellent match (>80%): Score < 0.5")
-    print("- Good match (60-80%): Score between 0.5 and 0.9")
-    print("- Insufficient match (<60%): Score > 0.9")
+    print("- Excellent match (>85%): Score < 0.1")
+    print("- Good match (60-85%): Score between 0.1 and 0.25")
+    print("- Insufficient match (<60%): Score > 0.25")
 
 if __name__ == "__main__":
     main()
