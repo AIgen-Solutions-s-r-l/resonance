@@ -1,7 +1,7 @@
 # Decision Record: Sigmoid Transformation Parameter Update
 
 ## Date
-April 18, 2025
+April 18, 2025 (Updated April 20, 2025)
 
 ## Status
 Accepted
@@ -16,24 +16,33 @@ With the original parameters (k=13.0, midpoint=0.281), a raw score of 0.25 resul
 
 A request was made to adjust the sigmoid function so that a raw score of 0.25 would result in an 80% match percentage instead of 60%, effectively making more jobs appear as better matches.
 
+**Update (April 20, 2025)**: An additional request was made to further refine the sigmoid function to ensure that a raw score of 0.20 results in a 90% match percentage, and all scores below 0.20 have greater than 90% matching.
+
 ## Decision
 We decided to update the sigmoid transformation function parameters to achieve the requested behavior. Specifically:
 
 1. We kept the slope parameter (k) at 13.0 to maintain the general shape of the curve
-2. We changed the midpoint parameter from 0.281 to 0.357 to ensure that a raw score of 0.25 results in an 80% match percentage
+2. We initially changed the midpoint parameter from 0.281 to 0.357 to ensure that a raw score of 0.25 results in an 80% match percentage
+3. **Update (April 20, 2025)**: We further adjusted the midpoint parameter to 0.369 to ensure that a raw score of 0.20 results in a 90% match percentage while maintaining a high match percentage (~82%) at a raw score of 0.25
 
 The updated sigmoid function now produces the following results:
-- score = 0.0 → 99.04% (match eccellente)
-- score = 0.1 → 96.58% (match eccellente)
-- score = 0.25 → 80.08% (match eccellente)
-- score = 0.3 → 67.72% (match buono)
-- score = 0.4 → 36.38% (match insufficiente)
-- score = 0.5 → 13.48% (match insufficiente)
+- score = 0.0 → 99.18% (match eccellente)
+- score = 0.1 → 97.06% (match eccellente)
+- score = 0.2 → 90.00% (match eccellente)
+- score = 0.25 → 82.45% (match eccellente)
+- score = 0.3 → 71.03% (match buono)
+- score = 0.4 → 40.06% (match insufficiente)
+- score = 0.5 → 15.41% (match insufficiente)
 
 This change effectively shifts the category thresholds:
 - Excellent match: > 80% (raw score < 0.25)
 - Good match: 60-80% (raw score between 0.25 and 0.3)
 - Insufficient match: < 60% (raw score > 0.3)
+
+With the additional refinement, we now ensure that:
+- Scores of 0.20 get exactly 90% matching
+- All scores below 0.20 get >90% matching
+- Scores of 0.25 get ~82% matching (slightly higher than the original 80% target)
 
 ## Consequences
 
@@ -53,6 +62,8 @@ This change effectively shifts the category thresholds:
 
 ## Implementation
 The change was implemented by updating the midpoint parameter in the `score_to_percentage` method in `app/libs/job_matcher/job_validator.py`. The updated code was tested using the score analysis tools to verify the correct behavior.
+
+**Update (April 20, 2025)**: The midpoint parameter was further adjusted from 0.357 to 0.369 to meet the additional requirements. The change was tested using the `test_score_transformation.py` script, which confirmed that the new parameters produce the desired matching percentages.
 
 ## Related Documents
 - [Score Analysis README](../../tools/score_analysis_README.md)

@@ -162,14 +162,15 @@ def main():
     print("=" * 60)
     print("The sigmoid function has been updated with new parameters:")
     print("- k = 13.0 (controls the slope of the curve)")
-    print("- midpoint = 0.357 (center point of the transition)")
+    print("- midpoint = 0.369 (center point of the transition)")
     print("\nWith these parameters:")
-    print("- score = 0.0 → 99.04% (match eccellente)")
-    print("- score = 0.1 → 96.58% (match eccellente)")
-    print("- score = 0.25 → 80.08% (match eccellente)")
-    print("- score = 0.3 → 67.72% (match buono)")
-    print("- score = 0.4 → 36.38% (match insufficiente)")
-    print("- score = 0.5 → 13.48% (match insufficiente)")
+    print("- score = 0.0 → 99.18% (match eccellente)")
+    print("- score = 0.1 → 97.06% (match eccellente)")
+    print("- score = 0.2 → 90.00% (match eccellente)")
+    print("- score = 0.25 → 82.45% (match eccellente)")
+    print("- score = 0.3 → 71.03% (match buono)")
+    print("- score = 0.4 → 40.06% (match insufficiente)")
+    print("- score = 0.5 → 15.41% (match insufficiente)")
 
 
 if __name__ == "__main__":

@@ -13,6 +13,10 @@ We've implemented a sigmoid transformation function to convert these raw scores 
 - Good match: 60-80% (raw score between 0.25 and 0.3)
 - Insufficient match: < 60% (raw score > 0.3)
 
+The function is specifically calibrated to provide:
+- 90% match at raw score 0.20
+- ~82% match at raw score 0.25
+
 ## Tools
 
 ### 1. analyze_raw_scores.py
@@ -61,7 +65,7 @@ def score_to_percentage(score):
     
     # Sigmoid parameters
     k = 13.0      # Controls the slope of the curve
-    midpoint = 0.357  # Center point of the transition (80% at score 0.25)
+    midpoint = 0.369  # Center point of the transition (90% at score 0.20, 82% at score 0.25)
     
     if score < 0:
         return 100.0
@@ -74,21 +78,22 @@ def score_to_percentage(score):
 ```
 
 With these parameters:
-- score = 0.0 → 99.04% (match eccellente)
-- score = 0.1 → 96.58% (match eccellente)
-- score = 0.25 → 80.08% (match eccellente)
-- score = 0.3 → 67.72% (match buono)
-- score = 0.4 → 36.38% (match insufficiente)
-- score = 0.5 → 13.48% (match insufficiente)
-- score = 0.7 → 1.14% (match insufficiente)
-- score = 0.9 → 0.09% (match insufficiente)
-- score = 1.0 → 0.02% (match insufficiente)
+- score = 0.0 → 99.18% (match eccellente)
+- score = 0.1 → 97.06% (match eccellente)
+- score = 0.2 → 90.00% (match eccellente)
+- score = 0.25 → 82.45% (match eccellente)
+- score = 0.3 → 71.03% (match buono)
+- score = 0.4 → 40.06% (match insufficiente)
+- score = 0.5 → 15.41% (match insufficiente)
+- score = 0.7 → 1.33% (match insufficiente)
+- score = 0.9 → 0.10% (match insufficiente)
+- score = 1.0 → 0.03% (match insufficiente)
 
 ## Analysis Results
 
 The analysis shows that the sigmoid transformation provides a more intuitive distribution of match percentages compared to the original linear transformation:
 
-1. **Threshold Alignment**: The sigmoid function creates clear thresholds at the desired points (80% at score 0.25, 60% at score 0.3)
+1. **Threshold Alignment**: The sigmoid function creates clear thresholds at the desired points (90% at score 0.20, ~82% at score 0.25, 60% at score 0.3)
 
 2. **Distribution Shaping**: The sigmoid function creates a more meaningful separation between excellent, good, and insufficient matches
 

@@ -92,14 +92,16 @@ class JobValidator:
         - m = 0.281 è il punto centrale della transizione
         
         Con questi parametri:
-        - score = 0.0 → 99.01% (match eccellente)
-        - score = 0.1 → 96.83% (match eccellente)
-        - score = 0.25 → 80.00% (match eccellente)
-        - score = 0.4 → 35.43% (match insufficiente)
-        - score = 0.5 → 13.50% (match insufficiente)
-        - score = 0.7 → 1.01% (match insufficiente)
-        - score = 0.9 → 0.08% (match insufficiente)
-        - score = 1.0 → 0.02% (match insufficiente)
+        - score = 0.0 → 99.18% (match eccellente)
+        - score = 0.1 → 97.06% (match eccellente)
+        - score = 0.2 → 90.00% (match eccellente)
+        - score = 0.25 → 82.45% (match eccellente)
+        - score = 0.3 → 71.04% (match buono)
+        - score = 0.4 → 40.06% (match insufficiente)
+        - score = 0.5 → 15.41% (match insufficiente)
+        - score = 0.7 → 1.31% (match insufficiente)
+        - score = 0.9 → 0.10% (match insufficiente)
+        - score = 1.0 → 0.03% (match insufficiente)
         
         Vantaggi di Questo Approccio:
         ---------------------------
@@ -123,7 +125,7 @@ class JobValidator:
         
         # Parametri della sigmoide
         k = 13.0      # Controlla la pendenza della curva
-        midpoint = 0.357  # Punto centrale della transizione (80% at score 0.25)
+        midpoint = 0.369  # Punto centrale della transizione (90% at score 0.20, 82% at score 0.25)
         
         if score < 0:
             # Gestisce potenziali punteggi negativi (non dovrebbero verificarsi nella similarità coseno)

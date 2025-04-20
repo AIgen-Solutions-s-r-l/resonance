@@ -83,6 +83,36 @@ def main():
     for score in scores:
         midpoint = calculate_midpoint_for_target(score, 80)
         print(f"For 80% at score {score:.2f}: midpoint = {midpoint:.4f}")
+    
+    # Calculate midpoint for 90% at score 0.20
+    print("\nCalculating midpoint for 90% at score 0.20:")
+    print("=" * 60)
+    midpoint_90_at_20 = calculate_midpoint_for_target(0.20, 90)
+    print(f"For 90% at score 0.20: midpoint = {midpoint_90_at_20:.4f}")
+    
+    # Calculate what percentage we would get at score 0.25 with this midpoint
+    print("\nWith midpoint = {:.4f}:".format(midpoint_90_at_20))
+    print("=" * 60)
+    
+    # Define the sigmoid function with the new midpoint
+    def sigmoid_with_new_midpoint(score, k=13.0, midpoint=midpoint_90_at_20):
+        """Calculate percentage using sigmoid function with the new midpoint."""
+        import math
+        if score < 0:
+            return 100.0
+        elif score > 2.0:
+            return 0.0
+        else:
+            percentage = 100.0 / (1.0 + math.exp(k * (score - midpoint)))
+            return round(percentage, 2)
+    
+    # Test various scores with the new midpoint
+    test_scores = [0.0, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
+    print(f"{'Raw Score':<10} | {'Match Percentage':<15}")
+    print("-" * 30)
+    for score in test_scores:
+        percentage = sigmoid_with_new_midpoint(score)
+        print(f"{score:<10.2f} | {percentage:<15.2f}")
 
 
 if __name__ == "__main__":
