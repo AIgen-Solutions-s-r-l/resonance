@@ -100,6 +100,7 @@ async def get_db_connection(pool_name: str = "default"):
         logger.debug(f"Connection acquired in {time.time() - start_time:.6f}s")
 
         try:
+            logger.debug(f"Connection status before yielding: {{'closed': conn.closed, 'broken': conn.broken, 'pgconn': conn.pgconn is not None}}")
             yield conn
         finally:
             logger.debug("Returning connection to pool")
@@ -128,6 +129,7 @@ async def get_db_cursor(pool_name: str = "default"):
             logger.debug("Creating cursor")
             async with conn.cursor(row_factory=dict_row) as cursor:
                 logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
+                logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
                 yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
@@ -398,6 +400,7 @@ async def get_filtered_job_count(
 
     try:
         query_start = time.time()
+        logger.debug(f"Cursor status before executing count query: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
         await cursor.execute(count_query, query_params)
         query_time = time.time() - query_start
 
