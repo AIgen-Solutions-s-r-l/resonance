@@ -1,102 +1,40 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# OS generated files
+.DS_Store
+Thumbs.db
 
-# Virtual Environment
-venv/
-env/
-.env
-.venv/
-ENV/
-
-# PyCharm
-.idea/
-*.iml
-*.iws
-.idea_modules/
-
-# VS Code
+# IDE specific
 .vscode/
 *.code-workspace
-.history/
-.devcontainer/
 
-# Cursor
-.cursor/
-.cursor-server/
+# Dependencies (Example for Node)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
+# Environment variables
+.env
+.env.*
+!.env.example
 
-# Coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
+# Build artifacts & temporary files
+.tmp/
+
+
+.builds/*.zip
+
+.venv
+
+# Python specific
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.whl
+*.mypy_cache/
+*.pytest_cache/
+*.coverage
 *.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Local development settings
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Logs
-*.log
-logs/
-
-*.pyc
-app/__pycache__/*
-__pycache__/*
-*.cpython-312.pyc
-*.cpython-311.pyc
-*.cpython-310.pyc
-
-# Poetry
-poetry.lock
-
-.cline*
-memory-bank
-*.sqlite3
-*.sqlite
-.roo
-.roomodes
-.rooignore
-cline_custom_modes.json
-custom-instructions.yaml
-insert-variables.sh
-score_transformation_comparison_all.png
-score_transformation_comparison.png
+*.hypothesis/
