@@ -38,3 +38,8 @@ __pycache__/
 *.coverage
 *.cover
 *.hypothesis/
+
+# Log files
+logs/
+app/logs/
+*.log
