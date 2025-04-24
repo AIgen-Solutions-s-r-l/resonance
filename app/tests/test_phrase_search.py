@@ -331,36 +331,37 @@ def test_multi_word_phrase_search():
     assert query_params[1] == 'business account manager'
 
 def test_multiple_individual_words_as_potential_phrase():
-    # We don't need a mock query object for this test.
+    # This test now verifies that multiple keywords are treated as a single phrase
+    # and only the phrase is searched for, not individual words
     keywords = ["business", "account", "manager"]
     
+    # In a real scenario, these would be preprocessed by the router into a single phrase
+    # For testing the query builder directly, we'll simulate that preprocessing
+    preprocessed_keywords = [" ".join(keywords)]
+    
     where_clauses, query_params = job_query_builder.build_filter_conditions(
-        keywords=keywords
+        keywords=preprocessed_keywords
     )
 
-    # Expect the 'embedding IS NOT NULL' clause and one combined WHERE clause with OR conditions
-    assert len(where_clauses) == 2, "Expected two WHERE clauses (embedding and combined keywords)"
+    # Expect the 'embedding IS NOT NULL' clause and one phrase clause
+    assert len(where_clauses) == 2, "Expected two WHERE clauses (embedding and phrase)"
     
-    combined_clause = where_clauses[1]
+    phrase_clause = where_clauses[1]
     
-    assert isinstance(combined_clause, str)
+    assert isinstance(phrase_clause, str)
     
-    # Check for the presence of both phrase and individual word conditions in the clause string
-    clause_str = str(combined_clause)
+    # Check that we're only searching for the phrase, not individual words
+    clause_str = str(phrase_clause)
     assert "(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')" in clause_str
-    assert " OR " in clause_str # Should be combined with OR
+    
+    # The clause should contain exactly one OR (between title and description search)
+    # but not multiple ORs that would indicate individual word searches
+    assert clause_str.count(" OR ") == 1, "Should only have one OR for title/description, not for individual words"
 
-    # Check the parameters
-    # Expect parameters for the phrase and each individual word (twice each)
-    assert len(query_params) == 8 # 2 for phrase + 2*3 for individual words
+    # Check the parameters - should only have the phrase, not individual words
+    assert len(query_params) == 2 # Only 2 for the phrase
     assert query_params[0] == 'business account manager'
     assert query_params[1] == 'business account manager'
-    assert query_params[2] == 'business'
-    assert query_params[3] == 'business'
-    assert query_params[4] == 'account'
-    assert query_params[5] == 'account'
-    assert query_params[6] == 'manager'
-    assert query_params[7] == 'manager'
 
 class MockColumn:
     def __init__(self, name):

@@ -64,7 +64,7 @@ async def start_job_matching(
     ),
     keywords: Optional[List[str]] = Query(
         None,
-        description="Filter jobs containing any of these keywords in the title or description",
+        description="Filter jobs containing any of these keywords in the title or description. Multiple keywords will be treated as a single phrase.",
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
@@ -126,13 +126,24 @@ async def start_job_matching(
         # Create a task ID
         task_id = await TaskManager.create_task()
         
+        # Preprocess keywords: concatenate multiple keywords into a single string with spaces
+        processed_keywords = None
+        if keywords and len(keywords) > 0:
+            processed_keywords = [" ".join(keywords)]
+            logger.info(
+                "Preprocessed keywords for user {current_user}: {original} -> {processed}",
+                current_user=current_user,
+                original=keywords,
+                processed=processed_keywords,
+            )
+        
         # Process the task in the background
         background_tasks.add_task(
             TaskManager.process_job_matching,
             task_id,
             resume,
             location_filter,
-            keywords,
+            processed_keywords,
             offset if offset is not None else 0,
             experience,
             radius,
@@ -308,7 +319,7 @@ async def get_matched_jobs_legacy(
     ),
     keywords: Optional[List[str]] = Query(
         None,
-        description="Filter jobs containing any of these keywords in the title or description",
+        description="Filter jobs containing any of these keywords in the title or description. Multiple keywords will be treated as a single phrase.",
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
@@ -348,10 +359,21 @@ async def get_matched_jobs_legacy(
                 detail="Resume not found for the current user.",
             )
 
+        # Preprocess keywords: concatenate multiple keywords into a single string with spaces
+        processed_keywords = None
+        if keywords and len(keywords) > 0:
+            processed_keywords = [" ".join(keywords)]
+            logger.info(
+                "Preprocessed keywords for user {current_user}: {original} -> {processed}",
+                current_user=current_user,
+                original=keywords,
+                processed=processed_keywords,
+            )
+            
         matched_jobs = await match_jobs_with_resume(
             resume,
             location=location_filter,
-            keywords=keywords,
+            keywords=processed_keywords,
             offset=offset if offset is not None else 0,
             experience=experience,
             include_total_count=True,  # Request total count for pagination

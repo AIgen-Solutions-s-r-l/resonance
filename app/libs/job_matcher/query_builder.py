@@ -184,72 +184,32 @@ class JobQueryBuilder:
         self, keywords: List[str]
     ) -> Tuple[List[str], List[Any]]:
         """
-        Build keyword filter conditions, supporting single words, phrases, and multiple keywords.
+        Build keyword filter conditions, treating keywords as a single phrase.
 
-        This method now intelligently handles input:
-        - If a single string containing spaces is provided, it's treated as an exact phrase.
-        - If multiple strings are provided, they are treated as individual keywords, but also combined into a potential phrase for higher relevance matching.
-        - Single words are handled as before, matching occurrences in title or description.
+        This method handles input as follows:
+        - If a single string is provided (with or without spaces), it's treated as an exact phrase.
+        - If multiple strings are provided, they are assumed to have been preprocessed into a single phrase.
+        - In all cases, only the exact phrase is searched for, not individual words.
 
         Args:
             keywords: List of keywords or phrases. Each element can be a single word or a multi-word phrase.
+                     Multiple elements are assumed to have been preprocessed into a single phrase.
 
         Returns:
             Tuple of (where clauses list, query parameters list)
         """
-        # Check if we have a single multi-word phrase or multiple keywords
-        if len(keywords) == 1 and ' ' in keywords[0].strip():
-            # Handle as a complete phrase
-            phrase = keywords[0].strip()
-            logger.info(f"Processing search phrase as a complete unit: '{phrase}'")
-            
-            # Create a single clause that requires the exact phrase in title OR description
-            where_clause = ["(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')"]
-            query_params = [phrase, phrase]
-            
-            return where_clause, query_params
-        elif len(keywords) > 1:
-            # Check if this might be a phrase that was split into individual words
-            # If all keywords are common words that often appear together, treat as a phrase
-            potential_phrase = ' '.join(keywords)
-            logger.info(f"Treating multiple keywords as potential phrase: '{potential_phrase}'")
-            
-            # Create two sets of clauses:
-            # 1. One for the combined phrase (higher relevance)
-            # 2. One for individual words (lower relevance, but still matches)
-            or_clauses = []
-            query_params = []
-            
-            # Add the combined phrase clause first (exact phrase match)
-            or_clauses.append("(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')")
-            query_params.append(potential_phrase)
-            query_params.append(potential_phrase)
-            
-            # Then add individual word clauses
-            for kw in keywords:
-                or_clauses.append("(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')")
-                query_params.append(kw)
-                query_params.append(kw)
-            
-            # Combine clauses
-            return ["(" + " OR ".join(or_clauses) + ")"], query_params
-        else:
-            # Handle single-word keywords with the original logic
-            or_clauses = []
-            query_params = []
-            
-            for kw in keywords:
-                # Use SQL concatenation for wildcards, escape the % with double %% for psycopg
-                or_clauses.append("(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')")
-                # Add parameter twice - once for title, once for description
-                query_params.append(kw)
-                query_params.append(kw)
-            
-            # Combine clauses
-            if or_clauses:
-                return ["(" + " OR ".join(or_clauses) + ")"], query_params
-            
+        if not keywords or len(keywords) == 0:
             return [], []
+            
+        # Get the phrase (either the single keyword or the preprocessed phrase)
+        phrase = keywords[0].strip()
+        logger.info(f"Processing search phrase as a complete unit: '{phrase}'")
+        
+        # Create a single clause that requires the exact phrase in title OR description
+        where_clause = ["(j.title ILIKE '%%' || %s || '%%' OR j.description ILIKE '%%' || %s || '%%')"]
+        query_params = [phrase, phrase]
+        
+        return where_clause, query_params
     
     def _build_experience_filters(
         self, experience: List[str]
