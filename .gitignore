@@ -43,3 +43,8 @@ __pycache__/
 logs/
 app/logs/
 *.log
+
+# Roo local configuration files
+.roomodes
+.ruru/
+.roo/
