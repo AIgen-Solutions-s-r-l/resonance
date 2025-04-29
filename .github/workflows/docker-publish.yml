@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - DarioAnalize
+      - release_2025_01
 
 jobs:
   test:
@@ -59,3 +59,4 @@ jobs:
           tags: |
             ghcr.io/aihawk-startup/matching_service:${{ env.GITHUB_SHA_SHORT }}
             ${{ github.ref == 'refs/heads/main' && 'ghcr.io/aihawk-startup/matching_service:pre' || '' }}
+            ${{ github.ref == 'refs/heads/release_2025_01' && 'ghcr.io/aihawk-startup/matching_service:release_2025_01' || '' }}
