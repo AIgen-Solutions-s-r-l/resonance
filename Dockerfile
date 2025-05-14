@@ -20,8 +20,8 @@ RUN poetry install --no-root --only main
 
 # Copy the application code
 COPY ./app /app/app
-COPY ./alembic.ini /app/
-COPY ./alembic /alembic/
+COPY ./alembic.ini /alembic.ini
+COPY ./alembic /alembic
 COPY ./tools/simple_statsd_server.py /app
 
 # Set environment variables
