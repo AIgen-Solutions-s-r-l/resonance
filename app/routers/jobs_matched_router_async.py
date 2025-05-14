@@ -326,6 +326,7 @@ async def get_matched_jobs_legacy(
         None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
     is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
+    sort_by_date: Optional[bool] = Query(None, description="Order job batches by date"),
     current_user: Any = Depends(get_current_user),
 ):
     """
@@ -379,6 +380,7 @@ async def get_matched_jobs_legacy(
             include_total_count=True,  # Request total count for pagination
             radius=radius,
             is_remote_only=is_remote_only, # Pass the new parameter
+            sort_by_date=sort_by_date if sort_by_date is not None else False
         )
 
         if not isinstance(matched_jobs, dict):

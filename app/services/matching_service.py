@@ -1,11 +1,14 @@
+from datetime import datetime
 from typing import Dict, Any, Optional
 from typing import List
+from app.libs.job_matcher.cache import CACHE_SIZE
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.core.mongodb import collection_name
 from app.log.logging import logger
 from app.schemas.job import JobSchema
 from app.schemas.location import LocationFilter
 
+RETURNED_JOBS_SIZE = 25
 
 async def get_resume_by_user_id(
     user_id: int, version: Optional[str] = None
@@ -56,6 +59,7 @@ async def match_jobs_with_resume(
     include_total_count: bool = False,
     radius: Optional[int] = None,
     is_remote_only: Optional[bool] = None, # Add new parameter
+    sort_by_date: bool = False
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
@@ -70,7 +74,7 @@ async def match_jobs_with_resume(
             # If radius is provided separately, use it (in meters)
             if radius is not None:
                 location.radius = radius
-        
+
         matched_jobs = await matcher.process_job(
             resume,
             location=location,
@@ -79,9 +83,34 @@ async def match_jobs_with_resume(
             offset=offset,
             experience=experience,
             include_total_count=include_total_count,
-            is_remote_only=is_remote_only, # Pass new parameter
+            is_remote_only=is_remote_only # Pass new parameter 
         )
-        return matched_jobs
+
+        if offset % CACHE_SIZE > (offset + RETURNED_JOBS_SIZE) % CACHE_SIZE:
+            # Then we recieved something like 499 as offset. Should never happen, but users are assholes
+            # so better be safe than sorry
+            matched_jobs_overflow = await matcher.process_job(
+                resume,
+                location=location,
+                keywords=keywords,
+                save_to_mongodb=save_to_mongodb,
+                offset=offset + CACHE_SIZE,
+                experience=experience,
+                include_total_count=include_total_count,
+                is_remote_only=is_remote_only # Pass new parameter 
+            )
+            matched_jobs["jobs"] = matched_jobs.get("jobs", []) + matched_jobs_overflow.get("jobs", [])
+
+        jobs: list[dict[str, Any]] = matched_jobs.get("jobs", [])
+        if len(jobs) == 0:
+            logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
+
+        if sort_by_date:
+            jobs.sort(key = lambda job: job.get('posted_date', datetime(1999, 1, 1)), reverse = True)
+
+        start = offset % CACHE_SIZE
+
+        return matched_jobs[start : start + RETURNED_JOBS_SIZE]
     except Exception as e:
         logger.exception(
             "Error matching jobs with resume",

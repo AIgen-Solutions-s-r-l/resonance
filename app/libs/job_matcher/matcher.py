@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.metrics.algorithm import async_matching_algorithm_timer
 
 from app.libs.job_matcher.exceptions import ValidationError
-from app.libs.job_matcher.cache import cache
+from app.libs.job_matcher.cache import cache, CACHE_SIZE
 from app.libs.job_matcher.persistence import persistence
 from app.libs.job_matcher.vector_matcher import vector_matcher
 from app.libs.job_matcher.query_builder import query_builder
@@ -63,7 +63,7 @@ class JobMatcher:
         save_to_mongodb: bool = False,
         offset: int = 0,
         use_cache: bool = True,
-        limit: int = 25,
+        limit: int = CACHE_SIZE,
         experience: Optional[List[str]] = None,
         include_total_count: bool = True,
         is_remote_only: Optional[bool] = None # Add parameter
@@ -162,7 +162,7 @@ class JobMatcher:
                 logger.info("CACHE CHECK: Checking cache for existing results")
                 cache_key = await cache.generate_key(
                     resume_id,
-                    offset=offset,
+                    offset=offset // CACHE_SIZE,
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
@@ -214,7 +214,7 @@ class JobMatcher:
                 cv_embedding,
                 location=location,
                 keywords=keywords,
-                offset=offset,
+                offset=(offset // CACHE_SIZE) * CACHE_SIZE,
                 limit=limit,
                 experience=experience,
                 applied_job_ids=filtered_job_ids, # Pass the combined IDs
@@ -259,7 +259,7 @@ class JobMatcher:
                 # Note: applied_ids was fetched before the initial cache check
                 cache_key = await cache.generate_key(
                     resume_id,
-                    offset=offset,
+                    offset=offset // CACHE_SIZE,
                     location=location.dict() if location else None,
                     keywords=keywords,
                     experience=experience,
