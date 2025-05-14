@@ -18,8 +18,6 @@ from app.libs.redis.factory import RedisCacheFactory, initialize_cache as init_r
 from app.libs.redis.monitoring import create_metrics_wrapped_cache
 from app.libs.redis.errors import RedisCircuitBreakerOpenError, RedisConnectionError
 
-CACHE_SIZE = 500
-
 class ResultsCache:
     """
     Cache for job matching results.

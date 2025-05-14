@@ -1,14 +1,11 @@
 from datetime import datetime
 from typing import Dict, Any, Optional
 from typing import List
-from app.libs.job_matcher.cache import CACHE_SIZE
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.core.mongodb import collection_name
 from app.log.logging import logger
-from app.schemas.job import JobSchema
+from app.core.config import settings
 from app.schemas.location import LocationFilter
-
-RETURNED_JOBS_SIZE = 25
 
 async def get_resume_by_user_id(
     user_id: int, version: Optional[str] = None
@@ -86,7 +83,7 @@ async def match_jobs_with_resume(
             is_remote_only=is_remote_only # Pass new parameter 
         )
 
-        if offset % CACHE_SIZE > (offset + RETURNED_JOBS_SIZE) % CACHE_SIZE:
+        if offset % settings.CACHE_SIZE > (offset + settings.RETURNED_JOBS_SIZE) % settings.CACHE_SIZE:
             # Then we recieved something like 499 as offset. Should never happen, but users are assholes
             # so better be safe than sorry
             matched_jobs_overflow = await matcher.process_job(
@@ -94,7 +91,7 @@ async def match_jobs_with_resume(
                 location=location,
                 keywords=keywords,
                 save_to_mongodb=save_to_mongodb,
-                offset=offset + CACHE_SIZE,
+                offset=offset + settings.CACHE_SIZE,
                 experience=experience,
                 include_total_count=include_total_count,
                 is_remote_only=is_remote_only # Pass new parameter 
@@ -108,9 +105,10 @@ async def match_jobs_with_resume(
         if sort_by_date:
             jobs.sort(key = lambda job: job.get('posted_date', datetime(1999, 1, 1)), reverse = True)
 
-        start = offset % CACHE_SIZE
+        start = offset % settings.CACHE_SIZE
+        matched_jobs["jobs"] = jobs[start : start + settings.RETURNED_JOBS_SIZE]
 
-        return matched_jobs[start : start + RETURNED_JOBS_SIZE]
+        return matched_jobs
     except Exception as e:
         logger.exception(
             "Error matching jobs with resume",
