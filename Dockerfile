@@ -8,6 +8,7 @@ RUN pip install poetry
 # Copy the Poetry configuration files
 COPY pyproject.toml /app/
 
+
 # Set the working directory
 WORKDIR /app
 
@@ -19,6 +20,8 @@ RUN poetry install --no-root --only main
 
 # Copy the application code
 COPY ./app /app/app
+COPY ./alembic.ini /app/
+COPY ./alembic /app/alembic/
 COPY ./tools/simple_statsd_server.py /app
 
 # Set environment variables
