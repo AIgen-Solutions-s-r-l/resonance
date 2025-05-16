@@ -120,7 +120,7 @@ async def match_jobs_with_resume(
                 if isinstance(posted_date, str):
                     posted_date = datetime.fromisoformat(posted_date)
                 delta: timedelta = datetime.now() - posted_date
-                recomm_score = job.get('score', 0.0) - (1.07)**delta.days + 1
+                recomm_score = job.get('score', 0.0) - 100 * ((1.03)**delta.days + 1)
                 return recomm_score
 
             jobs.sort(key = recommend_algo, reverse = True)
