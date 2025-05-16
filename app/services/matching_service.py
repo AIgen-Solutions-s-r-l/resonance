@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from typing import List
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.core.mongodb import collection_name
 from app.log.logging import logger
 from app.core.config import settings
+from app.schemas.job_match import SortType
 from app.schemas.location import LocationFilter
 
 async def get_resume_by_user_id(
@@ -56,7 +57,7 @@ async def match_jobs_with_resume(
     include_total_count: bool = False,
     radius: Optional[int] = None,
     is_remote_only: Optional[bool] = None, # Add new parameter
-    sort_by_date: bool = False
+    sort_type: SortType = SortType.SCORE
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
@@ -102,8 +103,17 @@ async def match_jobs_with_resume(
         if len(jobs) == 0:
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
 
-        if sort_by_date:
+        if sort_type == SortType.DATE:
             jobs.sort(key = lambda job: job.get('posted_date', datetime(1999, 1, 1)), reverse = True)
+
+        elif sort_type == SortType.RECOMMENDED:
+
+            def recommend_algo(job: dict) -> float:
+                delta: timedelta = datetime.now() - job.get('posted_date', datetime(1999, 1, 1))
+                recomm_score = job.get('score', 0.0) - (1.02)**delta.days + 1
+                return recomm_score
+
+            jobs.sort(key = recommend_algo, reverse = True)
 
         start = offset % settings.CACHE_SIZE
         matched_jobs["jobs"] = jobs[start : start + settings.RETURNED_JOBS_SIZE]

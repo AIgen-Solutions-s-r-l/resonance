@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 from pydantic import BaseModel
 from app.schemas.job import JobSchema
@@ -9,3 +10,8 @@ class JobsMatchedResponse(BaseModel):
     """
     jobs: List[JobSchema]
     total_count: int
+
+class SortType(Enum):
+    SCORE = "matching_score"
+    DATE = "date"
+    RECOMMENDED = "recommended"
