@@ -104,12 +104,22 @@ async def match_jobs_with_resume(
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
 
         if sort_type == SortType.DATE:
-            jobs.sort(key = lambda job: job.get('posted_date', datetime(1999, 1, 1)), reverse = True)
+            
+            def sorting_algo(job: dict) -> datetime:
+                posted_date = job.get('posted_date', datetime(1999, 1, 1))
+                if isinstance(posted_date, str):
+                    posted_date = datetime.fromisoformat(posted_date)
+                return posted_date
+
+            jobs.sort(key = sorting_algo, reverse = True)
 
         elif sort_type == SortType.RECOMMENDED:
 
             def recommend_algo(job: dict) -> float:
-                delta: timedelta = datetime.now() - job.get('posted_date', datetime(1999, 1, 1))
+                posted_date = job.get('posted_date', datetime(1999, 1, 1))
+                if isinstance(posted_date, str):
+                    posted_date = datetime.fromisoformat(posted_date)
+                delta: timedelta = datetime.now() - posted_date
                 recomm_score = job.get('score', 0.0) - (1.02)**delta.days + 1
                 return recomm_score
 
