@@ -12,6 +12,7 @@ from app.utils.db_utils import close_all_connection_pools
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
 from app.libs.job_matcher.models import JobMatch
 from app.schemas.location import LocationFilter
+from app.core.config import settings
 
 
 @pytest.fixture
@@ -217,7 +218,7 @@ async def test_match_jobs_with_resume_integration(
     assert kwargs["location"] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
-    assert kwargs["limit"] == 25
+    assert kwargs["limit"] == settings.CACHE_SIZE
     assert kwargs["experience"] == experience
     assert "is_remote_only" in kwargs # Add check for new param
     assert kwargs["is_remote_only"] is None # Check default value

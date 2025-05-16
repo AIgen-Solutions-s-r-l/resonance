@@ -9,15 +9,14 @@ from loguru import logger
 from time import time
 
 from app.schemas.location import LocationFilter
-from app.core.config import settings
 from app.utils.db_utils import get_db_cursor, get_filtered_job_count
 from app.metrics.algorithm import async_matching_algorithm_timer
 
 from app.libs.job_matcher.models import JobMatch
+from app.core.config import settings
 from app.libs.job_matcher.query_builder import query_builder
 from app.libs.job_matcher.similarity_searcher import SimilaritySearcher
 from app.libs.job_matcher.exceptions import VectorSimilarityError
-
 
 class VectorMatcher:
     """Core vector similarity matching functionality."""
@@ -34,7 +33,7 @@ class VectorMatcher:
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         offset: int = 0,
-        limit: int = 25,
+        limit: int = settings.CACHE_SIZE,
         experience: Optional[List[str]] = None,
         applied_job_ids: Optional[List[int]] = None,
         is_remote_only: Optional[bool] = None, # Add new parameter

@@ -48,7 +48,7 @@ class JobMatch:
             "company_name": self.company_name,
             "company_logo": self.company_logo,
             "score": self.score,
-            "posted_date": self.posted_date.isoformat() if self.posted_date else None,
+            "posted_date": self.posted_date,
             "job_state": self.job_state,
             "apply_link": self.apply_link
             # Removed fields:

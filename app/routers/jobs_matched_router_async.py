@@ -15,7 +15,7 @@ import uuid
 
 from app.core.auth import get_current_user, verify_api_key
 from app.schemas.job import JobSchema, JobDetailResponse
-from app.schemas.job_match import JobsMatchedResponse
+from app.schemas.job_match import JobsMatchedResponse, SortType
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
@@ -326,6 +326,7 @@ async def get_matched_jobs_legacy(
         None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
     ),
     is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
+    sort_by: Optional[str] = Query("matching_score", description="Order job batches by date"),
     current_user: Any = Depends(get_current_user),
 ):
     """
@@ -369,6 +370,13 @@ async def get_matched_jobs_legacy(
                 original=keywords,
                 processed=processed_keywords,
             )
+
+        sort_type = SortType.SCORE
+        try:
+            if sort_by is not None:
+                sort_type = SortType(sort_by.lower())
+        except ValueError:
+            sort_type = SortType.SCORE
             
         matched_jobs = await match_jobs_with_resume(
             resume,
@@ -379,6 +387,7 @@ async def get_matched_jobs_legacy(
             include_total_count=True,  # Request total count for pagination
             radius=radius,
             is_remote_only=is_remote_only, # Pass the new parameter
+            sort_type=sort_type
         )
 
         if not isinstance(matched_jobs, dict):
