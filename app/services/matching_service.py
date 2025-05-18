@@ -103,9 +103,8 @@ async def match_jobs_with_resume(
         if len(jobs) == 0:
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
 
+        score_threshold = 60.0
         if sort_type == SortType.DATE:
-
-            score_threshold = 57.0
 
             def sorting_algo(job: dict) -> datetime:
                 posted_date = job.get('posted_date', datetime(1999, 1, 1))
@@ -113,7 +112,7 @@ async def match_jobs_with_resume(
                     posted_date = datetime.fromisoformat(posted_date)
                 delta: timedelta = datetime.now() - posted_date
                 score = job.get('score', 0.0)
-                return -delta.total_seconds() if score >= score_threshold else -3600.0 * 24 * 90 - score
+                return -delta.total_seconds() if score >= score_threshold else score - 3600.0 * 24 * 90
 
             jobs.sort(key = sorting_algo, reverse = True)
 
@@ -124,8 +123,10 @@ async def match_jobs_with_resume(
                 if isinstance(posted_date, str):
                     posted_date = datetime.fromisoformat(posted_date)
                 delta: timedelta = datetime.now() - posted_date
-                recomm_score = job.get('score', 0.0) + 100 * (-(1.03)**delta.days + 1)
-                return recomm_score
+                score = job.get('score', 0.0)
+                if score < score_threshold:
+                    return score -100 * 14.4
+                return score + 100 * (-(1.03)**delta.days + 1)
 
             jobs.sort(key = recommend_algo, reverse = True)
 
