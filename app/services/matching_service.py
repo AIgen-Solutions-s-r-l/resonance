@@ -105,11 +105,15 @@ async def match_jobs_with_resume(
 
         if sort_type == SortType.DATE:
 
+            score_threshold = 57.0
+
             def sorting_algo(job: dict) -> datetime:
                 posted_date = job.get('posted_date', datetime(1999, 1, 1))
                 if isinstance(posted_date, str):
                     posted_date = datetime.fromisoformat(posted_date)
-                return posted_date
+                delta: timedelta = datetime.now() - posted_date
+                score = job.get('score', 0.0)
+                return -delta.total_seconds() if score >= score_threshold else -3600.0 * 24 * 90 - score
 
             jobs.sort(key = sorting_algo, reverse = True)
 

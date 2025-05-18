@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     Configuration class for environment variables and service settings.
     """
     # Match / Cache settings
-    CACHE_SIZE: int = 500
+    CACHE_SIZE: int = 1000
     RETURNED_JOBS_SIZE: int = 25
 
     # Service settings
