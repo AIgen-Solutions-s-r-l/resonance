@@ -75,7 +75,7 @@ class JobMatcher:
             location: Optional location filter
             keywords: Optional keyword filter
             save_to_mongodb: Whether to save results to MongoDB
-            offset: Results offset (will be reset to 0 if greater than 1500)
+            offset: Results offset (will be reset to 0 if greater than 2000)
             use_cache: Whether to use result caching
             limit: Results limit
             
@@ -84,10 +84,10 @@ class JobMatcher:
         """
         start_time = time()
         
-        # Validate offset parameter - reset to 0 if greater than 1500 (frontend limitation)
-        if offset > 1500:
+        # Validate offset parameter - reset to 0 if greater than 2000 (frontend limitation)
+        if offset > 2000:
             logger.warning(
-                "Offset exceeds maximum allowed value (1500), resetting to 0",
+                "Offset exceeds maximum allowed value (2000), resetting to 0",
                 original_offset=offset
             )
             offset = 0
