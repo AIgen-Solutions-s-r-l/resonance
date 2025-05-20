@@ -120,6 +120,8 @@ async def match_jobs_with_resume(
 
             def recommend_algo(job: dict) -> float:
                 posted_date = job.get('posted_date', datetime(1999, 1, 1))
+                if posted_date is None:
+                    posted_date = datetime(1999, 1, 1)
                 if isinstance(posted_date, str):
                     posted_date = datetime.fromisoformat(posted_date)
                 delta: timedelta = datetime.now() - posted_date
