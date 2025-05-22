@@ -253,20 +253,24 @@ class JobMatcher:
             
             # Store in cache if enabled
             if use_cache:
-                logger.info("RESULTS: Storing results in cache")
-                # Regenerate key including applied_ids for setting cache
-                # Note: applied_ids was fetched before the initial cache check
-                cache_key = await cache.generate_key(
-                    resume_id,
-                    offset=offset // settings.CACHE_SIZE,
-                    location=location.model_dump() if location else None,
-                    keywords=keywords,
-                    experience=experience,
-                    applied_job_ids=applied_ids,
-                    cooled_job_ids=cooled_ids,
-                    is_remote_only=is_remote_only # Include in cache key
-                )
-                await cache.set(cache_key, job_results)
+
+                if len(job_matches) == 0:
+                    logger.info("RESULTS: No matches found, not storing in cache")
+                else:
+                    logger.info("RESULTS: Storing results in cache")
+                    # Regenerate key including applied_ids for setting cache
+                    # Note: applied_ids was fetched before the initial cache check
+                    cache_key = await cache.generate_key(
+                        resume_id,
+                        offset=offset // settings.CACHE_SIZE,
+                        location=location.model_dump() if location else None,
+                        keywords=keywords,
+                        experience=experience,
+                        applied_job_ids=applied_ids,
+                        cooled_job_ids=cooled_ids,
+                        is_remote_only=is_remote_only # Include in cache key
+                    )
+                    await cache.set(cache_key, job_results)
             
             elapsed = time() - start_time
             logger.success(
