@@ -120,6 +120,10 @@ class RedisCache:
                     logger.error(f"Failed to get cache entry after {retry_count} retries: {str(e)}")
                     return None
                 
+                if isinstance(e, ValueError):
+                    # then either redis disconnected or the client ended in an invalid state
+                    await self._connection_manager._try_reconnect()
+                
                 # Calculate backoff with jitter
                 jitter = random.uniform(0.8, 1.2)
                 sleep_time = (backoff_ms / 1000.0) * jitter
