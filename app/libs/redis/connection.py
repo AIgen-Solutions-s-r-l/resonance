@@ -111,7 +111,7 @@ class RedisConnectionManager:
         """
         # Check if Redis is initialized
         if self._client is None:
-            raise Exception("Redis client not initialized")
+            raise ValueError("Redis client not initialized")
         
         # Check if circuit breaker allows operation
         if not await self._circuit_breaker.is_allowed():
