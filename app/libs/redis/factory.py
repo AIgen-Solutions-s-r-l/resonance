@@ -8,7 +8,7 @@ instances for reuse.
 
 from typing import Dict, Optional
 
-from loguru import logger
+from app.log.logging import logger
 
 from app.core.config import settings
 from app.libs.redis.cache import RedisCache

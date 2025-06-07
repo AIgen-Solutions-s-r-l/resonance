@@ -10,7 +10,7 @@ import random
 import time
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from loguru import logger
+from app.log.logging import logger
 
 from app.libs.redis.connection import RedisConnectionManager
 from app.libs.redis.serialization import RedisSerializer

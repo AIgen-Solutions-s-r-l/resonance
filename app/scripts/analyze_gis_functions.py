@@ -10,7 +10,7 @@ This script connects to the database and:
 
 import asyncio
 import sys
-from loguru import logger
+from app.log.logging import logger
 import re
 import os
 from pathlib import Path

@@ -5,7 +5,7 @@ This module provides the main interface for vector similarity job matching.
 """
 
 from typing import List, Optional
-from loguru import logger
+from app.log.logging import logger
 from time import time
 
 from app.schemas.location import LocationFilter

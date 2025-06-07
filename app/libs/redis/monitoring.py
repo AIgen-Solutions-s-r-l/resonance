@@ -7,8 +7,7 @@ health, and operations for integration with the application metrics system.
 
 import time
 from typing import Callable, Optional, Any, Dict, Awaitable
-
-from loguru import logger
+from app.log.logging import logger
 
 # Define module-level variables
 HAS_METRICS = False

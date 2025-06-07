@@ -47,13 +47,13 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
                     except Exception as e:
                         logger.exception("Could not decode token for debugging")
                 else:
-                    logger.error(
+                    logger.debug(
                         "Malformed Authorization header for {path}: {auth_header}",
                         path=path,
                         auth_header=auth_header
                     )
             else:
-                logger.error("No Authorization header present for {path}", path=path)
+                logger.debug("No Authorization header present for {path}", path=path)
         
         # Process the request and get response
         start_time = time.time()
@@ -62,7 +62,7 @@ class AuthDebugMiddleware(BaseHTTPMiddleware):
         
         # Log response status for auth issues
         if response.status_code == 401:
-            logger.error(
+            logger.debug(
                 "401 Unauthorized response for {path}",
                 path=path
             )

@@ -92,7 +92,7 @@ def verify_jwt_token(token: str) -> dict:
         )
         logger.info(f"Token payload (unverified): {unverified_payload}")
     except Exception as e:
-        logger.error(f"Could not decode token payload: {str(e)}")
+        logger.debug(f"Could not decode token payload: {str(e)}")
     
     # The jwt.decode function will raise specific exceptions like ExpiredSignatureError
     # which will be caught by the caller (get_current_user)

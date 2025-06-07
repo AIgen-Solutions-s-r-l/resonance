@@ -5,7 +5,7 @@ This module handles validation and creation of JobMatch objects from database ro
 """
 
 from typing import Optional, Dict, Any
-from loguru import logger
+from app.log.logging import logger
 from time import time
 
 from app.utils.data_parsers import parse_skills_string

@@ -11,7 +11,7 @@ import warnings
 import hashlib # Added for hashing applied job IDs
 from time import time
 from typing import Dict, Any, Optional, Tuple, Union, List # Added List
-from loguru import logger
+from app.log.logging import logger
 
 # Import Redis cache implementation
 from app.libs.redis.factory import RedisCacheFactory, initialize_cache as init_redis_cache

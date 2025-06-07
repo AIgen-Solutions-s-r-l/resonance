@@ -5,7 +5,7 @@ This module handles SQL query construction for job matching operations.
 """
 
 from typing import List, Optional, Tuple, Dict, Any
-from loguru import logger
+from app.log.logging import logger
 from app.core.config import settings
 from time import time
 

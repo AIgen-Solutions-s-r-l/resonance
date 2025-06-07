@@ -5,7 +5,7 @@ This module contains the main functionality for matching jobs with resumes.
 """
 
 from typing import List, Optional, Dict, Any, Tuple
-from loguru import logger
+from app.log.logging import logger
 from time import time
 
 from app.schemas.location import LocationFilter

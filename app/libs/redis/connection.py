@@ -8,7 +8,7 @@ pooling, health checks, and automatic reconnection.
 import asyncio
 import time
 from typing import Optional, Any, Dict
-from loguru import logger
+from app.log.logging import logger
 
 import redis.asyncio as redis
 from redis.exceptions import RedisError as RedisBaseError

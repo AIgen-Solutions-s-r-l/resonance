@@ -5,7 +5,7 @@ This module provides optimized vector similarity search for job matching.
 """
 
 from typing import List, Optional, Dict, Any
-from loguru import logger
+from app.log.logging import logger
 from time import time
 
 from app.schemas.location import LocationFilter
