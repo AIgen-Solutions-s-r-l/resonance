@@ -291,14 +291,17 @@ class JobMatcher:
                     ]
                     keywords_for_metrics += tokens
 
-            request = SearchRequest(
-                user_id=int(user_id),
-                location=location_for_metrics,
-                keywords=keywords_for_metrics,
-                time=datetime.now()
-            )
-            metrics_collection = database.get_collection("requests")
-            await metrics_collection.insert_one(request)
+            try:
+                request = SearchRequest(
+                    user_id=int(user_id),
+                    location=location_for_metrics,
+                    keywords=keywords_for_metrics,
+                    time=datetime.now()
+                )
+                metrics_collection = database.get_collection("requests")
+                await metrics_collection.insert_one(request)
+            except Exception:
+                pass
             
             elapsed = time() - start_time
             logger.success(
