@@ -292,7 +292,7 @@ class JobMatcher:
                     keywords_for_metrics += tokens
 
             request = SearchRequest(
-                user_id=user_id,
+                user_id=int(user_id),
                 location=location_for_metrics,
                 keywords=keywords_for_metrics,
                 time=datetime.now()
