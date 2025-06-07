@@ -21,9 +21,9 @@ from app.libs.job_matcher.query_builder import query_builder
 from app.services.applied_jobs_service import applied_jobs_service
 from app.services.cooled_jobs_service import cooled_jobs_service
 from app.core.mongodb import database
-import spacy
+# import spacy
 
-spacy_nlp = spacy.load("en_core_web_sm")
+# spacy_nlp = spacy.load("en_core_web_sm")
 
 class JobMatcher:
     """Core job matching functionality."""
@@ -283,11 +283,11 @@ class JobMatcher:
             if keywords:
                 keywords_for_metrics = []
                 for word in keywords:
-                    lemmatized = spacy_nlp(word.lower())
+                    lemmatized = word.lower().split(" ") # spacy_nlp(word.lower())
                     tokens = [
-                        token.lemma_.lower()
+                        token
                         for token in lemmatized
-                        if not token.is_stop
+
                     ]
                     keywords_for_metrics += tokens
 
