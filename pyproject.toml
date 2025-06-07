@@ -6,7 +6,7 @@ authors = [
     {name = "keat",email = "kavano.aresia@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "aio-pika (==9.4.3)",
     "alembic (==1.14.0)",
