@@ -4,10 +4,12 @@ Core job matching logic.
 This module contains the main functionality for matching jobs with resumes.
 """
 
+from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
 from loguru import logger
 from time import time
 
+from app.models.request import SearchRequest
 from app.schemas.location import LocationFilter
 from app.core.config import settings
 from app.metrics.algorithm import async_matching_algorithm_timer
@@ -18,7 +20,10 @@ from app.libs.job_matcher.vector_matcher import vector_matcher
 from app.libs.job_matcher.query_builder import query_builder
 from app.services.applied_jobs_service import applied_jobs_service
 from app.services.cooled_jobs_service import cooled_jobs_service
+from app.core.mongodb import database
+import spacy
 
+spacy_nlp = spacy.load("en_core_web_sm")
 
 class JobMatcher:
     """Core job matching functionality."""
@@ -185,7 +190,7 @@ class JobMatcher:
                     
                     return cached_results
             
-            logger.info("PROCESSING: No cache hit, proceeding with matching")
+            logger.info("PROCESSING: No cache hit, proceeding with matching (and recording request)")
             
             # Process the match
             logger.info("PROCESSING: Extracting CV embedding from resume")
@@ -267,6 +272,33 @@ class JobMatcher:
                     is_remote_only=is_remote_only # Include in cache key
                 )
                 await cache.set(cache_key, job_results)
+
+            # if cache was not used, save the request to be used for metrics
+
+            location_for_metrics = None
+            if location.latitude and location.longitude:
+                location_for_metrics = [location.latitude, location.longitude]
+
+            keywords_for_metrics = None
+            if keywords:
+                keywords_for_metrics = []
+                for word in keywords:
+                    lemmatized = spacy_nlp(word.lower())
+                    tokens = [
+                        token.lemma_.lower()
+                        for token in lemmatized
+                        if not token.is_stop
+                    ]
+                    keywords_for_metrics += tokens
+
+            request = SearchRequest(
+                user_id=user_id,
+                location=location_for_metrics,
+                keywords=keywords_for_metrics,
+                time=datetime.now()
+            )
+            metrics_collection = database.get_collection("requests")
+            await metrics_collection.insert_one(request)
             
             elapsed = time() - start_time
             logger.success(
