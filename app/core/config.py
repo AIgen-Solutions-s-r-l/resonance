@@ -88,18 +88,18 @@ class Settings(BaseSettings):
     app_name: str = os.getenv("APP_NAME", "matching_service")
 
     # Metrics settings
-    metrics_enabled: bool = os.getenv("METRICS_ENABLED", "True").lower() == "true"
+    metrics_enabled: bool = os.getenv("METRICS_ENABLED", "False").lower() == "true"
     metrics_debug: bool = os.getenv("METRICS_DEBUG", "False").lower() == "true"
     metrics_prefix: str = os.getenv("METRICS_PREFIX", "matching_service")
     metrics_app_name: str = os.getenv("METRICS_APP_NAME", "")
     metrics_environment: str = os.getenv("METRICS_ENVIRONMENT", os.getenv("ENVIRONMENT", "development"))
     metrics_sample_rate: float = float(os.getenv("METRICS_SAMPLE_RATE", "1.0"))
-    metrics_collection_enabled: bool = os.getenv("METRICS_COLLECTION_ENABLED", "True").lower() == "true"
+    metrics_collection_enabled: bool = os.getenv("METRICS_COLLECTION_ENABLED", "False").lower() == "true"
     include_timing_header: bool = os.getenv("INCLUDE_TIMING_HEADER", "False").lower() == "true"
     metrics_backend: str = os.getenv("METRICS_BACKEND", "statsd")  # For test compatibility (logging, statsd, prometheus)
     
     # StatsD backend settings
-    metrics_statsd_enabled: bool = os.getenv("METRICS_STATSD_ENABLED", "True").lower() == "true"
+    metrics_statsd_enabled: bool = os.getenv("METRICS_STATSD_ENABLED", "False").lower() == "true"
     metrics_statsd_host: str = os.getenv("METRICS_STATSD_HOST", "127.0.0.1")
     metrics_statsd_port: int = int(os.getenv("METRICS_STATSD_PORT", "8125"))
     

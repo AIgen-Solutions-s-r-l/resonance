@@ -193,7 +193,7 @@ if settings.metrics_enabled:
         )
 
 # Add auth debugging middleware
-app.add_middleware(AuthDebugMiddleware)
+#app.add_middleware(AuthDebugMiddleware)
 
 app.include_router(jobs_router)
 
