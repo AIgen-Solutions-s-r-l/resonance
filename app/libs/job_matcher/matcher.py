@@ -299,9 +299,9 @@ class JobMatcher:
                     time=datetime.now()
                 )
                 metrics_collection = database.get_collection("requests")
-                await metrics_collection.insert_one(request)
-            except Exception:
-                pass
+                await metrics_collection.insert_one(request.model_dump())
+            except Exception as e:
+                logger.warning("exception while saving search filter metric", error=e)
             
             elapsed = time() - start_time
             logger.success(
