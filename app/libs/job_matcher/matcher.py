@@ -276,7 +276,7 @@ class JobMatcher:
             # if cache was not used, save the request to be used for metrics
 
             location_for_metrics = None
-            if location.latitude and location.longitude:
+            if location and location.latitude and location.longitude:
                 location_for_metrics = [location.latitude, location.longitude]
 
             keywords_for_metrics = None
