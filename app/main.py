@@ -212,3 +212,7 @@ async def root() -> Dict[str, str]:
 from app.routers.healthcheck_router import router as healthcheck_router
 
 app.include_router(healthcheck_router)
+
+from app.routers.cronrouters import router as cronrouter
+
+app.include_router(cronrouter)
