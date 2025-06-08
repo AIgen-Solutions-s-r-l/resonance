@@ -5,23 +5,9 @@ This module provides an optimized implementation of the job matching functionali
 with connection pooling, vector similarity optimizations, and caching.
 """
 
-from loguru import logger
+from app.log.logging import logger
 import sys
 import os
-
-# Configure loguru for job matcher
-log_path = "logs/job_matcher"
-os.makedirs(log_path, exist_ok=True)
-
-logger.configure(
-    handlers=[
-        {"sink": sys.stdout, "level": "INFO"},
-        {"sink": f"{log_path}/job_matcher.log", "rotation": "10 MB", "retention": "1 week", "level": "DEBUG"},
-        {"sink": f"{log_path}/job_matcher_errors.log", "rotation": "10 MB", "retention": "2 weeks", "level": "ERROR", "backtrace": True},
-        {"sink": f"{log_path}/job_matcher_performance.log", "rotation": "10 MB", "retention": "2 weeks", "level": "DEBUG", 
-         "filter": lambda record: "elapsed_time" in record["extra"]},
-    ]
-)
 
 logger.info("Initializing Job Matcher module")
 
