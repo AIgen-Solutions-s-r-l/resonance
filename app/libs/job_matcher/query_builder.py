@@ -20,6 +20,7 @@ class JobQueryBuilder:
         self,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        fields: Optional[List[int]] = None,
         experience: Optional[List[str]] = None,
         company: Optional[str] = None,
         is_remote_only: Optional[bool] = None # Add new parameter
@@ -53,6 +54,11 @@ class JobQueryBuilder:
                 keyword_clauses, keyword_params = self._build_keyword_filters(keywords)
                 where_clauses.extend(keyword_clauses)
                 query_params.extend(keyword_params)
+
+            if fields and len(fields) > 0:
+                fields_clauses, fields_params = self._build_fields_filters(fields)
+                where_clauses.extend(fields_clauses)
+                query_params.extend(fields_params)
             
             # Add experience filters
             if experience and len(experience) > 0:
@@ -210,6 +216,16 @@ class JobQueryBuilder:
         query_params = [phrase, phrase]
         
         return where_clause, query_params
+    
+    def _build_fields_filters(
+        self, fields: List[int]
+    ) -> Tuple[List[str], List[Any]]:
+        """
+        Build fields filter conditions.
+        """
+        templated = "%s, " * len(fields) - 1
+        where_clause = [f"(j.field IN ({templated}%s))"]
+        return where_clause, fields
     
     def _build_experience_filters(
         self, experience: List[str]

@@ -31,6 +31,8 @@ class JobMatch:
     job_state: Optional[str] = None
     apply_link: Optional[str] = None
     location: Optional[str] = None
+    field: Optional[str] = None
+    subfield: Optional[str] = None
     
     def to_dict(self) -> dict:
         """Convert JobMatch to dictionary format."""

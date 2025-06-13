@@ -50,6 +50,7 @@ async def get_resume_by_user_id(
 async def match_jobs_with_resume(
     resume: Dict[str, Any],
     location: Optional[LocationFilter] = None,
+    fields: Optional[List[int]] = None,
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,
     offset: int = 0,
@@ -77,6 +78,7 @@ async def match_jobs_with_resume(
             resume,
             location=location,
             keywords=keywords,
+            fields=fields,
             save_to_mongodb=save_to_mongodb,
             offset=offset,
             experience=experience,
@@ -90,6 +92,7 @@ async def match_jobs_with_resume(
             matched_jobs_overflow = await matcher.process_job(
                 resume,
                 location=location,
+                fields=fields,
                 keywords=keywords,
                 save_to_mongodb=save_to_mongodb,
                 offset=offset + settings.CACHE_SIZE,

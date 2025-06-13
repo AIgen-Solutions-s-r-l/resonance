@@ -37,6 +37,7 @@ class JobMatcher:
         self,
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        fields: Optional[List[int]] = None,
         experience: Optional[List[str]] = None,
         is_remote_only: Optional[bool] = None # Add parameter
     ) -> Tuple[List[str], List[Any]]:
@@ -54,6 +55,7 @@ class JobMatcher:
         return query_builder.build_filter_conditions(
             location=location,
             keywords=keywords,
+            fields=fields,
             experience=experience,
             is_remote_only=is_remote_only # Pass parameter
         )
@@ -64,6 +66,7 @@ class JobMatcher:
         resume: Dict[str, Any],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        fields: Optional[List[int]] = None,
         save_to_mongodb: bool = False,
         offset: int = 0,
         use_cache: bool = True,
@@ -169,6 +172,7 @@ class JobMatcher:
                     offset=offset // settings.CACHE_SIZE,
                     location=location.model_dump() if location else None,
                     keywords=keywords,
+                    fields=fields,
                     experience=experience,
                     applied_job_ids=applied_ids,
                     cooled_job_ids=cooled_ids,
@@ -218,6 +222,7 @@ class JobMatcher:
                 cv_embedding,
                 location=location,
                 keywords=keywords,
+                fields=fields,
                 offset=(offset // settings.CACHE_SIZE) * settings.CACHE_SIZE,
                 limit=limit,
                 experience=experience,
@@ -239,7 +244,7 @@ class JobMatcher:
                 from app.utils.db_utils import get_db_cursor
                 # Get the filter conditions (including the new one)
                 where_clauses, query_params = await self._get_filter_conditions(
-                    location=location, keywords=keywords, experience=experience, is_remote_only=is_remote_only
+                    location=location, keywords=keywords, fields=fields, experience=experience, is_remote_only=is_remote_only
                 )
                 
                 async with get_db_cursor() as cursor:
@@ -266,6 +271,7 @@ class JobMatcher:
                     offset=offset // settings.CACHE_SIZE,
                     location=location.model_dump() if location else None,
                     keywords=keywords,
+                    fields=fields,
                     experience=experience,
                     applied_job_ids=applied_ids,
                     cooled_job_ids=cooled_ids,

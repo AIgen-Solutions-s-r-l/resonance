@@ -5,7 +5,7 @@ This router provides endpoints for matching jobs with resumes using
 a non-blocking asynchronous approach for better performance and scalability.
 """
 
-from typing import List, Any, Optional, Union
+from typing import Dict, List, Any, Optional, Union
 from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks
 from datetime import datetime, UTC
 from sqlalchemy import select
@@ -14,8 +14,9 @@ import uuid
 
 
 from app.core.auth import get_current_user, verify_api_key
+from app.models.classes import JobField
 from app.schemas.job import JobSchema, JobDetailResponse
-from app.schemas.job_match import JobsMatchedResponse, SortType
+from app.schemas.job_match import Field, FieldsResponse, JobsMatchedResponse, SortType, Subfield
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
@@ -321,6 +322,9 @@ async def get_matched_jobs_legacy(
         None,
         description="Filter jobs containing any of these keywords in the title or description. Multiple keywords will be treated as a single phrase.",
     ),
+    fields: Optional[List[int]] = Query(
+        None, description="Filter jobs belonging to this fields"
+    ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
         None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
@@ -380,7 +384,8 @@ async def get_matched_jobs_legacy(
             
         matched_jobs = await match_jobs_with_resume(
             resume,
-            location=location_filter,
+            location=location_filter, 
+            fields=fields,
             keywords=processed_keywords,
             offset=offset if offset is not None else 0,
             experience=experience,
@@ -548,4 +553,54 @@ async def get_jobs_by_ids(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving job details"
+        )
+
+
+@router.get(
+    "/fields",
+    response_model=FieldsResponse,
+    summary="Get fields mapping list",
+    description="Returns the available fields and subfields an user can search for",
+    status_code=status.HTTP_200_OK,
+)
+async def get_fields(
+    _: Any = Depends(get_current_user)
+):
+    try:
+        logger.info("Retrieving job fields")
+        
+        async with get_db_cursor() as cursor:
+            query = "SELECT * FROM Fields"
+
+            col_names = [col[0] for col in cursor.description]
+            await cursor.execute(query)
+
+            rows = await cursor.fetchall()
+            fields: Dict[str, Field] = {}
+            for row in rows:
+                row_dict = dict(zip(col_names, row))
+                job_field = JobField(**row_dict)
+
+                field_name = job_field.field
+                if field_name not in fields.keys():
+                    fields[field_name] = Field(name=field_name)
+
+                fields[field_name].subfields.append(
+                    Subfield(name=job_field.subfield, id=job_field.id)
+                )
+            
+        response = FieldsResponse()
+        for _, field in fields:
+            response.fields.append(field)
+
+        return response
+    
+    except Exception as e:
+        logger.exception(
+            "Error retrieving job fields from db",
+            error=str(e)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while retrieving job fields"
         )

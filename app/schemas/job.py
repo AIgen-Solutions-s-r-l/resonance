@@ -29,6 +29,7 @@ class JobSchema(BaseModel):
     portal: Optional[str] = None
     short_description: Optional[str] = None
     field: Optional[str] = None
+    subfield: Optional[str] = None
     experience: Optional[str] = None
     score: Optional[float] = None
     skills_required: Optional[List[str]] = None

@@ -202,6 +202,8 @@ async def execute_vector_similarity_query(
         j.posted_date,
         j.job_state,
         j.apply_link,
+        f.field as field,
+        f.subfield as subfield,
         co.country_name AS country,
         l.city,
         c.company_name,
@@ -213,6 +215,7 @@ async def execute_vector_similarity_query(
     LEFT JOIN "Companies" c ON j.company_id = c.company_id
     LEFT JOIN "Locations" l ON j.location_id = l.location_id
     LEFT JOIN "Countries" co ON l.country = co.country_id
+    LEFT JOIN "Fields" f ON j.field = f.id
     {where_sql}
     ORDER BY score -- non use desc or function otherwise not use index, problem of performance
     LIMIT %s OFFSET %s

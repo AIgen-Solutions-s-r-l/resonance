@@ -111,3 +111,11 @@ class Job(Base):
         "Location", back_populates="jobs"
     )
     
+
+class JobField(Base):
+
+    __tablename__ = "fields"
+
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    field: Mapped[str] = Column(String(100))
+    subfield: Mapped[str] = Column(String(150))

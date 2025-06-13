@@ -207,7 +207,9 @@ class JobValidator:
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
-                location=row.get('location')
+                location=row.get('location'),
+                field=row.get('field'),
+                subfield=row.get('subfield')
             )
 
             elapsed = time() - start_time

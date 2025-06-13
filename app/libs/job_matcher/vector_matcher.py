@@ -32,6 +32,7 @@ class VectorMatcher:
         cv_embedding: List[float],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        fields: Optional[List[int]] = None,
         offset: int = 0,
         limit: int = settings.CACHE_SIZE,
         experience: Optional[List[str]] = None,
@@ -62,7 +63,7 @@ class VectorMatcher:
             # Build filter conditions
             logger.info("VECTOR_MATCH: Building filter conditions")
             where_clauses, query_params = query_builder.build_filter_conditions(
-                location=location, keywords=keywords, experience=experience, is_remote_only=is_remote_only # Pass new parameter
+                location=location, keywords=keywords, fields=fields, experience=experience, is_remote_only=is_remote_only # Pass new parameter
             )
 
             logger.info(
