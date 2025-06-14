@@ -6,7 +6,7 @@ a non-blocking asynchronous approach for better performance and scalability.
 """
 
 from typing import List, Any, Optional, Union
-from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks, Body
 from datetime import datetime, UTC
 from sqlalchemy import select
 import re
@@ -550,7 +550,7 @@ async def get_jobs_by_ids(
             detail="An error occurred while retrieving job details"
         )
 
-@router.get(
+@router.post(
     "/validate",
     response_model=MissingJobsResponse,
     summary="Validate Job IDs",
@@ -558,24 +558,14 @@ async def get_jobs_by_ids(
     status_code=status.HTTP_200_OK,
 )
 async def validate_job_ids(
-    job_ids: Optional[List[str]] = Query(
-        None, description="List of job IDs to validate"
+    job_ids: Optional[List[str]] = Body(
+        None, media_type="application/json", description="List of job IDs to validate"
     ),
     _: bool = Depends(verify_api_key),
 ):
-    """
-    Check which job IDs in the given list are not present in the Jobs table.
-
-    Returns the list of IDs that do *not* exist.
-    """
     if not job_ids:
-        return MissingJobsResponse(
-            missing_ids=[],
-            count=0,
-            status="success"
-        )
+        return MissingJobsResponse(missing_ids=[], count=0, status="success")
 
-    # 1) Filter out anything that isn't a valid UUID format
     uuid_pattern = re.compile(
         r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
         re.I
@@ -590,43 +580,32 @@ async def validate_job_ids(
         )
 
     if not valid_job_ids:
-        # nothing valid to check against the DB
         return MissingJobsResponse(
-            missing_ids=job_ids, # treat all as missing
+            missing_ids=job_ids,
             count=len(job_ids),
             status="success"
         )
 
     try:
-        logger.info(
-            "Validating existence of {n} job IDs",
-            n=len(valid_job_ids)
-        )
+        logger.info("Validating existence of {n} job IDs", n=len(valid_job_ids))
+
         async with get_db_cursor() as cursor:
-            # 1) Log the incoming list of valid UUIDs
             logger.info(
                 "Validating job IDs against DB: {valid_ids}",
                 valid_ids=valid_job_ids
             )
-
-            # 2) Fetch the ones that exist
             await cursor.execute(
                 'SELECT id FROM "Jobs" WHERE id = ANY(%s)',
                 (valid_job_ids,)
             )
             rows = await cursor.fetchall()
             found_ids = {str(r["id"]) for r in rows}
-
-            # 3) Log what came back from the database
             logger.info(
                 "Database returned these existing IDs: {found_ids}",
                 found_ids=list(found_ids)
             )
 
-        # 4) Compute which valid IDs were not found
         missing_valid = [jid for jid in valid_job_ids if jid not in found_ids]
-
-        # 5) Log any that were “missing” despite valid format
         if missing_valid:
             logger.info(
                 "These valid-format IDs were NOT found: {missing_valid}",
@@ -635,10 +614,7 @@ async def validate_job_ids(
         else:
             logger.info("All valid-format IDs were found in the DB")
 
-        # 6) Combine invalid-format + valid-but-not-found
         missing_ids = invalid_job_ids + missing_valid
-
-        # 7) Final log of what you’ll return
         logger.info(
             "Final missing_ids (invalid + not-found): {missing_ids}",
             missing_ids=missing_ids
@@ -653,8 +629,7 @@ async def validate_job_ids(
     except Exception as exc:
         logger.exception(
             "Error checking job ID existence",
-            error=str(exc),
-            job_ids=job_ids
+            error=str(exc), job_ids=job_ids
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
