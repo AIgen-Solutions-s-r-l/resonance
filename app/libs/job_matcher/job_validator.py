@@ -193,7 +193,6 @@ class JobValidator:
                 description=row.get('description'),
                 workplace_type=row.get('workplace_type'),
                 short_description=row.get('short_description'),
-                field=row.get('field'),
                 experience=row.get('experience'),
                 skills_required=parse_skills_string(
                     row.get('skills_required')),

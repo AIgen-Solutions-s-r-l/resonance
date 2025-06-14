@@ -346,10 +346,11 @@ async def test_process_job_cache_handles_different_applied_ids(
     mock_get_applied_jobs.assert_awaited_once_with("user1")
     mock_generate_key.assert_awaited_with(
         resume["_id"],
-        offset=base_params["offset"],
-        location=base_params["location"],
-        keywords=base_params["keywords"],
-        experience=base_params["experience"],
+        offset=base_params.get("offset"),
+        location=base_params.get("location"),
+        keywords=base_params.get("keywords"),
+        fields=base_params.get("fields"),
+        experience=base_params.get("experience"),
         applied_job_ids=applied_ids_user1,
         cooled_job_ids=[],
         is_remote_only=None # Add missing param assertion
@@ -383,10 +384,11 @@ async def test_process_job_cache_handles_different_applied_ids(
     mock_get_applied_jobs.assert_awaited_once_with("user2")
     mock_generate_key.assert_awaited_with(
         resume["_id"],
-        offset=base_params["offset"],
-        location=base_params["location"],
-        keywords=base_params["keywords"],
-        experience=base_params["experience"],
+        offset=base_params.get("offset"),
+        location=base_params.get("location"),
+        keywords=base_params.get("keywords"),
+        fields=base_params.get("fields"),
+        experience=base_params.get("experience"),
         applied_job_ids=applied_ids_user2,
         cooled_job_ids=[],
         is_remote_only=None # Add missing param assertion
@@ -417,10 +419,11 @@ async def test_process_job_cache_handles_different_applied_ids(
     mock_get_applied_jobs.assert_awaited_once_with("user1")
     mock_generate_key.assert_awaited_once_with(
         resume["_id"],
-        offset=base_params["offset"],
-        location=base_params["location"],
-        keywords=base_params["keywords"],
-        experience=base_params["experience"],
+        offset=base_params.get("offset"),
+        location=base_params.get("location"),
+        keywords=base_params.get("keywords"),
+        fields=base_params.get("fields"),
+        experience=base_params.get("experience"),
         applied_job_ids=applied_ids_user1,
         cooled_job_ids=[],
         is_remote_only=None # Add missing param assertion
