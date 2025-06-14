@@ -558,8 +558,10 @@ async def get_jobs_by_ids(
     status_code=status.HTTP_200_OK,
 )
 async def validate_job_ids(
-    job_ids: Optional[List[str]] = Body(
-        None, media_type="application/json", description="List of job IDs to validate"
+    job_ids: List[str] = Body(
+        ..., 
+        embed=True,
+        description="List of job IDs to validate"
     ),
     _: bool = Depends(verify_api_key),
 ):
