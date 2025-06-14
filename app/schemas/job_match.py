@@ -21,9 +21,9 @@ class Subfield(BaseModel):
     name: str
     id: int
 
-class Field(BaseModel):
+class RootField(BaseModel):
     name: str
     subfields: List[Subfield] = []
 
 class FieldsResponse(BaseModel):
-    fields: List[Field] = []
+    fields: List[RootField] = []

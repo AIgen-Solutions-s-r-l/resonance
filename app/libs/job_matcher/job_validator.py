@@ -195,20 +195,22 @@ class JobValidator:
                 short_description=row.get('short_description'),
                 experience=row.get('experience'),
                 skills_required=parse_skills_string(
-                    row.get('skills_required')),
+                    row.get('skills_required')
+                ),
                 country=row.get('country'),
                 city=row.get('city'),
                 company_name=row.get('company_name'),
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
                 score=float(JobValidator.score_to_percentage(
-                    row.get('score', 0.0))),
+                    row.get('score', 0.0))
+                ),
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
                 location=row.get('location'),
-                field=row.get('field'),
-                subfield=row.get('subfield')
+                field=row.get('root_field'),
+                subfield=row.get('sub_field')
             )
 
             elapsed = time() - start_time

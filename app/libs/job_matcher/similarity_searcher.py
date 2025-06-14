@@ -66,8 +66,8 @@ class SimilaritySearcher:
             j.posted_date as posted_date,
             j.job_state as job_state,
             j.apply_link as apply_link,
-            f.field as field,
-            f.subfield as subfield,
+            f.root_field as root_field,
+            f.sub_field as sub_field,
             co.country_name as country,
             l.city as city,
             c.company_name as company_name,
@@ -78,7 +78,7 @@ class SimilaritySearcher:
         LEFT JOIN "Companies" c ON j.company_id = c.company_id
         LEFT JOIN "Locations" l ON j.location_id = l.location_id
         LEFT JOIN "Countries" co ON l.country = co.country_id
-        LEFT JOIN "Fields" f ON j.field = f.id
+        LEFT JOIN "Fields" f ON j.field_id = f.id
         {where_sql}
         LIMIT %s
         """

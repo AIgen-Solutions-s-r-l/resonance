@@ -114,8 +114,8 @@ class Job(Base):
 
 class JobField(Base):
 
-    __tablename__ = "fields"
+    __tablename__ = "Fields"
 
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
-    field: Mapped[str] = Column(String(100))
-    subfield: Mapped[str] = Column(String(150))
+    root_field: Mapped[str] = Column(String(100))
+    sub_field: Mapped[str] = Column(String(150))

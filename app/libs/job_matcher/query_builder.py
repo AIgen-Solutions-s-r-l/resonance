@@ -224,7 +224,7 @@ class JobQueryBuilder:
         Build fields filter conditions.
         """
         templated = "%s, " * len(fields) - 1
-        where_clause = [f"(j.field IN ({templated}%s))"]
+        where_clause = [f"(j.field_id IN ({templated}%s))"]
         return where_clause, fields
     
     def _build_experience_filters(

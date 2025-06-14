@@ -16,7 +16,7 @@ import uuid
 from app.core.auth import get_current_user, verify_api_key
 from app.models.classes import JobField
 from app.schemas.job import JobSchema, JobDetailResponse
-from app.schemas.job_match import Field, FieldsResponse, JobsMatchedResponse, SortType, Subfield
+from app.schemas.job_match import RootField, FieldsResponse, JobsMatchedResponse, SortType, Subfield
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
@@ -576,17 +576,17 @@ async def get_fields(
             await cursor.execute(query)
 
             rows = await cursor.fetchall()
-            fields: Dict[str, Field] = {}
+            fields: Dict[str, RootField] = {}
             for row in rows:
                 row_dict = dict(zip(col_names, row))
                 job_field = JobField(**row_dict)
 
-                field_name = job_field.field
+                field_name = job_field.root_field
                 if field_name not in fields.keys():
-                    fields[field_name] = Field(name=field_name)
+                    fields[field_name] = RootField(name=field_name)
 
                 fields[field_name].subfields.append(
-                    Subfield(name=job_field.subfield, id=job_field.id)
+                    Subfield(name=job_field.sub_field, id=job_field.id)
                 )
             
         response = FieldsResponse()
