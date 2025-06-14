@@ -14,7 +14,7 @@ import uuid
 
 
 from app.core.auth import get_current_user, verify_api_key
-from app.schemas.job import JobSchema, JobDetailResponse
+from app.schemas.job import JobSchema, JobDetailResponse, MissingJobsResponse
 from app.schemas.job_match import JobsMatchedResponse, SortType
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
@@ -548,4 +548,88 @@ async def get_jobs_by_ids(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving job details"
+        )
+
+@router.get(
+    "/validate",
+    response_model=MissingJobsResponse,
+    summary="Validate Job IDs",
+    description="Checks which of the given job IDs do not exist in the database",
+    status_code=status.HTTP_200_OK,
+)
+async def validate_job_ids(
+    job_ids: Optional[List[str]] = Query(
+        None, description="List of job IDs to validate"
+    ),
+    _: bool = Depends(verify_api_key),
+):
+    """
+    Check which job IDs in the given list are not present in the Jobs table.
+
+    Returns the list of IDs that do *not* exist.
+    """
+    if not job_ids:
+        return MissingJobsResponse(
+            missing_ids=[],
+            count=0,
+            status="success"
+        )
+
+    # 1) Filter out anything that isn't a valid UUID format
+    uuid_pattern = re.compile(
+        r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+        re.I
+    )
+    valid_job_ids = [jid for jid in job_ids if uuid_pattern.match(jid)]
+    invalid_job_ids = [jid for jid in job_ids if not uuid_pattern.match(jid)]
+
+    if invalid_job_ids:
+        logger.warning(
+            "Received {n} invalid UUIDs: {ids}",
+            n=len(invalid_job_ids), ids=invalid_job_ids
+        )
+
+    if not valid_job_ids:
+        # nothing valid to check against the DB
+        return MissingJobsResponse(
+            missing_ids=job_ids, # treat all as missing
+            count=len(job_ids),
+            status="success"
+        )
+
+    try:
+        logger.info(
+            "Validating existence of {n} job IDs",
+            n=len(valid_job_ids)
+        )
+        async with get_db_cursor() as cursor:
+            # fetch only the IDs that *do* exist
+            await cursor.execute(
+                'SELECT id FROM "Jobs" WHERE id = ANY(%s)',
+                (valid_job_ids,)
+            )
+            rows = await cursor.fetchall()
+            found_ids = {str(r["id"]) for r in rows}
+
+        # Compute which valid IDs were not found
+        missing_valid = [jid for jid in valid_job_ids if jid not in found_ids]
+
+        # Combine invalid-format IDs + valid-but-not-found
+        missing_ids = invalid_job_ids + missing_valid
+
+        return MissingJobsResponse(
+            missing_ids=missing_ids,
+            count=len(missing_ids),
+            status="success"
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Error checking job ID existence",
+            error=str(exc),
+            job_ids=job_ids
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while validating job IDs"
         )
