@@ -108,7 +108,7 @@ class JobQueryBuilder:
         fields - not nullable and with len > 0
         """
         relationship = "FieldJobs" # TODO : replace with relationship name
-        parametrized_any = "ANY(%s" + ", %s" * len(fields) - 1 + ")"
+        parametrized_any = "ANY(%s" + ", %s" * (len(fields) - 1) + ")"
         return [ManyToManyFilter(
             relationship = f"{relationship} AS fj", 
             where_clause = f"(selected.id = fj.job_id AND fj.field_id = {parametrized_any})",
