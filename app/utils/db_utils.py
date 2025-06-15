@@ -189,13 +189,13 @@ async def execute_vector_similarity_query(
     if all_where_clauses:
         where_sql = "WHERE " + " AND ".join(all_where_clauses) # e.g., "WHERE embedding IS NOT NULL AND co.country_name = %s AND j.experience = %s AND j.id NOT IN %s"
 
-    query = ""
+    query = "WITH\n"
     sql_params = []
 
     if many_to_many_filters is not None and len(many_to_many_filters) > 0:
         relationships = ", ".join([mtm.relationship for mtm in many_to_many_filters])
-        query = f"""
-        WITH "Jobs" AS (
+        query += f"""
+        "Jobs" AS (
             SELECT selected.*
             FROM "Jobs" as selected
             WHERE EXISTS (
@@ -205,12 +205,12 @@ async def execute_vector_similarity_query(
         sql_params += [param for mtm in many_to_many_filters for param in mtm.params]
         query += """
             )
-        )
+        ),
         """
 
     # Define the query using the constructed where_sql
     query += f"""
-    WITH "JobMatches" AS (
+    "JobMatches" AS (
         SELECT
             j.id AS id,
             j.title AS title,
