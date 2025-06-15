@@ -14,7 +14,7 @@ import uuid
 
 
 from app.core.auth import get_current_user, verify_api_key
-from app.models.classes import JobField
+from app.models.classes import Field
 from app.schemas.job import JobSchema, JobDetailResponse
 from app.schemas.job_match import RootField, FieldsResponse, JobsMatchedResponse, SortType, Subfield
 from app.models.job import Job
@@ -579,7 +579,7 @@ async def get_fields(
             fields: Dict[str, RootField] = {}
             for row in rows:
                 row_dict = dict(zip(col_names, row))
-                job_field = JobField(**row_dict)
+                job_field = Field(**row_dict)
 
                 field_name = job_field.root_field
                 if field_name not in fields.keys():
