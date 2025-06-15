@@ -212,7 +212,7 @@ async def execute_vector_similarity_query(
         SELECT
             j.id AS id,
             j.title AS title,
-            j.description AS descriptio,
+            j.description AS description,
             j.workplace_type AS workplace_type,
             j.short_description AS short_description,
             j.experience AS experience,
