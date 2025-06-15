@@ -576,21 +576,15 @@ async def get_fields(
 
             rows = await cursor.fetchall()
 
-            if cursor.description is None:
-                logger.error("cursor description is None for /fields")
-
-            col_names = [col[0] for col in cursor.description]
             fields: Dict[str, RootField] = {}
             for row in rows:
-                row_dict = dict(zip(col_names, row))
-                job_field = Field(**row_dict)
 
-                field_name = job_field.root_field
+                field_name = row.get('root_field')
                 if field_name not in fields.keys():
                     fields[field_name] = RootField(name=field_name)
 
                 fields[field_name].subfields.append(
-                    Subfield(name=job_field.sub_field, id=job_field.id)
+                    Subfield(name=row.get('sub_field'), id=row.get('id'))
                 )
             
         response = FieldsResponse()
