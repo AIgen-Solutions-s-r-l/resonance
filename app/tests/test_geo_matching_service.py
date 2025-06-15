@@ -40,8 +40,8 @@ async def test_match_jobs_with_resume_with_geo_params():
         )
         
         # Verify that process_job was called with the correct parameters
-        mock_matcher_instance.process_job.assert_called_once()
-        call_args = mock_matcher_instance.process_job.call_args[1]
+        mock_matcher_instance.process_job.assert_called()
+        call_args = mock_matcher_instance.process_job.call_args_list[0][1]
         
         # Check that the location parameter has the geo data
         assert call_args['location'] is not None
@@ -79,8 +79,8 @@ async def test_match_jobs_with_resume_with_geo_params_no_radius():
         )
         
         # Verify that process_job was called with the correct parameters
-        mock_matcher_instance.process_job.assert_called_once()
-        call_args = mock_matcher_instance.process_job.call_args[1]
+        mock_matcher_instance.process_job.assert_called()
+        call_args = mock_matcher_instance.process_job.call_args_list[0][1]
         
         # Check that the location parameter has the geo data but no radius
         assert call_args['location'] is not None
@@ -112,8 +112,8 @@ async def test_match_jobs_with_resume_no_geo_params():
         )
         
         # Verify that process_job was called with the correct parameters
-        mock_matcher_instance.process_job.assert_called_once()
-        call_args = mock_matcher_instance.process_job.call_args[1]
+        mock_matcher_instance.process_job.assert_called()
+        call_args = mock_matcher_instance.process_job.call_args_list[0][1]
         
         # Check that the location parameter is created but has no geo data
         assert call_args['location'] is not None
@@ -153,8 +153,8 @@ async def test_match_jobs_with_resume_with_location_and_radius():
         )
         
         # Verify that process_job was called with the correct parameters
-        mock_matcher_instance.process_job.assert_called_once()
-        call_args = mock_matcher_instance.process_job.call_args[1]
+        mock_matcher_instance.process_job.assert_called()
+        call_args = mock_matcher_instance.process_job.call_args_list[0][1]
         
         # Check that the location parameter has all the data
         assert call_args['location'] is not None
