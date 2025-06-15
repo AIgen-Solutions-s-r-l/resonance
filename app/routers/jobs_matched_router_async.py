@@ -352,6 +352,7 @@ async def get_matched_jobs_legacy(
             location_filter=location_filter,
             keywords=keywords,
             experience=experience,
+            fields=fields
         )
 
         resume = await get_resume_by_user_id(current_user)

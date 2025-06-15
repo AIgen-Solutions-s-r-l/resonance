@@ -141,9 +141,11 @@ async def match_jobs_with_resume(
         if len(jobs) == 0:
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
         else:
+            logger.info("matched with {amount} jobs", resume_id = resume.get("_id", None), amount=len(jobs))
             sort_jobs(jobs, sort_type)
         
         if len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
+            logger.info("retrieving further, unfiltered, jobs", resume_id = resume.get("_id", None))
             # then we extract other (unfiltered) jobs until we have at least ONE cache worth of jobs
             matched_jobs_unfiltered = await matcher.process_job(
                 resume,
