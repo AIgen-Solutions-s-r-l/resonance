@@ -570,7 +570,7 @@ async def get_fields(
         logger.info("Retrieving job fields")
         
         async with get_db_cursor() as cursor:
-            query = "SELECT * FROM Fields"
+            query = "SELECT * FROM \"Fields\""
 
             await cursor.execute(query)
 
@@ -578,7 +578,7 @@ async def get_fields(
 
             if cursor.description is None:
                 logger.error("cursor description is None for /fields")
-                
+
             col_names = [col[0] for col in cursor.description]
             fields: Dict[str, RootField] = {}
             for row in rows:
