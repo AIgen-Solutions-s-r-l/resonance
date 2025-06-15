@@ -6,7 +6,7 @@ a non-blocking asynchronous approach for better performance and scalability.
 """
 
 
-from typing import List, Any, Optional, Union
+from typing import Dict, List, Any, Optional, Union
 from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks, Body
 from datetime import datetime, UTC
 from sqlalchemy import select
@@ -586,9 +586,9 @@ async def get_fields(
                     Subfield(name=row.get('sub_field'), id=row.get('id'))
                 )
             
-        response = FieldsResponse()
-        for _, field in fields:
-            response.fields.append(field)
+            response = FieldsResponse()
+            for field in fields.values():
+                response.fields.append(field)
 
         return response
     
