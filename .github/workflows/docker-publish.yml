@@ -59,6 +59,5 @@ jobs:
           push: true
           tags: |
             ${{ github.ref == 'refs/heads/main' && 'ghcr.io/aihawk-startup/matching_service:pre' || '' }}
-            ${{ github.ref == 'refs/heads/dropdown-filters' && 'ghcr.io/aihawk-startup/matching_service:pre' || '' }}
             ${{ github.ref == 'refs/heads/release_2025_01' && 'ghcr.io/aihawk-startup/matching_service:release_2025_01' || '' }}
             ghcr.io/aihawk-startup/matching_service:${{ env.GITHUB_SHA_SHORT }}
