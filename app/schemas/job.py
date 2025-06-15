@@ -72,3 +72,8 @@ class JobDetailResponse(BaseModel):
     jobs: List[JobSchema]
     count: int
     status: str
+
+class MissingJobsResponse(BaseModel):
+    missing_ids: List[str]
+    count: int
+    status: str

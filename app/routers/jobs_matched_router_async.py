@@ -5,17 +5,17 @@ This router provides endpoints for matching jobs with resumes using
 a non-blocking asynchronous approach for better performance and scalability.
 """
 
-from typing import Dict, List, Any, Optional, Union
-from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks
+
+from typing import List, Any, Optional, Union
+from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks, Body
 from datetime import datetime, UTC
 from sqlalchemy import select
 import re
 import uuid
 
-
 from app.core.auth import get_current_user, verify_api_key
 from app.models.classes import Field
-from app.schemas.job import JobSchema, JobDetailResponse
+from app.schemas.job import JobSchema, JobDetailResponse, MissingJobsResponse
 from app.schemas.job_match import RootField, FieldsResponse, JobsMatchedResponse, SortType, Subfield
 from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
@@ -555,7 +555,6 @@ async def get_jobs_by_ids(
             detail="An error occurred while retrieving job details"
         )
 
-
 @router.get(
     "/fields",
     response_model=FieldsResponse,
@@ -601,4 +600,93 @@ async def get_fields(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while retrieving job fields"
+        )
+
+          
+@router.post(
+    "/validate",
+    response_model=MissingJobsResponse,
+    summary="Validate Job IDs",
+    description="Checks which of the given job IDs do not exist in the database",
+    status_code=status.HTTP_200_OK,
+)
+async def validate_job_ids(
+    job_ids: List[str] = Body(
+        ..., 
+        embed=True,
+        description="List of job IDs to validate"
+    ),
+    _: bool = Depends(verify_api_key),
+):
+    if not job_ids:
+        return MissingJobsResponse(missing_ids=[], count=0, status="success")
+
+    uuid_pattern = re.compile(
+        r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+        re.I
+    )
+    valid_job_ids = [jid for jid in job_ids if uuid_pattern.match(jid)]
+    invalid_job_ids = [jid for jid in job_ids if not uuid_pattern.match(jid)]
+
+    if invalid_job_ids:
+        logger.warning(
+            "Received {n} invalid UUIDs: {ids}",
+            n=len(invalid_job_ids), ids=invalid_job_ids
+        )
+
+    if not valid_job_ids:
+        return MissingJobsResponse(
+            missing_ids=job_ids,
+            count=len(job_ids),
+            status="success"
+        )
+
+    try:
+        logger.info("Validating existence of {n} job IDs", n=len(valid_job_ids))
+
+        async with get_db_cursor() as cursor:
+            logger.info(
+                "Validating job IDs against DB: {valid_ids}",
+                valid_ids=valid_job_ids
+            )
+            await cursor.execute(
+                'SELECT id FROM "Jobs" WHERE id = ANY(%s)',
+                (valid_job_ids,)
+            )
+            rows = await cursor.fetchall()
+            found_ids = {str(r["id"]) for r in rows}
+            logger.info(
+                "Database returned these existing IDs: {found_ids}",
+                found_ids=list(found_ids)
+            )
+
+        missing_valid = [jid for jid in valid_job_ids if jid not in found_ids]
+        if missing_valid:
+            logger.info(
+                "These valid-format IDs were NOT found: {missing_valid}",
+                missing_valid=missing_valid
+            )
+        else:
+            logger.info("All valid-format IDs were found in the DB")
+
+        missing_ids = invalid_job_ids + missing_valid
+        logger.info(
+            "Final missing_ids (invalid + not-found): {missing_ids}",
+            missing_ids=missing_ids
+        )
+
+        return MissingJobsResponse(
+            missing_ids=missing_ids,
+            count=len(missing_ids),
+            status="success"
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Error checking job ID existence",
+            error=str(exc), job_ids=job_ids
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while validating job IDs"
         )
