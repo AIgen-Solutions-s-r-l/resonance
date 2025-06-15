@@ -9,7 +9,7 @@ from app.log.logging import logger
 from time import time
 
 from app.schemas.location import LocationFilter
-from app.utils.db_utils import get_db_cursor, get_filtered_job_count
+from app.utils.db_utils import get_db_cursor
 from app.metrics.algorithm import async_matching_algorithm_timer
 
 from app.libs.job_matcher.models import JobMatch
@@ -32,6 +32,7 @@ class VectorMatcher:
         cv_embedding: List[float],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
+        fields: Optional[List[int]] = None,
         offset: int = 0,
         limit: int = settings.CACHE_SIZE,
         experience: Optional[List[str]] = None,
@@ -61,8 +62,8 @@ class VectorMatcher:
 
             # Build filter conditions
             logger.info("VECTOR_MATCH: Building filter conditions")
-            where_clauses, query_params = query_builder.build_filter_conditions(
-                location=location, keywords=keywords, experience=experience, is_remote_only=is_remote_only # Pass new parameter
+            many_to_many_filters, where_clauses, query_params = query_builder.build_filter_conditions(
+                location=location, keywords=keywords, fields=fields, experience=experience, is_remote_only=is_remote_only # Pass new parameter
             )
 
             logger.info(
@@ -75,33 +76,13 @@ class VectorMatcher:
             async with get_db_cursor("default") as cursor:
                 logger.info("VECTOR_MATCH: Database cursor acquired")
 
-                # Check row count using a lighter query
-                count_start = time()
-                logger.info("VECTOR_MATCH: Running count query")
-                row_count = await get_filtered_job_count(cursor, where_clauses, query_params, True)
-                count_elapsed = time() - count_start
-
-                logger.info(
-                    f"VECTOR_MATCH: Count query completed - {count_elapsed:.6f}s",
-                    row_count=row_count,
-                    elapsed_time=f"{count_elapsed:.6f}s"
-                )
-
-                # Check if we need to use fallback query due to low row count
-                if row_count <= 1:
-                    logger.info(
-                        "VECTOR_MATCH: Using fallback query due to low row count",
-                        row_count=row_count
-                    )
-                    return await self.similarity_searcher._execute_fallback_query(
-                        cursor, where_clauses, query_params, limit
-                    )
-
                 # Execute optimized vector similarity query
                 logger.info(
-                    "VECTOR_MATCH: Executing optimized vector similarity query")
+                    "VECTOR_MATCH: Executing optimized vector similarity query"
+                )
                 try:
                     # Define the expected vector dimension
+                    # We should probably NOT define this here
                     EXPECTED_DIMENSION = 1024
                     
                     # Validate and normalize embedding format
@@ -156,7 +137,7 @@ class VectorMatcher:
                     )
 
                     result = await self.similarity_searcher._execute_vector_query(
-                        cursor, cv_embedding, where_clauses, query_params, limit, offset, applied_job_ids=applied_job_ids  # Pass parameter
+                        cursor, cv_embedding, many_to_many_filters, where_clauses, query_params, limit, offset, applied_job_ids=applied_job_ids  # Pass parameter
                     )
                     logger.info(
                         f"VECTOR_MATCH: Vector query returned {len(result)} results")

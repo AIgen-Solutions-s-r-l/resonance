@@ -9,6 +9,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     Float,
+    Table,
 )
 from sqlalchemy.orm import relationship, declarative_base, Mapped
 from sqlalchemy.sql import func
@@ -17,6 +18,30 @@ from geoalchemy2 import Geometry
 from typing import List, Optional
 
 Base = declarative_base()
+
+
+FieldJobs = Table(
+    "FieldJobs",
+    Base.metadata,
+    Column("job_id", UUID(as_uuid=True), ForeignKey("Jobs.id", ondelete="CASCADE"), primary_key=True),
+    Column("field_id", Integer, ForeignKey("Fields.id", ondelete="CASCADE"), primary_key=True),
+)
+
+class Field(Base):
+    __tablename__ = "Fields"
+
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    root_field: Mapped[str] = Column(String(255), nullable=False)
+    sub_field: Mapped[str] = Column(String(255), nullable=False)
+    record_creation_time: Mapped[Optional[DateTime]] = Column(
+        DateTime(), server_default=func.now(), nullable=False
+    )
+
+    jobs: Mapped[List["Job"]] = relationship(
+        "Job",
+        secondary=FieldJobs,
+        back_populates="fields"
+    )
 
 
 class Company(Base):
@@ -29,9 +54,7 @@ class Company(Base):
         DateTime(), server_default=func.now(), nullable=False
     )
 
-    jobs: Mapped[List["Job"]] = relationship(
-        "Job", back_populates="company"
-    )
+    jobs: Mapped[List["Job"]] = relationship("Job", back_populates="company")
 
 
 class Country(Base):
@@ -51,7 +74,7 @@ class Location(Base):
     city: Mapped[str] = Column(String(255), nullable=False)
     latitude: Mapped[Optional[float]] = Column(Float, nullable=True)
     longitude: Mapped[Optional[float]] = Column(Float, nullable=True)
-    geom: Mapped[Optional[Geometry]] = Column (Geometry('POINT'), nullable=True)
+    geom: Mapped[Optional[Geometry]] = Column(Geometry("POINT"), nullable=True)
     record_creation_time: Mapped[Optional[DateTime]] = Column(
         DateTime(), server_default=func.now(), nullable=False
     )
@@ -64,9 +87,7 @@ class Location(Base):
         UniqueConstraint("city", "country", name="unique_location_city_country"),
     )
 
-    jobs: Mapped[List["Job"]] = relationship(
-        "Job", back_populates="location"
-    )
+    jobs: Mapped[List["Job"]] = relationship("Job", back_populates="location")
 
 
 class Job(Base):
@@ -81,7 +102,6 @@ class Job(Base):
     job_state: Mapped[Optional[str]] = Column(String(8))
     description: Mapped[Optional[str]] = Column(Text)
     short_description: Mapped[Optional[str]] = Column(Text)
-    field: Mapped[Optional[str]] = Column(String(255))
     experience: Mapped[Optional[str]] = Column(String(255))
     skills_required: Mapped[Optional[str]] = Column(Text)
     apply_link: Mapped[Optional[str]] = Column(Text)
@@ -104,10 +124,5 @@ class Job(Base):
         ),
     )
 
-    company: Mapped["Company"] = relationship(
-        "Company", back_populates="jobs"
-    )
-    location: Mapped["Location"] = relationship(
-        "Location", back_populates="jobs"
-    )
-    
+    company: Mapped["Company"] = relationship("Company", back_populates="jobs")
+    location: Mapped["Location"] = relationship("Location", back_populates="jobs")

@@ -107,3 +107,4 @@ yarl==1.17.2
 zope.interface==7.1.1
 datadog-api-client==2.32.0
 spacy==3.8.7
+GeoAlchemy2==0.17.1

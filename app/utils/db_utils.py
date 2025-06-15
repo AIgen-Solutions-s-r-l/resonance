@@ -16,6 +16,7 @@ from psycopg_pool import AsyncConnectionPool
 from app.core.config import settings
 from app.log.logging import logger
 from app.metrics.database import async_sql_query_timer
+from app.schemas.job_match import ManyToManyFilter
 
 # Type variable for generic connection pool
 T = TypeVar("T")
@@ -140,6 +141,7 @@ async def get_db_cursor(pool_name: str = "default"):
 async def execute_vector_similarity_query(
     cursor: psycopg.AsyncCursor,
     cv_embedding: List[float],
+    many_to_many_filters: List[ManyToManyFilter],
     where_clauses: List[str],
     query_params: List[Any],
     limit: int = 25,
@@ -187,40 +189,61 @@ async def execute_vector_similarity_query(
     if all_where_clauses:
         where_sql = "WHERE " + " AND ".join(all_where_clauses) # e.g., "WHERE embedding IS NOT NULL AND co.country_name = %s AND j.experience = %s AND j.id NOT IN %s"
 
+    query = ""
+    sql_params = []
+
+    if many_to_many_filters is not None and len(many_to_many_filters) > 0:
+        relationships += ", ".join([mtm.relationship for mtm in many_to_many_filters])
+        query = f"""
+            WITH "Jobs" AS (
+                SELECT selected.*
+                FROM "Jobs" as selected
+                WHERE EXISTS (
+                    SELECT 1 FROM {relationships}
+                    WHERE 
+        """
+        query += "AND ".join([mtm.where_clause for mtm in many_to_many_filters])
+        sql_params += [param for mtm in many_to_many_filters for param in mtm.params]
+        query += ")\n)\n\n"
 
     # Define the query using the constructed where_sql
-    query = f"""
-    SELECT
-        j.id,
-        j.title,
-        j.description,
-        j.workplace_type,
-        j.short_description,
-        j.field,
-        j.experience,
-        j.skills_required,
-        j.posted_date,
-        j.job_state,
-        j.apply_link,
-        co.country_name AS country,
-        l.city,
-        c.company_name,
-        c.logo AS company_logo,
-        j.portal AS portal,
-        --no use operation or function otherwise not use index, problem of performance
-        embedding <=> %s::vector AS score
-    FROM "Jobs" j
-    LEFT JOIN "Companies" c ON j.company_id = c.company_id
-    LEFT JOIN "Locations" l ON j.location_id = l.location_id
-    LEFT JOIN "Countries" co ON l.country = co.country_id
-    {where_sql}
-    ORDER BY score -- non use desc or function otherwise not use index, problem of performance
-    LIMIT %s OFFSET %s
+    query += f"""
+    WITH "JobMatches" AS (
+        SELECT
+            j.id AS id,
+            j.title AS title,
+            j.description AS description,
+            j.workplace_type AS workplace_type,
+            j.short_description AS short_description,
+            j.experience AS experience,
+            j.skills_required AS skills_required,
+            j.posted_date AS posted_date,
+            j.job_state AS job_state,
+            j.apply_link AS apply_link,
+            co.country_name AS country,
+            l.city AS city,
+            c.company_name AS company_name,
+            c.logo AS company_logo,
+            j.portal AS portal,
+            --no use operation or function otherwise not use index, problem of performance
+            embedding <=> %s::vector AS score
+        FROM "Jobs" AS j
+        LEFT JOIN "Companies" c ON j.company_id = c.company_id
+        LEFT JOIN "Locations" l ON j.location_id = l.location_id
+        LEFT JOIN "Countries" co ON l.country = co.country_id
+        {where_sql}
+        ORDER BY score -- non use desc or function otherwise not use index, problem of performance
+        LIMIT %s OFFSET %s
+    )
+
+    SELECT jm.*, f.root_field, f.sub_field
+    FROM "JobMatches" as jm 
+    LEFT JOIN "FieldJobs" as fj ON jm.id = fj.job_id
+    LEFT JOIN "Fields" as f ON fj.field_id = f.id
     """
 
     # Simplified parameter handling
     # Just one embedding parameter for cosine similarity
-    sql_params = []
     
     # Define the expected vector dimension
     EXPECTED_DIMENSION = 1024
@@ -338,97 +361,6 @@ async def execute_vector_similarity_query(
         )
         raise
 
-
-@async_sql_query_timer("simple_count_query")
-async def get_filtered_job_count(
-    cursor: psycopg.AsyncCursor,
-    where_clauses: List[str],
-    query_params: List[Any],
-    fast: bool = False,
-) -> int:
-    """
-    Get the count of jobs matching the filter criteria.
-
-    Args:
-        cursor: Database cursor
-        where_clauses: SQL WHERE clauses
-        query_params: Query parameters
-
-    Returns:
-        Number of matching jobs
-    """
-    start_time = time.time()
-
-    # Build WHERE clause
-    where_sql = ""
-    if where_clauses:
-        where_sql = "WHERE " + " AND ".join(where_clauses)
-
-    # In case of large datasets, we can use a faster query to quickly determine if there are more than 5 elements.
-    # This helps in deciding the next steps and which query to use subsequently.
-    count_query = f"""
-        WITH JobData AS (
-            SELECT 1
-            FROM "Jobs" j
-            LEFT JOIN "Companies" c ON j.company_id = c.company_id
-            LEFT JOIN "Locations" l ON j.location_id = l.location_id
-            LEFT JOIN "Countries" co ON l.country = co.country_id
-            {where_sql}
-            LIMIT 6
-        )
-        SELECT
-            COUNT(*) AS count
-        FROM JobData
-        """
-
-    if not fast:
-        count_query = f"""
-        SELECT COUNT(*) AS count
-        FROM "Jobs" j
-        LEFT JOIN "Companies" c ON j.company_id = c.company_id
-        LEFT JOIN "Locations" l ON j.location_id = l.location_id
-        LEFT JOIN "Countries" co ON l.country = co.country_id
-        {where_sql}
-        """
-
-    logger.debug(
-        "Executing count query",
-        where_clause_count=len(where_clauses),
-        has_filter=bool(where_clauses),
-        param_count=len(query_params),
-    )
-
-    try:
-        query_start = time.time()
-        logger.debug(f"Cursor status before executing count query: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
-        await cursor.execute(count_query, query_params)
-        query_time = time.time() - query_start
-
-        fetch_start = time.time()
-        result = await cursor.fetchone()
-        fetch_time = time.time() - fetch_start
-
-        count = result["count"] if result else 0
-
-        logger.debug(
-            "Count query completed",
-            count=count,
-            query_time=f"{query_time:.6f}s",
-            fetch_time=f"{fetch_time:.6f}s",
-            total_time=f"{time.time() - start_time:.6f}s",
-        )
-
-        return count
-    except Exception as e:
-        logger.error(
-            "Error executing count query",
-            error=str(e),
-            error_type=type(e).__name__,
-            where_clauses=where_clauses,
-            param_count=len(query_params),
-            elapsed_time=f"{time.time() - start_time:.6f}s",
-        )
-        raise
 
 
 async def close_all_connection_pools():

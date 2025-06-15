@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator
-from typing import List, Optional
+from typing import List, Optional, Set
 from datetime import datetime
 import re
 
@@ -28,7 +28,8 @@ class JobSchema(BaseModel):
     country: Optional[str] = None
     portal: Optional[str] = None
     short_description: Optional[str] = None
-    field: Optional[str] = None
+    root_fields: Optional[Set[str]] = None
+    sub_fields: Optional[Set[str]] = None
     experience: Optional[str] = None
     score: Optional[float] = None
     skills_required: Optional[List[str]] = None

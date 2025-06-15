@@ -5,7 +5,7 @@ This module contains data models used for job matching operations.
 """
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Set
 from datetime import datetime
 
 
@@ -31,6 +31,8 @@ class JobMatch:
     job_state: Optional[str] = None
     apply_link: Optional[str] = None
     location: Optional[str] = None
+    root_fields: Optional[Set[str]] = None
+    sub_fields: Optional[Set[str]] = None
     
     def to_dict(self) -> dict:
         """Convert JobMatch to dictionary format."""

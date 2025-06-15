@@ -4,7 +4,7 @@ Job validation and transformation functionality.
 This module handles validation and creation of JobMatch objects from database rows.
 """
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 from app.log.logging import logger
 from time import time
 
@@ -135,7 +135,7 @@ class JobValidator:
             return 0.0
         else:
             # Applica la trasformazione sigmoide: 100 / (1 + e^(k*(score-midpoint)))
-            percentage = 100.0 / (1.0 + math.exp(k * (score - midpoint)))
+            percentage = 100.0 / (1.0 + math.exp(k * (float(score) - midpoint)))
             return round(percentage, 2)
 
     def validate_row_data(self, row: dict) -> bool:
@@ -149,6 +149,9 @@ class JobValidator:
             bool: True if all required fields are present, False otherwise
         """
         return all(field in row for field in self.REQUIRED_FIELDS)
+    
+    def extract_fields(self, row: dict) -> Tuple[str, str]:
+        return row.get('root_field'), row.get('sub_field')
 
     def create_job_match(self, row: dict) -> Optional[JobMatch]:
         """
@@ -187,27 +190,32 @@ class JobValidator:
             return None
 
         try:
+            root_field, sub_field = self.extract_fields(row)
+
             job_match = JobMatch(
                 id=str(row['id']),
                 title=row['title'],
                 description=row.get('description'),
                 workplace_type=row.get('workplace_type'),
                 short_description=row.get('short_description'),
-                field=row.get('field'),
                 experience=row.get('experience'),
                 skills_required=parse_skills_string(
-                    row.get('skills_required')),
+                    row.get('skills_required')
+                ),
                 country=row.get('country'),
                 city=row.get('city'),
                 company_name=row.get('company_name'),
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
                 score=float(JobValidator.score_to_percentage(
-                    row.get('score', 0.0))),
+                    row.get('score', 0.0))
+                ),
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
-                location=row.get('location')
+                location=row.get('location'),
+                root_fields=set([root_field]) if root_field else set(),
+                sub_fields=set([sub_field]) if sub_field else set()
             )
 
             elapsed = time() - start_time

@@ -93,6 +93,7 @@ async def test_process_job_with_experience_filter(
             "test_resume_id",
             offset=0,
             location=None,
+            fields=None,
             keywords=None,
             experience=experience,
             applied_job_ids=[],
@@ -114,10 +115,9 @@ async def test_process_job_with_experience_filter(
 
 @pytest.mark.asyncio
 @patch('app.libs.job_matcher.vector_matcher.query_builder.build_filter_conditions')
-@patch('app.libs.job_matcher.vector_matcher.get_filtered_job_count')
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_vector_matcher_with_experience_filter(
-    mock_get_db_cursor, mock_get_filtered_job_count, mock_build_filter_conditions, job_matcher
+    mock_get_db_cursor, mock_build_filter_conditions, job_matcher
 ):
     """Test that the vector matcher correctly uses experience filters."""
     # Set up mocks
@@ -127,10 +127,8 @@ async def test_vector_matcher_with_experience_filter(
     mock_context.__aexit__.return_value = None
     mock_get_db_cursor.return_value = mock_context
     
-    mock_get_filtered_job_count.return_value = 0  # Will return empty results
-    
     # Mock filter conditions
-    mock_build_filter_conditions.return_value = (["embedding IS NOT NULL", "(j.experience = %s)"], ["Mid-level"])
+    mock_build_filter_conditions.return_value = ([], ["embedding IS NOT NULL", "(j.experience = %s)"], ["Mid-level"])
     
     # Call the vector matcher with experience parameter
     cv_embedding = [0.1] * 1024
@@ -138,6 +136,7 @@ async def test_vector_matcher_with_experience_filter(
     await job_matcher.get_top_jobs_by_vector_similarity(
         cv_embedding,
         experience=experience,
+        fields=[],
         location=None, # Keep existing params
         keywords=None,
         offset=0,
@@ -212,8 +211,8 @@ async def test_match_jobs_with_resume_integration(
     assert isinstance(result, list) or (isinstance(result, dict) and "jobs" in result)
     
     # Check that get_top_jobs_by_vector_similarity was called with all parameters
-    mock_get_top_jobs.assert_called_once()
-    args, kwargs = mock_get_top_jobs.call_args
+    mock_get_top_jobs.assert_called()
+    args, kwargs = mock_get_top_jobs.call_args_list[0]
     assert args[0] == resume["vector"]
     assert kwargs["location"] == location
     assert kwargs["keywords"] == keywords
@@ -290,6 +289,7 @@ async def test_experience_filter_with_cache(
             "test_resume_id",
             offset=0,
             location=None,
+            fields=None,
             keywords=None,
             experience=experience_1,
             applied_job_ids=[],
@@ -326,6 +326,7 @@ async def test_experience_filter_with_cache(
         offset=0,
         location=None,
         keywords=None,
+        fields=None,
         experience=experience_2,
         applied_job_ids=[],
         cooled_job_ids=[],
@@ -392,6 +393,7 @@ async def test_experience_filter_with_cache_hit(
         offset=0,
         location=None,
         keywords=None,
+        fields=None,
         experience=experience,
         applied_job_ids=[],
         cooled_job_ids=[],

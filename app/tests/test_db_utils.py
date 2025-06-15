@@ -33,6 +33,7 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     results = await execute_vector_similarity_query(
         cursor=mock_cursor,
         cv_embedding=cv_embedding,
+        many_to_many_filters=[],
         where_clauses=where_clauses,
         query_params=query_params,
         limit=limit,
@@ -88,6 +89,7 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     results = await execute_vector_similarity_query(
         cursor=mock_cursor,
         cv_embedding=cv_embedding,
+        many_to_many_filters=[],
         where_clauses=where_clauses,
         query_params=query_params,
         limit=limit,
@@ -136,6 +138,7 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     results = await execute_vector_similarity_query(
         cursor=mock_cursor,
         cv_embedding=cv_embedding,
+        many_to_many_filters=[],
         where_clauses=where_clauses,
         query_params=query_params,
         limit=limit,

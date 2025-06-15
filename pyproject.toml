@@ -6,7 +6,7 @@ authors = [
     {name = "keat",email = "kavano.aresia@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10,<4"
 dependencies = [
     "aio-pika (==9.4.3)",
     "alembic (==1.14.0)",
@@ -116,8 +116,8 @@ dependencies = [
     "yarl (==1.17.2)",
     "zope-interface (==7.1.1)",
     "datadog-api-client (==2.32.0)",
-    "redis (==5.2.0)",
-    "spacy (==3.8.7)"
+    "GeoAlchemy2 (==0.17.1)",
+    "redis (==5.2.0)"
 ]
 
 
