@@ -195,16 +195,18 @@ async def execute_vector_similarity_query(
     if many_to_many_filters is not None and len(many_to_many_filters) > 0:
         relationships = ", ".join([mtm.relationship for mtm in many_to_many_filters])
         query = f"""
-            WITH "Jobs" AS (
-                SELECT selected.*
-                FROM "Jobs" as selected
-                WHERE EXISTS (
-                    SELECT 1 FROM {relationships}
-                    WHERE 
-        """
+        WITH "Jobs" AS (
+            SELECT selected.*
+            FROM "Jobs" as selected
+            WHERE EXISTS (
+                SELECT 1 FROM {relationships}
+                WHERE """
         query += "AND ".join([mtm.where_clause for mtm in many_to_many_filters])
         sql_params += [param for mtm in many_to_many_filters for param in mtm.params]
-        query += ")\n)\n\n"
+        query += """
+            )
+        )
+        """
 
     # Define the query using the constructed where_sql
     query += f"""
