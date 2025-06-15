@@ -572,10 +572,14 @@ async def get_fields(
         async with get_db_cursor() as cursor:
             query = "SELECT * FROM Fields"
 
-            col_names = [col[0] for col in cursor.description]
             await cursor.execute(query)
 
             rows = await cursor.fetchall()
+
+            if cursor.description is None:
+                logger.error("cursor description is None for /fields")
+                
+            col_names = [col[0] for col in cursor.description]
             fields: Dict[str, RootField] = {}
             for row in rows:
                 row_dict = dict(zip(col_names, row))
