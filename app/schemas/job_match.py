@@ -1,7 +1,12 @@
 from enum import Enum
-from typing import List
+from typing import Any, List
 from pydantic import BaseModel
 from app.schemas.job import JobSchema
+
+class ManyToManyFilter(BaseModel):
+    relationship: str
+    where_clause: str
+    params: List[Any]
 
 class JobsMatchedResponse(BaseModel):
     """

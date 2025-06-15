@@ -8,9 +8,10 @@ from typing import List, Optional, Dict, Any
 from app.log.logging import logger
 from time import time
 
+from app.schemas.job_match import ManyToManyFilter
 from app.schemas.location import LocationFilter
 from app.core.config import settings
-from app.utils.db_utils import get_db_cursor, execute_vector_similarity_query, get_filtered_job_count
+from app.utils.db_utils import execute_vector_similarity_query
 from app.metrics.algorithm import (
     async_matching_algorithm_timer,
     report_match_score_distribution,
@@ -27,97 +28,11 @@ from app.libs.job_matcher.exceptions import VectorSimilarityError
 class SimilaritySearcher:
     """Handles vector similarity searches for job matching."""
     
-    async def _execute_fallback_query(
-        self, 
-        cursor: Any,
-        where_clauses: List[str], 
-        query_params: List[Any],
-        limit: int
-    ) -> List[JobMatch]:
-        """
-        Execute a simple fallback query without vector operations.
-        
-        Args:
-            cursor: Database cursor
-            where_clauses: SQL WHERE clauses
-            query_params: Query parameters
-            limit: Results limit
-            
-        Returns:
-            List of JobMatch objects
-        """
-        start_time = time()
-        
-        # Simple query without vector operations
-        where_sql = ""
-        if where_clauses:
-            where_sql = "WHERE " + " AND ".join(where_clauses)
-        
-        simple_query = f"""
-        SELECT
-            j.id as id,
-            j.title as title,
-            j.description as description,
-            j.workplace_type as workplace_type,
-            j.short_description as short_description,
-            j.field as field,
-            j.experience as experience,
-            j.skills_required as skills_required,
-            j.posted_date as posted_date,
-            j.job_state as job_state,
-            j.apply_link as apply_link,
-            f.root_field as root_field,
-            f.sub_field as sub_field,
-            co.country_name as country,
-            l.city as city,
-            c.company_name as company_name,
-            c.logo as company_logo,
-            j.portal as portal,
-            0.0 as score
-        FROM "Jobs" j
-        LEFT JOIN "Companies" c ON j.company_id = c.company_id
-        LEFT JOIN "Locations" l ON j.location_id = l.location_id
-        LEFT JOIN "Countries" co ON l.country = co.country_id
-        LEFT JOIN "Fields" f ON j.field_id = f.id
-        {where_sql}
-        LIMIT %s
-        """
-        
-        simple_start = time()
-        await cursor.execute(simple_query, query_params + [limit])
-        results = await cursor.fetchall()
-        simple_elapsed = time() - simple_start
-        
-        logger.debug(
-            "Fallback query execution completed",
-            results_count=len(results),
-            elapsed_time=f"{simple_elapsed:.6f}s",
-            sql_size=len(simple_query)
-        )
-        
-        job_matches = []
-        for row in results:
-            if job_match := job_validator.create_job_match(row):
-                job_matches.append(job_match)
-        
-        # Report metrics for the fallback path
-        if settings.metrics_enabled:
-            report_algorithm_path("simple_fallback", {"reason": "few_results"})
-            report_match_count(len(job_matches), {"path": "simple_fallback"})
-        
-        elapsed = time() - start_time
-        logger.info(
-            "Fallback query process completed",
-            matches_found=len(job_matches),
-            elapsed_time=f"{elapsed:.6f}s"
-        )
-        
-        return job_matches
-    
     async def _execute_vector_query(
         self,
         cursor: Any,
         cv_embedding: List[float],
+        many_to_many_filters: List[ManyToManyFilter],
         where_clauses: List[str],
         query_params: List[Any],
         limit: int,
@@ -182,6 +97,7 @@ class SimilaritySearcher:
             cursor_type=type(cursor).__name__,
             embedding_length=len(cv_embedding),
             where_count=len(where_clauses),
+            many_to_many=len(many_to_many_filters),
             params_count=len(query_params),
             param_types=[type(p).__name__ for p in query_params],
             param_values=str(query_params)[:100] + "..." if len(str(query_params)) > 100 else query_params,
@@ -194,6 +110,7 @@ class SimilaritySearcher:
         results = await execute_vector_similarity_query(
             cursor,
             cv_embedding,
+            many_to_many_filters,
             where_clauses,
             query_params,
             limit,
@@ -208,10 +125,25 @@ class SimilaritySearcher:
             elapsed_time=f"{vector_elapsed:.6f}s"
         )
         
-        job_matches = []
+        job_matches_dict: Dict[int, JobMatch] = {}
         for row in results:
-            if job_match := job_validator.create_job_match(row):
-                job_matches.append(job_match)
+            id = row.get("id", None)
+            if not id:
+                logger.warning("Got JobMatch row with null id", row=row)
+                continue
+            if id not in job_matches_dict.keys():
+                job_match = job_validator.create_job_match(row)
+                if job_match:
+                    job_matches_dict[id] = job_match
+            else:
+                job_root_field, job_sub_field = job_validator.extract_fields(row)
+                if job_root_field:
+                    job_matches_dict[id].root_fields.add(job_root_field)
+                if job_sub_field:
+                    job_matches_dict[id].sub_fields.add(job_sub_field)
+
+                
+        job_matches = list(job_matches_dict.values())
         
         # Report metrics for the vector similarity path
         if settings.metrics_enabled:

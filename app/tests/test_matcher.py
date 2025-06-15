@@ -20,57 +20,11 @@ def job_matcher():
     """Return a new instance of the optimized matcher."""
     return OptimizedJobMatcher()
 
-
-@pytest.mark.asyncio
-@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_fallback_query')
-@patch('app.libs.job_matcher.vector_matcher.get_filtered_job_count')
-@patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
-async def test_get_top_jobs_by_vector_similarity_single_result(
-    mock_get_db_cursor, mock_get_filtered_job_count, mock_execute_fallback, job_matcher
-):
-    # Set up mocks
-    mock_cursor = AsyncMock()
-    mock_context = AsyncMock()
-    mock_context.__aenter__.return_value = mock_cursor
-    mock_context.__aexit__.return_value = None
-    mock_get_db_cursor.return_value = mock_context
-    
-    mock_get_filtered_job_count.return_value = 1  # This will trigger fallback query
-    
-    # Create a JobMatch instance, not just a dictionary
-    mock_result = JobMatch(
-        id="1",
-        title="Software Engineer",
-        description="Job description",
-        workplace_type="office",
-        short_description="short desc",
-        field="IT",
-        experience="3 years",
-        skills_required=["Python", "Django"],
-        country="USA",
-        city="New York",
-        company_name="TechCorp",
-        score=1.0
-    )
-    
-    mock_execute_fallback.return_value = [mock_result]
-    
-    mock_embedding = [0.1] * 1024  # Create a properly sized embedding vector
-    job_matches = await job_matcher.get_top_jobs_by_vector_similarity(
-        mock_embedding
-    )
-    
-    assert len(job_matches) == 1
-    assert job_matches[0].title == "Software Engineer"
-    assert job_matches[0].score == 1.0
-
-
 @pytest.mark.asyncio
 @patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query')
-@patch('app.libs.job_matcher.vector_matcher.get_filtered_job_count')
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_get_top_jobs_by_vector_similarity_multiple_results(
-    mock_get_db_cursor, mock_get_filtered_job_count, mock_execute_query, job_matcher
+    mock_get_db_cursor, mock_execute_query, job_matcher
 ):
     # Set up mocks
     mock_cursor = AsyncMock()
@@ -97,7 +51,6 @@ async def test_get_top_jobs_by_vector_similarity_multiple_results(
         }) for i in range(20)
     ]
     
-    mock_get_filtered_job_count.return_value = len(mock_results)  # > 5, so uses regular query
     mock_execute_query.return_value = mock_results
     
     mock_embedding = [0.1] * 1024  # Create a properly sized embedding vector
@@ -337,8 +290,6 @@ async def test_process_job_cache_handles_different_applied_ids(
         async def __aexit__(self, *args):
             pass
     monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
-    monkeypatch.setattr("app.utils.db_utils.get_filtered_job_count", AsyncMock(return_value=5)) # Corrected path
-
 
     result1 = await job_matcher.process_job(resume, **base_params, use_cache=True, is_remote_only=None) # Add missing param
 

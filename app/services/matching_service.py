@@ -46,6 +46,39 @@ async def get_resume_by_user_id(
             error_details=str(e),
         )
         return {"error": "Error retrieving resume"}
+    
+def sort_jobs(
+    jobs: list[dict[str, Any]],
+    sort_type: SortType
+):
+    score_threshold = 60.0
+    if sort_type == SortType.DATE:
+
+        def sorting_algo(job: dict) -> datetime:
+            posted_date = job.get('posted_date', datetime(1999, 1, 1))
+            if isinstance(posted_date, str):
+                posted_date = datetime.fromisoformat(posted_date)
+            delta: timedelta = datetime.now() - posted_date
+            score = job.get('score', 0.0)
+            return -delta.total_seconds() if score >= score_threshold else score - 3600.0 * 24 * 90
+
+        jobs.sort(key = sorting_algo, reverse = True)
+
+    elif sort_type == SortType.RECOMMENDED:
+
+        def recommend_algo(job: dict) -> float:
+            posted_date = job.get('posted_date', datetime(1999, 1, 1))
+            if posted_date is None:
+                posted_date = datetime(1999, 1, 1)
+            if isinstance(posted_date, str):
+                posted_date = datetime.fromisoformat(posted_date)
+            delta: timedelta = datetime.now() - posted_date
+            score = job.get('score', 0.0)
+            if score < score_threshold:
+                return score -100 * 14.4
+            return score + 100 * (-(1.03)**delta.days + 1)
+
+        jobs.sort(key = recommend_algo, reverse = True)
 
 async def match_jobs_with_resume(
     resume: Dict[str, Any],
@@ -86,8 +119,10 @@ async def match_jobs_with_resume(
             is_remote_only=is_remote_only # Pass new parameter 
         )
 
+        jobs: list[dict[str, Any]] = matched_jobs.get("jobs", [])
+
         if offset % settings.CACHE_SIZE > (offset + settings.RETURNED_JOBS_SIZE) % settings.CACHE_SIZE:
-            # Then we recieved something like 499 as offset. Should never happen, but users are assholes
+            # Then we recieved something like 999 as offset. Should never happen, but users are assholes
             # so better be safe than sorry
             matched_jobs_overflow = await matcher.process_job(
                 resume,
@@ -100,40 +135,25 @@ async def match_jobs_with_resume(
                 include_total_count=include_total_count,
                 is_remote_only=is_remote_only # Pass new parameter 
             )
-            matched_jobs["jobs"] = matched_jobs.get("jobs", []) + matched_jobs_overflow.get("jobs", [])
+            jobs = jobs + matched_jobs_overflow.get("jobs", [])
 
-        jobs: list[dict[str, Any]] = matched_jobs.get("jobs", [])
+        
         if len(jobs) == 0:
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
-
-        score_threshold = 60.0
-        if sort_type == SortType.DATE:
-
-            def sorting_algo(job: dict) -> datetime:
-                posted_date = job.get('posted_date', datetime(1999, 1, 1))
-                if isinstance(posted_date, str):
-                    posted_date = datetime.fromisoformat(posted_date)
-                delta: timedelta = datetime.now() - posted_date
-                score = job.get('score', 0.0)
-                return -delta.total_seconds() if score >= score_threshold else score - 3600.0 * 24 * 90
-
-            jobs.sort(key = sorting_algo, reverse = True)
-
-        elif sort_type == SortType.RECOMMENDED:
-
-            def recommend_algo(job: dict) -> float:
-                posted_date = job.get('posted_date', datetime(1999, 1, 1))
-                if posted_date is None:
-                    posted_date = datetime(1999, 1, 1)
-                if isinstance(posted_date, str):
-                    posted_date = datetime.fromisoformat(posted_date)
-                delta: timedelta = datetime.now() - posted_date
-                score = job.get('score', 0.0)
-                if score < score_threshold:
-                    return score -100 * 14.4
-                return score + 100 * (-(1.03)**delta.days + 1)
-
-            jobs.sort(key = recommend_algo, reverse = True)
+        else:
+            sort_jobs(jobs, sort_type)
+        
+        if len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
+            # then we extract other (unfiltered) jobs until we have at least ONE cache worth of jobs
+            matched_jobs_unfiltered = await matcher.process_job(
+                resume,
+                save_to_mongodb=save_to_mongodb
+            )
+            
+            ids = set([job["id"] for job in jobs])
+            non_duplicates = list(filter(lambda job: job["id"] not in ids, matched_jobs_unfiltered["jobs"]))
+            sort_jobs(non_duplicates, sort_type)
+            jobs = jobs + non_duplicates
 
         start = offset % settings.CACHE_SIZE
         matched_jobs["jobs"] = jobs[start : start + settings.RETURNED_JOBS_SIZE]

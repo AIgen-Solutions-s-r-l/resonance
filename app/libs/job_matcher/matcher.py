@@ -33,33 +33,6 @@ class JobMatcher:
         self.settings = settings
         logger.info("JobMatcher initialized")
         
-    async def _get_filter_conditions(
-        self,
-        location: Optional[LocationFilter] = None,
-        keywords: Optional[List[str]] = None,
-        fields: Optional[List[int]] = None,
-        experience: Optional[List[str]] = None,
-        is_remote_only: Optional[bool] = None # Add parameter
-    ) -> Tuple[List[str], List[Any]]:
-        """
-        Get the SQL filter conditions for the job query.
-        
-        Args:
-            location: Optional location filter
-            keywords: Optional keyword filter
-            experience: Optional experience level filter
-            
-        Returns:
-            Tuple of (where clauses list, query parameters list)
-        """
-        return query_builder.build_filter_conditions(
-            location=location,
-            keywords=keywords,
-            fields=fields,
-            experience=experience,
-            is_remote_only=is_remote_only # Pass parameter
-        )
-    
     @async_matching_algorithm_timer("process_job_optimized")
     async def process_job(
         self,
@@ -237,21 +210,7 @@ class JobMatcher:
             
             # Add total count to response if requested
             if include_total_count:
-                # We need to get the full count from vector_matcher's internal count logic
-                # This uses the same filter conditions but ignores offset/limit
-                # This query is already done as part of get_top_jobs_by_vector_similarity
-                # To avoid having to do it again, we'll get the count through vector_matcher
-                from app.utils.db_utils import get_db_cursor
-                # Get the filter conditions (including the new one)
-                where_clauses, query_params = await self._get_filter_conditions(
-                    location=location, keywords=keywords, fields=fields, experience=experience, is_remote_only=is_remote_only
-                )
-                
-                async with get_db_cursor() as cursor:
-                    from app.utils.db_utils import get_filtered_job_count
-                    total_jobs = await get_filtered_job_count(cursor, where_clauses, query_params, False)
-                    logger.info(f"RESULTS: Total job count for pagination: {total_jobs}")
-                    job_results["total_count"] = total_jobs
+                job_results["total_count"] = len(job_results["jobs"])
             
             # Post-filtering logic removed as filtering is now done in the DB query
             logger.info(f"RESULTS: Final job matches count after DB filtering: {len(job_results['jobs'])}")

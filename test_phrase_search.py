@@ -22,7 +22,7 @@ async def test_phrase_search():
     
     # First, let's check how the query is built
     print("Testing query building for phrase search...")
-    where_clauses, query_params = query_builder.build_filter_conditions(
+    many_to_many_filters, where_clauses, query_params = query_builder.build_filter_conditions(
         location=location,
         keywords=phrase
     )
@@ -43,7 +43,7 @@ async def test_phrase_search():
         # Test with multiple keywords that might be a split phrase
         split_phrase = ["business", "account", "manager"]
         print("\nTesting with split phrase...")
-        where_clauses, query_params = query_builder.build_filter_conditions(
+        many_to_many_filters, where_clauses, query_paramss = query_builder.build_filter_conditions(
             location=location,
             keywords=split_phrase
         )

@@ -9,9 +9,9 @@ from app.log.logging import logger
 from app.core.config import settings
 from time import time
 
+from app.schemas.job_match import ManyToManyFilter
 from app.schemas.location import LocationFilter
 from app.libs.job_matcher.exceptions import QueryBuildingError
-
 
 class JobQueryBuilder:
     """Builder for job matching SQL queries."""
@@ -24,7 +24,7 @@ class JobQueryBuilder:
         experience: Optional[List[str]] = None,
         company: Optional[str] = None,
         is_remote_only: Optional[bool] = None # Add new parameter
-    ) -> Tuple[List[str], List[Any]]:
+    ) -> Tuple[List[ManyToManyFilter], List[str], List[Any]]:
         """
         Build SQL filter conditions based on location, keywords, experience, and company.
         
@@ -36,13 +36,18 @@ class JobQueryBuilder:
             is_remote_only: Optional filter for remote jobs only.
             
         Returns:
-            Tuple of (where clauses list, query parameters list)
+            Triple of (many-to-many filter clauses, where clauses list, query parameters list)
         """
         start_time = time()
         try:
             where_clauses = ["embedding IS NOT NULL"]
+            many_to_many_filters = []
             query_params = []
             
+            if fields and len(fields) > 0:
+                fields_filter = self._build_fields_filters(fields)
+                many_to_many_filters.extend(fields_filter)
+
             # Add location filters
             if location:
                 location_clauses, location_params = self._build_location_filters(location)
@@ -55,11 +60,6 @@ class JobQueryBuilder:
                 where_clauses.extend(keyword_clauses)
                 query_params.extend(keyword_params)
 
-            if fields and len(fields) > 0:
-                fields_clauses, fields_params = self._build_fields_filters(fields)
-                where_clauses.extend(fields_clauses)
-                query_params.extend(fields_params)
-            
             # Add experience filters
             if experience and len(experience) > 0:
                 experience_clauses, experience_params = self._build_experience_filters(experience)
@@ -87,7 +87,7 @@ class JobQueryBuilder:
                 params=str(query_params)[:100]  # Log a preview of params for debugging
             )
             
-            return where_clauses, query_params
+            return many_to_many_filters, where_clauses, query_params
             
         except Exception as e:
             elapsed = time() - start_time
@@ -99,6 +99,23 @@ class JobQueryBuilder:
             )
             raise QueryBuildingError(f"Failed to build query conditions: {e}")
     
+    def _build_fields_filters(
+        self, fields: List[int]
+    ) -> List[ManyToManyFilter]:
+        """
+        Build fields filter as a Many-to-Many filter
+
+        fields - not nullable and with len > 0
+        """
+        relationship = "FieldJobs" # TODO : replace with relationship name
+        parametrized_any = "ANY(%s" + ", %s" * len(fields) - 1 + ")"
+        return [ManyToManyFilter(
+            relationship = f"{relationship} AS fj", 
+            where_clause = f"(selected.id = fj.job_id AND fj.field_id = {parametrized_any})",
+            params = fields
+        )]
+        
+
     def _build_location_filters(
         self, location: LocationFilter
     ) -> Tuple[List[str], List[Any]]:
@@ -216,16 +233,6 @@ class JobQueryBuilder:
         query_params = [phrase, phrase]
         
         return where_clause, query_params
-    
-    def _build_fields_filters(
-        self, fields: List[int]
-    ) -> Tuple[List[str], List[Any]]:
-        """
-        Build fields filter conditions.
-        """
-        templated = "%s, " * len(fields) - 1
-        where_clause = [f"(j.field_id IN ({templated}%s))"]
-        return where_clause, fields
     
     def _build_experience_filters(
         self, experience: List[str]

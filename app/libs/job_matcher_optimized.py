@@ -26,8 +26,7 @@ from app.libs.job_matcher import (
 # Re-export database utilities needed by tests
 from app.utils.db_utils import (
     get_db_cursor,
-    execute_vector_similarity_query,
-    get_filtered_job_count
+    execute_vector_similarity_query
 )
 
 # For backward compatibility
@@ -35,6 +34,5 @@ __all__ = [
     'JobMatch',
     'OptimizedJobMatcher',
     'get_db_cursor',
-    'execute_vector_similarity_query',
-    'get_filtered_job_count'
+    'execute_vector_similarity_query'
 ]

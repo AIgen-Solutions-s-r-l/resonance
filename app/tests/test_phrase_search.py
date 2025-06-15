@@ -205,7 +205,7 @@ def test_single_word_keyword_search():
     keywords = ["business"]
     
     # Call the method that builds filter conditions
-    where_clauses, query_params = job_query_builder.build_filter_conditions(
+    many_to_many_filters, where_clauses, query_params = job_query_builder.build_filter_conditions(
         keywords=keywords
     )
 
@@ -312,7 +312,7 @@ def test_multi_word_phrase_search():
     # We don't need a mock query object for this test.
     keywords = ["business account manager"]
     
-    where_clauses, query_params = job_query_builder.build_filter_conditions(
+    many_to_many_filters, where_clauses, query_params = job_query_builder.build_filter_conditions(
         keywords=keywords
     )
 
@@ -339,7 +339,7 @@ def test_multiple_individual_words_as_potential_phrase():
     # For testing the query builder directly, we'll simulate that preprocessing
     preprocessed_keywords = [" ".join(keywords)]
     
-    where_clauses, query_params = job_query_builder.build_filter_conditions(
+    many_to_many_filters, where_clauses, query_params = job_query_builder.build_filter_conditions(
         keywords=preprocessed_keywords
     )
 
