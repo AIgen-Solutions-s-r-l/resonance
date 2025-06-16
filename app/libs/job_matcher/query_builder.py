@@ -112,7 +112,7 @@ class JobQueryBuilder:
         return [ManyToManyFilter(
             relationship = f"{relationship} AS fj", 
             where_clause = f"(selected.id = fj.job_id AND fj.field_id = {parametrized_any})",
-            params = fields
+            params = [fields]
         )]
         
 
