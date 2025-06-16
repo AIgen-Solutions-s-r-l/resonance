@@ -98,7 +98,11 @@ class JobQueryBuilder:
                 elapsed_time=f"{elapsed:.6f}s"
             )
             raise QueryBuildingError(f"Failed to build query conditions: {e}")
-    
+        
+    '''
+    OLD IMPLEMENTATION OF _build_fields_filters
+    -------------------------------------------
+
     def _build_fields_filters(
         self, fields: List[int]
     ) -> List[ManyToManyFilter]:
@@ -107,14 +111,38 @@ class JobQueryBuilder:
 
         fields - not nullable and with len > 0
         """
-        relationship = '"FieldJobs"' # TODO : replace with relationship name
+        relationship = '"FieldJobs"'  # TODO : replace with relationship name
         parametrized_any = "ANY(%s" + ", %s" * (len(fields) - 1) + ")"
         return [ManyToManyFilter(
-            relationship = f"{relationship} AS fj", 
-            where_clause = f"(selected.id = fj.job_id AND fj.field_id = {parametrized_any})",
-            params = [fields]
-        )]
-        
+            relationship=f"{relationship} AS fj",
+            where_clause=f"(selected.id = fj.job_id AND fj.field_id = {parametrized_any})",
+            params=[fields]
+        )]  
+    '''
+    
+    def _build_fields_filters(
+        self, fields: List[int]
+    ) -> List[ManyToManyFilter]:
+        """
+        Build field filters for a many-to-many relationship.
+
+        The whole list of IDs is passed as **one** parameter; psycopg adapts the
+        Python list to an `int[]`, and the explicit `::int[]` cast keeps the query
+        planner happy even when the list is empty.
+        """
+        relationship = '"FieldJobs"'
+
+        return [
+            ManyToManyFilter(
+                relationship=f"{relationship} AS fj",
+                where_clause=(
+                    "(selected.id = fj.job_id "
+                    "AND fj.field_id = ANY(%s::int[]))"
+                ),
+                params=[fields],
+            )
+        ]
+
 
     def _build_location_filters(
         self, location: LocationFilter
