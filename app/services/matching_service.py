@@ -144,6 +144,7 @@ async def match_jobs_with_resume(
             logger.info("matched with {amount} jobs", resume_id = resume.get("_id", None), amount=len(jobs))
             sort_jobs(jobs, sort_type)
         
+        matched_jobs["total_count"] = 2000
         if len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
             logger.info("retrieving further, unfiltered, jobs", resume_id = resume.get("_id", None))
             # then we extract other (unfiltered) jobs until we have at least ONE cache worth of jobs
@@ -156,6 +157,7 @@ async def match_jobs_with_resume(
             non_duplicates = list(filter(lambda job: job["id"] not in ids, matched_jobs_unfiltered["jobs"]))
             sort_jobs(non_duplicates, sort_type)
             jobs = jobs + non_duplicates
+            matched_jobs["total_count"] = settings.CACHE_SIZE
 
         start = offset % settings.CACHE_SIZE
         matched_jobs["jobs"] = jobs[start : start + settings.RETURNED_JOBS_SIZE]

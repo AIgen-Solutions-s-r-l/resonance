@@ -208,10 +208,6 @@ class JobMatcher:
                 "jobs": [match.to_dict() for match in job_matches]
             }
             
-            # Add total count to response if requested
-            if include_total_count:
-                job_results["total_count"] = len(job_results["jobs"])
-            
             # Post-filtering logic removed as filtering is now done in the DB query
             logger.info(f"RESULTS: Final job matches count after DB filtering: {len(job_results['jobs'])}")
             

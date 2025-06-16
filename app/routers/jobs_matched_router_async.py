@@ -408,9 +408,7 @@ async def get_matched_jobs_legacy(
         
         # Extract total count (or use length of results if not available)
         total_count = matched_jobs.get("total_count")
-        if total_count is None or total_count == 0:
-            total_count = len(job_list)
-
+        
         job_count = len(job_list)
         logger.info(
             "Found {job_count} jobs matched for user {current_user} (total: {total_count})",
