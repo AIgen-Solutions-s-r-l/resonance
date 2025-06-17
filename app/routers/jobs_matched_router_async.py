@@ -505,7 +505,6 @@ async def get_jobs_by_ids(
                 j.description,
                 j.workplace_type,
                 j.short_description,
-                j.field,
                 j.experience,
                 j.skills_required,
                 j.posted_date,
