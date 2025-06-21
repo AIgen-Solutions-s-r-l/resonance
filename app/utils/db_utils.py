@@ -242,6 +242,7 @@ async def execute_vector_similarity_query(
     FROM "JobMatches" as jm 
     LEFT JOIN "FieldJobs" as fj ON jm.id = fj.job_id
     LEFT JOIN "Fields" as f ON fj.field_id = f.id
+    ORDER BY score
     """
 
     # Simplified parameter handling
