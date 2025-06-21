@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     # PostgreSQL settings
     database_url: str = os.getenv(
         "DATABASE_URL",
-        "postgresql+asyncpg://adminlaborolabs:laboroLabs!25@laborolabs-pre.postgres.database.azure.com/matching",
+        "",
     )
     
     # Database connection pooling settings
