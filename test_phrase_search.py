@@ -33,7 +33,7 @@ async def test_phrase_search():
     # Now test the actual search
     try:
         print("Executing search with phrase...")
-        results = await vector_matcher.get_top_jobs_by_vector_similarity(
+        results = await vector_matcher.get_top_jobs(
             cv_embedding=embedding,
             location=location, 
             keywords=phrase
@@ -51,7 +51,7 @@ async def test_phrase_search():
         print(f"Generated where clauses for split phrase: {where_clauses}")
         print(f"Generated query params for split phrase: {query_params}")
         
-        results = await vector_matcher.get_top_jobs_by_vector_similarity(
+        results = await vector_matcher.get_top_jobs(
             cv_embedding=embedding,
             location=location, 
             keywords=split_phrase

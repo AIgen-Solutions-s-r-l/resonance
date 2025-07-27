@@ -21,7 +21,7 @@ async def test_keyword_search():
     
     try:
         # This would have failed before with: only '%s', '%b', '%t' are allowed as placeholders, got '%''
-        results = await vector_matcher.get_top_jobs_by_vector_similarity(
+        results = await vector_matcher.get_top_jobs(
             cv_embedding=embedding,
             location=location, 
             keywords=keywords

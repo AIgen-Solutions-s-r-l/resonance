@@ -81,7 +81,7 @@ def sort_jobs(
         jobs.sort(key = recommend_algo, reverse = True)
 
 async def match_jobs_with_resume(
-    resume: Dict[str, Any],
+    resume: Optional[Dict[str, Any]],
     location: Optional[LocationFilter] = None,
     fields: Optional[List[int]] = None,
     keywords: Optional[List[str]] = None,
@@ -89,24 +89,12 @@ async def match_jobs_with_resume(
     offset: int = 0,
     experience: Optional[List[str]] = None,
     include_total_count: bool = False,
-    radius: Optional[int] = None,
     is_remote_only: Optional[bool] = None, # Add new parameter
     sort_type: SortType = SortType.RECOMMENDED
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
         
-        # If location is provided, ensure it's properly configured
-        if location is None:
-            location = LocationFilter()
-        
-        # If frontend provided coordinates and radius, use them for geospatial filtering
-        if location.latitude is not None and location.longitude is not None:
-            # These are already set in the LocationFilter from the API parameters
-            # If radius is provided separately, use it (in meters)
-            if radius is not None:
-                location.radius = radius
-
         matched_jobs = await matcher.process_job(
             resume,
             location=location,

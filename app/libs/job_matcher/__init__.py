@@ -53,7 +53,7 @@ class OptimizedJobMatcher:
     
     async def get_top_jobs_by_vector_similarity(self, *args, **kwargs):
         """Delegate to the vector similarity matcher."""
-        return await self._vector_matcher.get_top_jobs_by_vector_similarity(*args, **kwargs)
+        return await self._vector_matcher.get_top_jobs(*args, **kwargs)
     
     async def save_matches(self, *args, **kwargs):
         """Delegate to the persistence component."""

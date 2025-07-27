@@ -14,7 +14,7 @@ async def test_string_embedding():
         logger.info(f"Testing with string embedding: {string_embedding}")
         
         # This should now work with our fixes
-        results = await vector_matcher.get_top_jobs_by_vector_similarity(
+        results = await vector_matcher.get_top_jobs(
             cv_embedding=string_embedding,
             limit=2
         )
@@ -33,7 +33,7 @@ async def test_list_embedding():
         logger.info(f"Testing with list embedding: {list_embedding}")
         
         # This should work as before
-        results = await vector_matcher.get_top_jobs_by_vector_similarity(
+        results = await vector_matcher.get_top_jobs(
             cv_embedding=list_embedding,
             limit=2
         )
