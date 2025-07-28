@@ -27,7 +27,7 @@ def job_matcher():
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_process_job_with_experience_filter(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_build_experience_filters, mock_get_cooled_jobs, job_matcher, monkeypatch
@@ -49,7 +49,7 @@ async def test_process_job_with_experience_filter(
     mock_get_cooled_jobs.return_value = []  # No cooled jobs
     mock_get_top_jobs.return_value = [
         JobMatch(
-            id="1",
+            id=1,
             title="Senior Software Engineer",
             description="Job description",
             workplace_type="office",
@@ -133,7 +133,7 @@ async def test_vector_matcher_with_experience_filter(
     # Call the vector matcher with experience parameter
     cv_embedding = [0.1] * 1024
     experience = ["Mid-level"]
-    await job_matcher.get_top_jobs_by_vector_similarity(
+    await job_matcher.get_top_jobs(
         cv_embedding,
         experience=experience,
         fields=[],
@@ -156,7 +156,7 @@ async def test_vector_matcher_with_experience_filter(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached
 ):
@@ -173,7 +173,9 @@ async def test_match_jobs_with_resume_integration(
     location = LocationFilter(
         country="USA",
         city="New York",
-        radius_km=20.0
+        radius_km=20.0,
+        latitude=43.0,
+        longitude=-75.0
     )
     
     keywords = ["Python", "Django"]
@@ -184,7 +186,7 @@ async def test_match_jobs_with_resume_integration(
     mock_get_cached.return_value = None
     mock_get_top_jobs.return_value = [
         JobMatch(
-            id="1",
+            id=1,
             title="Entry Level Developer",
             description="Job description",
             workplace_type="office",
@@ -210,7 +212,7 @@ async def test_match_jobs_with_resume_integration(
     # Verify results
     assert isinstance(result, list) or (isinstance(result, dict) and "jobs" in result)
     
-    # Check that get_top_jobs_by_vector_similarity was called with all parameters
+    # Check that get_top_jobs was called with all parameters
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
     assert args[0] == resume["vector"]
@@ -232,7 +234,7 @@ async def test_match_jobs_with_resume_integration(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_experience_filter_with_cache(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_get_cooled_jobs, job_matcher, monkeypatch
@@ -254,7 +256,7 @@ async def test_experience_filter_with_cache(
     
     
     job_match = JobMatch(
-        id="1",
+        id=1,
         title="Mid Level Developer",
         description="Job description",
         workplace_type="office",
@@ -342,7 +344,7 @@ async def test_experience_filter_with_cache(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_experience_filter_with_cache_hit(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_get_cooled_jobs, job_matcher

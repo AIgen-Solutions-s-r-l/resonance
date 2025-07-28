@@ -23,7 +23,7 @@ def job_matcher():
 @pytest.mark.asyncio
 @patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query')
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
-async def test_get_top_jobs_by_vector_similarity_multiple_results(
+async def test_get_top_jobs_multiple_results(
     mock_get_db_cursor, mock_execute_query, job_matcher
 ):
     # Set up mocks
@@ -54,7 +54,7 @@ async def test_get_top_jobs_by_vector_similarity_multiple_results(
     mock_execute_query.return_value = mock_results
     
     mock_embedding = [0.1] * 1024  # Create a properly sized embedding vector
-    job_matches = await job_matcher.get_top_jobs_by_vector_similarity(
+    job_matches = await job_matcher.get_top_jobs(
         mock_embedding
     )
     
@@ -134,7 +134,7 @@ async def test_process_job_without_embeddings(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_process_job_success(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached, job_matcher, monkeypatch
 ):
@@ -144,7 +144,7 @@ async def test_process_job_success(
         "vector": [0.1] * 1024,  # Create a properly sized embedding vector
     }
     
-    # Create mock results for the get_top_jobs_by_vector_similarity method
+    # Create mock results for the get_top_jobs method
     mock_results = [
         JobMatch(
             id=f"{i}",
@@ -248,7 +248,7 @@ async def test_process_job_with_cache(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity')
+@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
 async def test_process_job_cache_handles_different_applied_ids(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_get_applied_jobs, mock_get_cooled_jobs, job_matcher, monkeypatch

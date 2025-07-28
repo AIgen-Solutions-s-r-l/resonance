@@ -88,7 +88,6 @@ async def match_jobs_with_resume(
     save_to_mongodb: bool = False,
     offset: int = 0,
     experience: Optional[List[str]] = None,
-    include_total_count: bool = False,
     is_remote_only: Optional[bool] = None, # Add new parameter
     sort_type: SortType = SortType.RECOMMENDED
 ) -> Dict[str, Any]:
@@ -103,7 +102,6 @@ async def match_jobs_with_resume(
             save_to_mongodb=save_to_mongodb,
             offset=offset,
             experience=experience,
-            include_total_count=include_total_count,
             is_remote_only=is_remote_only # Pass new parameter 
         )
 
@@ -120,7 +118,6 @@ async def match_jobs_with_resume(
                 save_to_mongodb=save_to_mongodb,
                 offset=offset + settings.CACHE_SIZE,
                 experience=experience,
-                include_total_count=include_total_count,
                 is_remote_only=is_remote_only # Pass new parameter 
             )
             jobs = jobs + matched_jobs_overflow.get("jobs", [])

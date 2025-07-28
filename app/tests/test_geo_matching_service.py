@@ -35,8 +35,7 @@ async def test_match_jobs_with_resume_with_geo_params():
         # Call the function with a radius
         await match_jobs_with_resume(
             resume,
-            location=location,
-            radius=5000  # 5 km in meters
+            location=location
         )
         
         # Verify that process_job was called with the correct parameters
@@ -47,7 +46,6 @@ async def test_match_jobs_with_resume_with_geo_params():
         assert call_args['location'] is not None
         assert call_args['location'].latitude == 40.7128
         assert call_args['location'].longitude == -74.0060
-        assert call_args['location'].radius == 5000
 
 
 @pytest.mark.asyncio
@@ -86,7 +84,6 @@ async def test_match_jobs_with_resume_with_geo_params_no_radius():
         assert call_args['location'] is not None
         assert call_args['location'].latitude == 40.7128
         assert call_args['location'].longitude == -74.0060
-        assert call_args['location'].radius is None
         assert call_args['location'].radius_km == 10.0
 
 
@@ -107,18 +104,14 @@ async def test_match_jobs_with_resume_no_geo_params():
         
         # Call the function with a radius but no location
         await match_jobs_with_resume(
-            resume,
-            radius=5000  # 5 km in meters
+            resume
         )
         
         # Verify that process_job was called with the correct parameters
         mock_matcher_instance.process_job.assert_called()
         call_args = mock_matcher_instance.process_job.call_args_list[0][1]
         
-        # Check that the location parameter is created but has no geo data
-        assert call_args['location'] is not None
-        assert call_args['location'].latitude is None
-        assert call_args['location'].longitude is None
+        assert call_args['location'] is None
 
 
 @pytest.mark.asyncio
@@ -148,8 +141,7 @@ async def test_match_jobs_with_resume_with_location_and_radius():
         # Call the function with a location and radius
         await match_jobs_with_resume(
             resume,
-            location=location,
-            radius=5000  # 5 km in meters
+            location=location
         )
         
         # Verify that process_job was called with the correct parameters
@@ -163,4 +155,3 @@ async def test_match_jobs_with_resume_with_location_and_radius():
         assert call_args['location'].latitude == 37.7749
         assert call_args['location'].longitude == -122.4194
         assert call_args['location'].radius_km == 10.0
-        assert call_args['location'].radius == 5000

@@ -253,7 +253,7 @@ sequenceDiagram
     else Cache Miss
         C-->>JM: null
         Note over JM: Procede con la ricerca vettoriale.
-        JM->>VM: get_top_jobs_by_vector_similarity(cv_embedding, location, keywords, offset=N, limit=5, experience=...)
+        JM->>VM: get_top_jobs(cv_embedding, location, keywords, offset=N, limit=5, experience=...)
         Note over VM: 'limit' ha default 5 qui.
         VM->>DU: get_db_cursor("default")
         DU-->>VM: cursor
@@ -291,7 +291,7 @@ sequenceDiagram
 
 **Punti Chiave Specifici di Questa Implementazione:**
 
-1.  **Default `limit` Diversi:** `JobMatcher.process_job` ha un `limit` predefinito di 50, ma lo passa a `VectorMatcher.get_top_jobs_by_vector_similarity` che a sua volta ha un `limit` predefinito di 5. Questo `limit=5` viene poi usato nella query al database.
+1.  **Default `limit` Diversi:** `JobMatcher.process_job` ha un `limit` predefinito di 50, ma lo passa a `VectorMatcher.get_top_jobs` che a sua volta ha un `limit` predefinito di 5. Questo `limit=5` viene poi usato nella query al database.
 2.  **Cache:** La cache (`cache.py`) gioca un ruolo centrale, usando l'`offset` nella chiave.
 3.  **Fallback Query:** Se ci sono 5 o meno risultati potenziali (determinato da `get_filtered_job_count`), viene usata una query più semplice senza `offset`.
 4.  **Query Vettoriale:** Solo se ci sono più di 5 risultati potenziali, viene eseguita la query vettoriale completa che utilizza sia `LIMIT 5` che l'`offset=N`.

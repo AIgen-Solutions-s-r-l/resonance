@@ -51,7 +51,7 @@ class OptimizedJobMatcher:
         matcher = JobMatcher()
         return await matcher.process_job(*args, **kwargs)
     
-    async def get_top_jobs_by_vector_similarity(self, *args, **kwargs):
+    async def get_top_jobs(self, *args, **kwargs):
         """Delegate to the vector similarity matcher."""
         return await self._vector_matcher.get_top_jobs(*args, **kwargs)
     

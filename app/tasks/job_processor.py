@@ -158,7 +158,6 @@ class TaskManager:
                 keywords=keywords,
                 offset=offset,
                 experience=experience,
-                include_total_count=True,
                 radius=radius,
                 is_remote_only=is_remote_only # Pass new parameter
             )

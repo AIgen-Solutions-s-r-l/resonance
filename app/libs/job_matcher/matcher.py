@@ -190,7 +190,7 @@ class JobMatcher:
                 logger.info("PROCESSING: No job IDs to filter (neither applied nor cooled)")
 
             # Use the vector matcher to find matches, passing combined IDs for filtering
-            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity with filtering")
+            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs with filtering")
             job_matches = await vector_matcher.get_top_jobs(
                 cv_embedding,
                 location=location,

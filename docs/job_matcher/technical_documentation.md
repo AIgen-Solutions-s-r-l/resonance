@@ -218,7 +218,7 @@ sequenceDiagram
     alt Cache Hit
         Cache-->>JobMatcher: return cached results
     else Cache Miss
-        JobMatcher->>VectorMatcher: get_top_jobs_by_vector_similarity
+        JobMatcher->>VectorMatcher: get_top_jobs
         VectorMatcher->>QueryBuilder: build_filter_conditions
         QueryBuilder-->>VectorMatcher: where_clauses, query_params
         
@@ -374,7 +374,6 @@ async def process_job(
     use_cache: bool = True,
     limit: int = 25,
     experience: Optional[List[str]] = None,
-    include_total_count: bool = True
 ) -> Dict[str, Any]
 ```
 
@@ -383,7 +382,7 @@ Primary entry point for job matching operations.
 ### VectorMatcher
 
 ```python
-async def get_top_jobs_by_vector_similarity(
+async def get_top_jobs(
     self,
     cv_embedding: List[float],
     location: Optional[LocationFilter] = None,

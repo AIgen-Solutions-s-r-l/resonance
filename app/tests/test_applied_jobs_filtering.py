@@ -45,7 +45,7 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
         mock_get_applied_jobs.return_value = mock_applied_job_ids
 
         # Mock the vector matcher to return the *already filtered* results
-        with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity",
+        with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs",
                    new_callable=AsyncMock) as mock_get_jobs:
             mock_get_jobs.return_value = mock_filtered_job_matches
             
@@ -86,11 +86,11 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                             # Verify that get_applied_job_ids was called with the correct user_id
                             mock_get_applied_jobs.assert_called_once_with(user_id_to_test)
 
-                            # Verify that get_top_jobs_by_vector_similarity was called with applied_job_ids
+                            # Verify that get_top_jobs was called with applied_job_ids
                             mock_get_jobs.assert_called_once()
                             call_args, call_kwargs = mock_get_jobs.call_args
-                            assert call_kwargs.get("applied_job_ids") == mock_applied_job_ids, \
-                                "get_top_jobs_by_vector_similarity should be called with applied_job_ids"
+                            assert call_kwargs.get("blacklisted_job_ids") == mock_applied_job_ids, \
+                                "get_top_jobs should be called with applied_job_ids"
 
                             # Verify cache stores the results returned by the mock (already filtered)
                             mock_cache_set.assert_called_once()
