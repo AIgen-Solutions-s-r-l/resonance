@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release_2025_01
+      - resumeless-query
 
 jobs:
   test:

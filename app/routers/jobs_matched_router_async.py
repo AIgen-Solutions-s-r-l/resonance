@@ -433,8 +433,8 @@ async def get_matched_jobs_legacy(
         )
 
 
-@router.post(
-    "/search",
+@router.get(
+    "/search/legacy",
     response_model=JobsMatchedResponse,
     summary="Get Jobs Matching User's Resume (Legacy)",
     description="Returns a list of jobs that match the authenticated user's resume along with total count for pagination.",
