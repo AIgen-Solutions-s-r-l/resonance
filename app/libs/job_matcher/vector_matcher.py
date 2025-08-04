@@ -48,7 +48,7 @@ class VectorMatcher:
             keywords: Optional keyword filter
             offset: Results offset
             limit: Results limit
-            experience: Optional experience level filter. Allowed values: Intern, Entry, Mid, Executive
+            experience: Optional experience level filter. Allowed values: Internship, Entry, Mid, Executive
             applied_job_ids: Optional list of job IDs to exclude.
             is_remote_only: Optional filter for remote jobs only.
 

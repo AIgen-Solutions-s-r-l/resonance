@@ -10,7 +10,7 @@ The experience parameter allows clients to prefilter job matches based on experi
 
 | Parameter  | Type        | Required | Description                                                  |
 |------------|-------------|----------|--------------------------------------------------------------|
-| experience | List[str]   | No       | Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level |
+| experience | List[str]   | No       | Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Internship, Mid-level, Senior-level |
 
 ## Usage
 
@@ -37,7 +37,7 @@ GET /jobs/match?experience=Executive-level&country=Germany&keywords=manager
 
 When the `experience` parameter is provided, the system will:
 
-1. Validate that all values are in the allowed set: "Entry-level", "Executive-level", "Intern", "Mid-level", "Senior-level"
+1. Validate that all values are in the allowed set: "Entry-level", "Executive-level", "Internship", "Mid-level", "Senior-level"
 2. Add a SQL filter in the query to the jobs database to only include jobs with matching experience levels
 3. Include the experience parameter in cache keys to ensure proper caching
 4. Log the experience filter usage for monitoring and debugging purposes

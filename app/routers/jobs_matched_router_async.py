@@ -69,7 +69,7 @@ async def start_job_matching(
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
-        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
+        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Internship, Mid-level, Senior-level"
     ),
     is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
     wait: bool = Query(False, description="Wait for results (not recommended for production use)"),
@@ -327,7 +327,7 @@ async def get_matched_jobs_legacy(
     ),
     offset: Optional[int] = Query(0, description="Get further jobs"),
     experience: Optional[List[str]] = Query(
-        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
+        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Internship, Mid-level, Senior-level"
     ),
     is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only"),
     sort_by: Optional[str] = Query("recommended", description="Order job batches by date"),

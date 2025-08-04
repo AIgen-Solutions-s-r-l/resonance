@@ -42,7 +42,7 @@ echo "- SQL conditions with experience"
 echo ""
 
 echo -e "${RED}IMPORTANT:${NC} Based on the code analysis, only these exact values are valid:"
-echo "- 'Intern'"
+echo "- 'Internship'"
 echo "- 'Entry'"
 echo "- 'Mid'"
 echo "- 'Executive'"
