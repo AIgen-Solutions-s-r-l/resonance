@@ -199,7 +199,7 @@ async def start_job_matching(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
-    except Exception as e:
+    except Exception:
         logger.exception(
             "Unexpected error for user {current_user}",
             current_user=current_user,
@@ -281,7 +281,7 @@ async def get_job_matching_status(
         
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         logger.exception(
             "Unexpected error checking task status for user {current_user}",
             current_user=current_user,
@@ -433,7 +433,7 @@ async def get_matched_jobs_legacy(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
-    except Exception as e:
+    except Exception:
         logger.exception(
             "Unexpected error for user {current_user}",
             current_user=current_user,
@@ -442,7 +442,74 @@ async def get_matched_jobs_legacy(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
         )
+    
 
+@router.get(
+    "/internal_matching",
+    response_model=JobDetailResponse,
+    summary="Get top 10 job matches by matching score without authentication",
+    status_code=status.HTTP_200_OK,
+)
+async def internal_matching(
+    user_id: int = Query(..., description="User ID to retrieve job matches for"),
+):
+    """
+    Internal matching endpoint that returns the top 10 job matches
+    for a given user_id, sorted by matching_score, no authentication.
+    """
+    try:
+        # 1) load the user's resume
+        resume = await get_resume_by_user_id(user_id)
+        if not resume or "error" in resume:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Resume not found for the given user_id.",
+            )
+
+        # 2) run the matching service with sort_by="matching_score", no filters
+        matched = await match_jobs_with_resume(
+            resume,
+            offset=0,
+            include_total_count=False,
+            radius=None,
+            is_remote_only=None,
+            sort_type=SortType.SCORE,
+        )
+        if not isinstance(matched, dict):
+            logger.exception("Unexpected data structure for internal matching, user_id=%s", user_id)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Invalid data structure from matching service.",
+            )
+
+        # 3) take only the first 10 matches
+        job_list = matched.get("jobs", [])[:10]
+        job_ids = [job["id"] for job in job_list]
+
+        # 4) fetch full details for those 10 jobs
+        if not job_ids:
+            return JobDetailResponse(jobs=[], count=0, status="success")
+
+        async with get_db_cursor() as cursor:
+            await cursor.execute(
+                'SELECT * FROM "Jobs" WHERE id = ANY(%s)',
+                (job_ids,),
+            )
+            rows = await cursor.fetchall()
+            jobs = [dict(r) for r in rows]
+
+        # 5) return exactly like /details
+        return JobDetailResponse(jobs=jobs, count=len(jobs), status="success")
+
+    except HTTPException:
+        # pass through 404 or other HTTPExceptions
+        raise
+    except Exception:
+        logger.exception("Error in internal matching for user_id=%s", user_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred.",
+        )
 
 @router.get(
     "/details",
