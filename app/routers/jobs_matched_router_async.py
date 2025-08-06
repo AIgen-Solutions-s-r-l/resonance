@@ -447,15 +447,25 @@ async def get_matched_jobs_legacy(
 @router.get(
     "/internal_matching",
     response_model=JobDetailResponse,
-    summary="Get top 10 job matches by matching score without authentication",
+    summary="Get top N job matches by matching score without authentication",
     status_code=status.HTTP_200_OK,
 )
 async def internal_matching(
     user_id: int = Query(..., description="User ID to retrieve job matches for"),
+    amount: Optional[int] = Query(
+        None,
+        ge=1,
+        description="How many matches to return (defaults to 10 if not set)",
+    ),
+    experience: Optional[str] = Query(None, description="Experience level filter"),
+    country: Optional[str] = Query(None, description="Country filter"),
+    latitude: Optional[float] = Query(None, description="Latitude for geo-based filtering"),
+    longitude: Optional[float] = Query(None, description="Longitude for geo-based filtering"),
 ):
     """
-    Internal matching endpoint that returns the top 10 job matches
+    Internal matching endpoint that returns the top `amount` job matches
     for a given user_id, sorted by matching_score, no authentication.
+    Passes along optional filters: experience, country, latitude & longitude.
     """
     try:
         # 1) load the user's resume
@@ -466,7 +476,7 @@ async def internal_matching(
                 detail="Resume not found for the given user_id.",
             )
 
-        # 2) run the matching service with sort_by="matching_score", no filters
+        # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
             resume,
             offset=0,
@@ -474,19 +484,27 @@ async def internal_matching(
             radius=None,
             is_remote_only=None,
             sort_type=SortType.SCORE,
+            amount=amount,
+            experience=experience,
+            country=country,
+            latitude=latitude,
+            longitude=longitude,
         )
         if not isinstance(matched, dict):
-            logger.exception("Unexpected data structure for internal matching, user_id=%s", user_id)
+            logger.exception(
+                "Unexpected data structure for internal matching, user_id=%s", user_id
+            )
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure from matching service.",
             )
 
-        # 3) take only the first 10 matches
-        job_list = matched.get("jobs", [])[:10]
+        # 3) slice to requested amount (default 10)
+        limit = amount or 10
+        job_list = matched.get("jobs", [])[:limit]
         job_ids = [job["id"] for job in job_list]
 
-        # 4) fetch full details for those 10 jobs
+        # 4) fetch full details for those jobs
         if not job_ids:
             return JobDetailResponse(jobs=[], count=0, status="success")
 
@@ -498,14 +516,16 @@ async def internal_matching(
             rows = await cursor.fetchall()
             jobs = [dict(r) for r in rows]
 
-        # 5) return exactly like /details
+        # 5) return full details
         return JobDetailResponse(jobs=jobs, count=len(jobs), status="success")
 
     except HTTPException:
-        # pass through 404 or other HTTPExceptions
         raise
     except Exception:
-        logger.exception("Error in internal matching for user_id=%s", user_id)
+        logger.exception(
+            "Error in internal matching for user_id=%s (amount=%s, exp=%s, country=%s, lat=%s, lon=%s)",
+            user_id, amount, experience, country, latitude, longitude
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
