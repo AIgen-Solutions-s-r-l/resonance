@@ -520,13 +520,17 @@ async def internal_matching(
 
         async with get_db_cursor() as cursor:
             await cursor.execute(
-                'SELECT * FROM "Jobs" WHERE id = ANY(%s)',
-                (job_ids,),
-            )
+                    'SELECT * FROM "Jobs" WHERE id = ANY(%s)',
+                    (job_ids,),
+                )
             rows = await cursor.fetchall()
-            jobs = [dict(r) for r in rows]
 
-        # 5) return full details
+            jobs = []
+            for r in rows:
+                job = dict(r)
+                job["id"] = str(job["id"])
+                jobs.append(job)
+
         return JobDetailResponse(jobs=jobs, count=len(jobs), status="success")
 
     except HTTPException as e:
