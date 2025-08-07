@@ -487,7 +487,6 @@ async def internal_matching(
             radius=None,
             is_remote_only=None,
             sort_type=SortType.SCORE,
-            amount=amount,
             experience=experience,
             country=country,
             latitude=latitude,
