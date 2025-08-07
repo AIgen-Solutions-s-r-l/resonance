@@ -472,9 +472,12 @@ async def internal_matching(
         resume = await get_resume_by_user_id(user_id)
         if not resume or "error" in resume:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail="Resume not found for the given user_id.",
             )
+        
+        logger.info("Internal matching for user {user_id} with resume: {resume}",
+                    user_id=user_id, resume=resume)
 
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
@@ -498,6 +501,8 @@ async def internal_matching(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure from matching service.",
             )
+
+        logger.info("Matched jobs for user {user_id}", user_id=user_id)
 
         # 3) slice to requested amount (default 10)
         limit = amount or 10
