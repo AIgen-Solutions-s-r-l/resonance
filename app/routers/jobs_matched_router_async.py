@@ -478,6 +478,14 @@ async def internal_matching(
         
         logger.info("Internal matching for user {user_id} with resume: {resume}",
                     user_id=user_id, resume=resume)
+        
+        location = LocationFilter(
+            country=country,
+            city=None,  # legit doubt
+            latitude=latitude,
+            longitude=longitude,
+        )
+        exp_list = [experience] if experience else None
 
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
@@ -487,10 +495,8 @@ async def internal_matching(
             radius=None,
             is_remote_only=None,
             sort_type=SortType.SCORE,
-            experience=experience,
-            country=country,
-            latitude=latitude,
-            longitude=longitude,
+            experience=exp_list,
+            location=location,
         )
         if not isinstance(matched, dict):
             logger.exception(
