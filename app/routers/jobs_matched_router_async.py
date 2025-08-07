@@ -524,12 +524,14 @@ async def internal_matching(
         # 5) return full details
         return JobDetailResponse(jobs=jobs, count=len(jobs), status="success")
 
-    except HTTPException:
+    except HTTPException as e:
+        logger.exception("Internal matching error {error} for user_id={user_id}",
+                         error=str(e), user_id=user_id)
         raise
-    except Exception:
+    except Exception as e:
         logger.exception(
-            "Error in internal matching for user_id=%s (amount=%s, exp=%s, country=%s, lat=%s, lon=%s)",
-            user_id, amount, experience, country, latitude, longitude
+            "Unexpected error during internal matching for user_id={user_id}: {error}",
+            user_id=user_id, error=str(e)
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
