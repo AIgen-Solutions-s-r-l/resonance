@@ -236,7 +236,7 @@ async def execute_simple_query(
     # Log parameter structure for debugging
     logger.info(
         "DB_UTILS: Simplified parameter structure: {embedding_count} embeddings, {where_params_count} WHERE params, {total_params} total params, country filter: {country_filter}",
-        embedding_count=1,
+        embedding_count=0,
         where_params_count=len(query_params),
         total_params=len(sql_params),
         country_filter=[p for p in query_params if isinstance(p, str)],
@@ -244,7 +244,7 @@ async def execute_simple_query(
 
     # Log query for debugging
     logger.info(
-        "DB_UTILS: Executing vector similarity query: {param_count} parameters, {where_clause_count} WHERE clauses, {embedding_length} embedding length, {query_size} characters",
+        "DB_UTILS: Executing vector similarity query: {param_count} parameters, {where_clause_count} WHERE clauses, {query_size} characters",
         param_count=len(sql_params),
         where_clause_count=len(where_clauses),
         has_filter=bool(where_clauses),
