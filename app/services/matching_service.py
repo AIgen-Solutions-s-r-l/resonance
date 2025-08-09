@@ -49,9 +49,10 @@ async def get_resume_by_user_id(
     
 def sort_jobs(
     jobs: list[dict[str, Any]],
-    sort_type: SortType
+    sort_type: SortType,
+    score_threshold: float = 50.0
 ):
-    score_threshold = 60.0
+    
     if sort_type == SortType.DATE:
 
         def sorting_algo(job: dict) -> datetime:
@@ -142,7 +143,11 @@ async def match_jobs_with_resume(
             logger.warning("user matched with zero jobs", resume_id = resume.get("_id", None))
         else:
             logger.info("matched with {amount} jobs", resume_id = resume.get("_id", None), amount=len(jobs))
-            sort_jobs(jobs, sort_type)
+            sort_jobs(
+                jobs, 
+                sort_type,
+                50.0 if fields is None or len(fields) == 0 else 0.0
+            )
         
         matched_jobs["total_count"] = 2000
         if len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
@@ -155,7 +160,11 @@ async def match_jobs_with_resume(
             
             ids = set([job["id"] for job in jobs])
             non_duplicates = list(filter(lambda job: job["id"] not in ids, matched_jobs_unfiltered["jobs"]))
-            sort_jobs(non_duplicates, sort_type)
+            sort_jobs(
+                non_duplicates, 
+                sort_type,
+                50.0 if fields is None or len(fields) == 0 else 0.0
+            )
             jobs = jobs + non_duplicates
             matched_jobs["total_count"] = settings.CACHE_SIZE
 
