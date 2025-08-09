@@ -52,8 +52,7 @@ class JobMatch:
             "score": self.score,
             "posted_date": self.posted_date,
             "job_state": self.job_state,
-            "apply_link": self.apply_link
-            # Removed fields:
-            # "portal": self.portal,
-            # "location": self.location
+            "apply_link": self.apply_link,
+            "portal": self.portal,
+            "location": self.location
         }
