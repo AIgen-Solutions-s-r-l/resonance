@@ -517,8 +517,12 @@ async def internal_matching(
         # 4) fetch full details for those jobs
         if not job_ids:
             return JobDetailResponse(jobs=[], count=0, status="success")
+        
+        logger.info("ALL DETAILS: {job}", job=job_list)
 
         job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
+
+        logger.info("ALL DETAILS 2: {job}", job=job_pydantic_list)
 
         return JobDetailResponse(jobs=job_pydantic_list, count=len(job_pydantic_list), status="success")
 
