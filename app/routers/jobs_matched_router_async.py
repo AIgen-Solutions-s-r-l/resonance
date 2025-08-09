@@ -480,8 +480,6 @@ async def internal_matching(
         matched = await match_jobs_with_resume(
             resume,
             offset=0,
-            include_total_count=False,
-            radius=None,
             is_remote_only=None,
             sort_type=SortType.SCORE,
             experience=exp_list,
