@@ -206,7 +206,7 @@ async def execute_simple_query(
             l.city AS city,
             c.company_name AS company_name,
             c.logo AS company_logo,
-            j.portal AS portal,
+            j.portal AS portal
         FROM "Jobs" AS j
         LEFT JOIN "Companies" c ON j.company_id = c.company_id
         LEFT JOIN "Locations" l ON j.location_id = l.location_id
