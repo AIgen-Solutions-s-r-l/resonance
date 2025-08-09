@@ -26,57 +26,14 @@ class TestGeoMatching:
         location = LocationFilter(
             latitude=40.7128,
             longitude=-74.0060,
-            radius=5000  # 5 km in meters
+            radius_km=5.0
         )
         
         # Verify the parameters are set correctly
         assert location.latitude == 40.7128
         assert location.longitude == -74.0060
-        assert location.radius == 5000
+        assert location.radius_km == 5
 
-    def test_build_location_filters_with_geo_and_radius_meters(self, query_builder):
-        """Test building location filters with geo parameters and radius in meters."""
-        # Create a LocationFilter with geo parameters and radius in meters
-        location = LocationFilter(
-            latitude=40.7128,
-            longitude=-74.0060,
-            radius=5000  # 5 km in meters
-        )
-        
-        # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
-        
-        # Verify that the geo filter is included
-        assert len(where_clauses) == 1
-        assert "ST_DWithin" in where_clauses[0]
-        
-        # Verify the parameters
-        assert len(query_params) == 3
-        assert query_params[0] == -74.0060  # longitude
-        assert query_params[1] == 40.7128   # latitude
-        assert query_params[2] == 5000.0    # radius in meters (as float)
-
-    def test_build_location_filters_with_geo_and_radius_km(self, query_builder):
-        """Test building location filters with geo parameters and radius in kilometers."""
-        # Create a LocationFilter with geo parameters and radius in kilometers
-        location = LocationFilter(
-            latitude=40.7128,
-            longitude=-74.0060,
-            radius_km=10.0  # 10 km
-        )
-        
-        # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
-        
-        # Verify that the geo filter is included
-        assert len(where_clauses) == 1
-        assert "ST_DWithin" in where_clauses[0]
-        
-        # Verify the parameters
-        assert len(query_params) == 3
-        assert query_params[0] == -74.0060  # longitude
-        assert query_params[1] == 40.7128   # latitude
-        assert query_params[2] == 10.0      # radius in km
 
     def test_build_location_filters_without_geo(self, query_builder):
         """Test building location filters without geo parameters."""
@@ -103,7 +60,7 @@ class TestGeoMatching:
         location = LocationFilter(
             latitude=40.7128,
             longitude=None,
-            radius=5000
+            radius_km=5.0
         )
         
         # Build the location filters
@@ -117,7 +74,7 @@ class TestGeoMatching:
         location = LocationFilter(
             latitude=None,
             longitude=-74.0060,
-            radius=5000
+            radius_km=5.0
         )
         
         # Build the location filters
@@ -133,29 +90,6 @@ class TestGeoMatching:
         # Verify the default radius is 50000 meters (50 km)
         assert settings.default_geo_radius_meters == 50000
 
-
-    def test_radius_precedence(self, query_builder):
-        """Test that radius in meters takes precedence over radius_km."""
-        # Create a LocationFilter with both radius and radius_km
-        location = LocationFilter(
-            latitude=40.7128,
-            longitude=-74.0060,
-            radius_km=10.0,  # 10 km
-            radius=5000      # 5 km in meters (should take precedence)
-        )
-        
-        # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
-        
-        # Verify that the geo filter is included
-        assert len(where_clauses) == 1
-        assert "ST_DWithin" in where_clauses[0]
-        
-        # Verify the parameters - radius should be 5000 meters, not 10.0 * 1000
-        assert len(query_params) == 3
-        assert query_params[0] == -74.0060  # longitude
-        assert query_params[1] == 40.7128   # latitude
-        assert query_params[2] == 5000.0    # radius in meters (as float)
         
     def test_geo_coordinates_prioritized_over_city(self, query_builder):
         """Test that latitude and longitude coordinates are prioritized over city names."""
@@ -163,7 +97,7 @@ class TestGeoMatching:
         location = LocationFilter(
             latitude=40.7128,
             longitude=-74.0060,
-            radius=5000,  # 5 km in meters
+            radius_km=5,  # 5 km in meters
             city="New York"  # This should be ignored when geo coordinates are provided
         )
         
@@ -181,7 +115,7 @@ class TestGeoMatching:
         assert len(query_params) == 3
         assert query_params[0] == -74.0060  # longitude
         assert query_params[1] == 40.7128   # latitude
-        assert query_params[2] == 5000.0    # radius in meters (as float)
-        
+        assert query_params[2] == 5.0    
+
         # Verify that "New York" is not in the parameters
         assert "New York" not in query_params

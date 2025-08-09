@@ -36,7 +36,7 @@ class JobMatcher:
     @async_matching_algorithm_timer("process_job_optimized")
     async def process_job(
         self,
-        resume: Dict[str, Any],
+        resume: Optional[Dict[str, Any]],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         fields: Optional[List[int]] = None,
@@ -45,7 +45,6 @@ class JobMatcher:
         use_cache: bool = True,
         limit: int = settings.CACHE_SIZE,
         experience: Optional[List[str]] = None,
-        include_total_count: bool = True,
         is_remote_only: Optional[bool] = None # Add parameter
     ) -> Dict[str, Any]:
         """
@@ -84,42 +83,51 @@ class JobMatcher:
                 use_cache=use_cache,
                 is_remote_only=is_remote_only # Log parameter
             )
-            logger.info("RESUME CHECK: Checking resume for vector embedding")
-            
-            # Check for vector embedding
-            if "vector" not in resume:
-                logger.warning("No vector found in resume")
-                return {"jobs": []}
+
+            user_id = -1
+            if resume is None:
+                resume_id = "guest"
+                applied_ids = None
+                cv_embedding = None
+                
             else:
-                vector_length = len(resume['vector']) if isinstance(resume.get('vector'), list) else 'unknown'
-                logger.info(f"RESUME CHECK: Vector found in resume, length: {vector_length}")
+                logger.info("RESUME CHECK: Checking resume for vector embedding")
             
-            resume_id = str(resume.get("_id", "unknown"))
-            logger.info(f"RESUME CHECK: Resume ID: {resume_id}")
+                # Check for vector embedding
+                if "vector" not in resume:
+                    logger.warning("No vector found in resume")
+                    return {"jobs": []}
+                else:
+                    vector_length = len(resume['vector']) if isinstance(resume.get('vector'), list) else 'unknown'
+                    logger.info(f"RESUME CHECK: Vector found in resume, length: {vector_length}")
+                
+                cv_embedding = resume["vector"]
+                resume_id = str(resume.get("_id", "unknown"))
+                logger.info(f"RESUME CHECK: Resume ID: {resume_id}")
+                
+                # Add log to debug resume structure
+                logger.info(f"RESUME CHECK: Resume keys: {list(resume.keys())}")
             
-            # Add log to debug resume structure
-            logger.info(f"RESUME CHECK: Resume keys: {list(resume.keys())}")
-            
-            # Fetch applied job IDs for the user *before* cache check
-            applied_ids: Optional[List[str]] = None
-            if "user_id" in resume:
-                user_id = resume["user_id"]
-                logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
-                try:
-                    # Ensure applied_jobs_service is awaited if it's async
-                    applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
-                    if applied_ids:
-                         logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs for cache key.")
-                    else:
-                         logger.info(f"PROCESSING: No applied job IDs found for user {user_id}.")
-                except AttributeError:
-                     logger.error("AppliedJobsService does not have 'get_applied_jobs'. Cannot include in cache key.")
-                     applied_ids = None # Ensure it's None if fetch fails
-                except Exception as e:
-                    logger.error(f"Error fetching applied job IDs for cache key: {e}")
-                    applied_ids = None # Proceed without filtering on error
-            else:
-                logger.info("PROCESSING: No user_id in resume, cannot fetch applied jobs for cache key.")
+                # Fetch applied job IDs for the user *before* cache check
+                applied_ids: Optional[List[str]] = None
+                if "user_id" in resume:
+                    user_id = resume["user_id"]
+                    logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
+                    try:
+                        # Ensure applied_jobs_service is awaited if it's async
+                        applied_ids = await applied_jobs_service.get_applied_jobs(user_id)
+                        if applied_ids:
+                            logger.info(f"PROCESSING: Found {len(applied_ids)} applied job IDs for cache key.")
+                        else:
+                            logger.info(f"PROCESSING: No applied job IDs found for user {user_id}.")
+                    except AttributeError:
+                        logger.error("AppliedJobsService does not have 'get_applied_jobs'. Cannot include in cache key.")
+                        applied_ids = None # Ensure it's None if fetch fails
+                    except Exception as e:
+                        logger.error(f"Error fetching applied job IDs for cache key: {e}")
+                        applied_ids = None # Proceed without filtering on error
+                else:
+                    logger.info("PROCESSING: No user_id in resume, cannot fetch applied jobs for cache key.")
                 
             # Fetch cooled job IDs *before* cache check
             cooled_ids: Optional[List[str]] = None
@@ -169,14 +177,6 @@ class JobMatcher:
             
             logger.info("PROCESSING: No cache hit, proceeding with matching (and recording request)")
             
-            # Process the match
-            logger.info("PROCESSING: Extracting CV embedding from resume")
-            cv_embedding = resume["vector"]
-            vector_length = len(cv_embedding) if isinstance(cv_embedding, list) else 'unknown'
-            logger.info(f"PROCESSING: Starting vector similarity search with embedding length: {vector_length}")
-            
-            # Applied IDs and cooled IDs are already fetched before the cache check.
-            
             # Combine applied and cooled job IDs for filtering
             filtered_job_ids = []
             if applied_ids:
@@ -190,8 +190,8 @@ class JobMatcher:
                 logger.info("PROCESSING: No job IDs to filter (neither applied nor cooled)")
 
             # Use the vector matcher to find matches, passing combined IDs for filtering
-            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs_by_vector_similarity with filtering")
-            job_matches = await vector_matcher.get_top_jobs_by_vector_similarity(
+            logger.info("PROCESSING: Calling vector_matcher.get_top_jobs with filtering")
+            job_matches = await vector_matcher.get_top_jobs(
                 cv_embedding,
                 location=location,
                 keywords=keywords,
@@ -199,7 +199,7 @@ class JobMatcher:
                 offset=(offset // settings.CACHE_SIZE) * settings.CACHE_SIZE,
                 limit=limit,
                 experience=experience,
-                applied_job_ids=filtered_job_ids, # Pass the combined IDs
+                blacklisted_job_ids=filtered_job_ids, # Pass the combined IDs
                 is_remote_only=is_remote_only # Pass new parameter
             )
             

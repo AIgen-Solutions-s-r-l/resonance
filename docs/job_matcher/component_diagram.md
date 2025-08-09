@@ -45,7 +45,7 @@ classDiagram
     }
     
     class VectorMatcher {
-        +get_top_jobs_by_vector_similarity()
+        +get_top_jobs()
     }
     
     class QueryBuilder {
@@ -105,7 +105,7 @@ sequenceDiagram
     alt Cache Hit
         Cache-->>JobMatcher: return cached results
     else Cache Miss
-        JobMatcher->>VectorMatcher: get_top_jobs_by_vector_similarity
+        JobMatcher->>VectorMatcher: get_top_jobs
         VectorMatcher->>QueryBuilder: build_filter_conditions
         QueryBuilder-->>VectorMatcher: where_clauses, query_params
         

@@ -50,7 +50,7 @@ async def test_filter_cooled_jobs_from_search_results(monkeypatch):
             mock_get_cooled_jobs.return_value = mock_cooled_job_ids
 
             # Mock the vector matcher to return the *already filtered* results
-            with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs_by_vector_similarity",
+            with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs",
                       new_callable=AsyncMock) as mock_get_jobs:
                 mock_get_jobs.return_value = mock_filtered_job_matches
                 
@@ -94,14 +94,14 @@ async def test_filter_cooled_jobs_from_search_results(monkeypatch):
                                 # Verify that get_cooled_jobs was called
                                 mock_get_cooled_jobs.assert_called_once()
                                 
-                                # Verify that get_top_jobs_by_vector_similarity was called with combined job_ids
+                                # Verify that get_top_jobs was called with combined job_ids
                                 mock_get_jobs.assert_called_once()
                                 call_args, call_kwargs = mock_get_jobs.call_args
                                 
                                 # The combined list should contain both applied and cooled job IDs
                                 expected_filtered_ids = mock_applied_job_ids + mock_cooled_job_ids
-                                assert sorted(call_kwargs.get("applied_job_ids")) == sorted(expected_filtered_ids), \
-                                    "get_top_jobs_by_vector_similarity should be called with combined applied and cooled job IDs"
+                                assert sorted(call_kwargs.get("blacklisted_job_ids")) == sorted(expected_filtered_ids), \
+                                    "get_top_jobs should be called with combined applied and cooled job IDs"
                                 
                                 # Verify cache stores the results returned by the mock (already filtered)
                                 mock_cache_set.assert_called_once()

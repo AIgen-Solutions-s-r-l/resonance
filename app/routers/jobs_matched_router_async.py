@@ -315,9 +315,6 @@ async def get_matched_jobs_legacy(
     radius_km: Optional[float] = Query(
         None, description="Filter jobs within the radius in kilometers"
     ),
-    radius: Optional[int] = Query(
-        None, description="Filter jobs within the radius in meters (for geographic matching)"
-    ),
     keywords: Optional[List[str]] = Query(
         None,
         description="Filter jobs containing any of these keywords in the title or description. Multiple keywords will be treated as a single phrase.",
@@ -369,12 +366,6 @@ async def get_matched_jobs_legacy(
         processed_keywords = None
         if keywords and len(keywords) > 0:
             processed_keywords = [" ".join(keywords)]
-            logger.info(
-                "Preprocessed keywords for user {current_user}: {original} -> {processed}",
-                current_user=current_user,
-                original=keywords,
-                processed=processed_keywords,
-            )
 
         sort_type = SortType.RECOMMENDED
         try:
@@ -390,8 +381,6 @@ async def get_matched_jobs_legacy(
             keywords=processed_keywords,
             offset=offset if offset is not None else 0,
             experience=experience,
-            include_total_count=True,  # Request total count for pagination
-            radius=radius,
             is_remote_only=is_remote_only, # Pass the new parameter
             sort_type=sort_type
         )
@@ -539,6 +528,124 @@ async def internal_matching(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
         )
+
+@router.get(
+    "/search/legacy",
+    response_model=JobsMatchedResponse,
+    summary="Get Jobs Matching User's Resume (Legacy)",
+    description="Returns a list of jobs that match the authenticated user's resume along with total count for pagination.",
+    status_code=status.HTTP_200_OK,
+    deprecated=False,
+)
+async def job_search_legacy(
+    country: Optional[str] = Query(
+        None, description="Filter jobs by country (hard filter)"
+    ),
+    city: Optional[str] = Query(None, description="Filter jobs by city (hard filter)"),
+    latitude: Optional[float] = Query(
+        None, description="Filter jobs by latitude (soft filter)"
+    ),
+    longitude: Optional[float] = Query(
+        None, description="Filter jobs by longitude (soft filter)"
+    ),
+    radius_km: Optional[float] = Query(
+        None, description="Filter jobs within the radius in kilometers"
+    ),
+    keywords: Optional[List[str]] = Query(
+        None,
+        description="Filter jobs containing any of these keywords in the title or description. Multiple keywords will be treated as a single phrase.",
+    ),
+    fields: Optional[List[int]] = Query(
+        None, description="Filter jobs belonging to this fields"
+    ),
+    offset: Optional[int] = Query(0, description="Get further jobs"),
+    experience: Optional[List[str]] = Query(
+        None, description="Filter jobs by experience level. Allowed values: Entry-level, Executive-level, Intern, Mid-level, Senior-level"
+    ),
+    is_remote_only: Optional[bool] = Query(None, description="Filter jobs that are remote only")
+):
+    """
+    """
+    try:
+        location_filter = LocationFilter(
+            country=country,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            radius_km=radius_km if radius_km is not None else 20.0,
+        )
+
+        logger.info(
+            "A Guest is requesting jobs (legacy endpoint)",
+            location_filter=location_filter,
+            keywords=keywords,
+            experience=experience,
+            fields=fields
+        )
+
+        # Preprocess keywords: concatenate multiple keywords into a single string with spaces
+        processed_keywords = None
+        if keywords and len(keywords) > 0:
+            processed_keywords = [" ".join(keywords)]
+
+        sort_type = SortType.DATE
+            
+        matched_jobs = await match_jobs_with_resume(
+            None,
+            location=location_filter, 
+            fields=fields,
+            keywords=processed_keywords,
+            offset=offset if offset is not None else 0,
+            experience=experience,
+            is_remote_only=is_remote_only, # Pass the new parameter
+            sort_type=sort_type
+        )
+
+        if not isinstance(matched_jobs, dict):
+            logger.exception("Unexpected data structure for matched_jobs")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Invalid data structure for matched jobs.",
+            )
+
+        # Extract jobs list
+        job_list = matched_jobs.get("jobs", [])
+        
+        # Extract total count (or use length of results if not available)
+        total_count = matched_jobs.get("total_count")
+        
+        job_count = len(job_list)
+        logger.info(
+            "Found {job_count} jobs for guest user (total: {total_count})",
+            job_count=job_count,
+            total_count=total_count
+        )
+
+        job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
+
+        # Return the new response model with both jobs and total count
+        return JobsMatchedResponse(
+            jobs=job_pydantic_list,
+            total_count=total_count
+        )
+
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.exception("Validation error", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.exception(
+            "Unexpected error", error=str(e)
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred.",
+        )
+
 
 @router.get(
     "/details",

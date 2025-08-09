@@ -27,16 +27,16 @@ class VectorMatcher:
         logger.info("VectorMatcher initialized")
 
     @async_matching_algorithm_timer("optimized_vector_similarity")
-    async def get_top_jobs_by_vector_similarity(
+    async def get_top_jobs(
         self,
-        cv_embedding: List[float],
+        cv_embedding: Optional[List[float]],
         location: Optional[LocationFilter] = None,
         keywords: Optional[List[str]] = None,
         fields: Optional[List[int]] = None,
         offset: int = 0,
         limit: int = settings.CACHE_SIZE,
         experience: Optional[List[str]] = None,
-        applied_job_ids: Optional[List[int]] = None,
+        blacklisted_job_ids: Optional[List[int]] = None,
         is_remote_only: Optional[bool] = None, # Add new parameter
     ) -> List[JobMatch]:
         """
@@ -81,6 +81,14 @@ class VectorMatcher:
                     "VECTOR_MATCH: Executing optimized vector similarity query"
                 )
                 try:
+                    if cv_embedding is None:
+                        # then execute simple query
+                        logger.info("No cv embeddings provided, proceeding with embeddingless query")
+                        result = await self.similarity_searcher._execute_query(
+                            cursor, many_to_many_filters, where_clauses, query_params, limit, offset, blacklisted_job_ids
+                        )
+                        return result
+
                     # Define the expected vector dimension
                     # We should probably NOT define this here
                     EXPECTED_DIMENSION = 1024
@@ -126,8 +134,6 @@ class VectorMatcher:
                     logger.info(
                         "VECTOR_MATCH: Query parameters detail",
                         cursor_type=type(cursor).__name__,
-                        embedding_sample=str(cv_embedding[:3]) + "..." if isinstance(
-                            cv_embedding, list) and len(cv_embedding) > 3 else cv_embedding,
                         where_clauses=where_clauses,
                         query_params=query_params,
                         query_params_types=[
@@ -137,7 +143,7 @@ class VectorMatcher:
                     )
 
                     result = await self.similarity_searcher._execute_vector_query(
-                        cursor, cv_embedding, many_to_many_filters, where_clauses, query_params, limit, offset, applied_job_ids=applied_job_ids  # Pass parameter
+                        cursor, cv_embedding, many_to_many_filters, where_clauses, query_params, limit, offset, blacklisted_job_ids
                     )
                     logger.info(
                         f"VECTOR_MATCH: Vector query returned {len(result)} results")
