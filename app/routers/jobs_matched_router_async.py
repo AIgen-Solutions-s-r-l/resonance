@@ -518,20 +518,9 @@ async def internal_matching(
         if not job_ids:
             return JobDetailResponse(jobs=[], count=0, status="success")
 
-        async with get_db_cursor() as cursor:
-            await cursor.execute(
-                    'SELECT * FROM "Jobs" WHERE id = ANY(%s)',
-                    (job_ids,),
-                )
-            rows = await cursor.fetchall()
+        job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
 
-            jobs = []
-            for r in rows:
-                job = dict(r)
-                job["id"] = str(job["id"])
-                jobs.append(job)
-
-        return JobDetailResponse(jobs=jobs, count=len(jobs), status="success")
+        return JobDetailResponse(jobs=job_pydantic_list, count=len(job_pydantic_list), status="success")
 
     except HTTPException as e:
         logger.exception("Internal matching error {error} for user_id={user_id}",
