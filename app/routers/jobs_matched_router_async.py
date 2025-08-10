@@ -450,6 +450,7 @@ async def internal_matching(
     country: Optional[str] = Query(None, description="Country filter"),
     latitude: Optional[float] = Query(None, description="Latitude for geo-based filtering"),
     longitude: Optional[float] = Query(None, description="Longitude for geo-based filtering"),
+    fields: Optional[List[int]] = Query(None, description="Fields to include in the job details")
 ):
     """
     Internal matching endpoint that returns the top `amount` job matches
@@ -481,6 +482,7 @@ async def internal_matching(
             resume,
             offset=0,
             is_remote_only=None,
+            fields=fields,
             sort_type=SortType.SCORE,
             experience=exp_list,
             location=location,
