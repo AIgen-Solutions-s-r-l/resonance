@@ -60,8 +60,11 @@ def sort_jobs(
             if isinstance(posted_date, str):
                 posted_date = datetime.fromisoformat(posted_date)
             delta: timedelta = datetime.now() - posted_date
-            score = job.get('score', 0.0)
-            return -delta.total_seconds() if score >= score_threshold else score - 3600.0 * 24 * 90
+            score = job.get('score', None)
+            if score is None or score >= score_threshold:
+                return -delta.total_seconds()
+            
+            return score - 3600.0 * 24 * 90
 
         jobs.sort(key = sorting_algo, reverse = True)
 
