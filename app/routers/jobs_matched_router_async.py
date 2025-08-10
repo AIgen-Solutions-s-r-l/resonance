@@ -765,9 +765,7 @@ async def get_jobs_by_ids(
     description="Returns the available fields and subfields an user can search for",
     status_code=status.HTTP_200_OK,
 )
-async def get_fields(
-    _: Any = Depends(get_current_user)
-):
+async def get_fields():
     try:
         logger.info("Retrieving job fields")
         
