@@ -53,6 +53,8 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     kwargs={"row_factory": dict_row},
                     open=False,  # Don't open in constructor to avoid deprecation warning
                     # Configure reconnection and reset behavior
+                    max_lifetime=settings.db_pool_max_lifetime,
+                    check=AsyncConnectionPool.check_connection,
                     reconnect_timeout=3  # Shorter reconnect timeout for tests
                 )
 
