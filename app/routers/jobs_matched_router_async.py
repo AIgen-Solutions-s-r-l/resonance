@@ -486,6 +486,7 @@ async def internal_matching(
             sort_type=SortType.SCORE,
             experience=exp_list,
             location=location,
+            fallback=False
         )
         if not isinstance(matched, dict):
             logger.exception(

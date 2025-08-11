@@ -93,7 +93,8 @@ async def match_jobs_with_resume(
     offset: int = 0,
     experience: Optional[List[str]] = None,
     is_remote_only: Optional[bool] = None, # Add new parameter
-    sort_type: SortType = SortType.RECOMMENDED
+    sort_type: SortType = SortType.RECOMMENDED,
+    fallback: bool = True
 ) -> Dict[str, Any]:
     try:
         matcher = OptimizedJobMatcher()
@@ -138,7 +139,7 @@ async def match_jobs_with_resume(
             )
         
         matched_jobs["total_count"] = 2000
-        if len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
+        if fallback and len(jobs) < settings.CACHE_SIZE and offset < settings.CACHE_SIZE:
             logger.info("retrieving further, unfiltered, jobs", resume_id = resume.get("_id") if resume else None)
             # then we extract other (unfiltered) jobs until we have at least ONE cache worth of jobs
             matched_jobs_unfiltered = await matcher.process_job(
