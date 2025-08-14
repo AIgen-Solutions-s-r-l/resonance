@@ -483,7 +483,7 @@ async def internal_matching(
             offset=0,
             is_remote_only=None,
             fields=fields,
-            sort_type=SortType.SCORE,
+            sort_type=SortType.RECOMMENDED,
             experience=exp_list,
             location=location,
             fallback=False
@@ -508,11 +508,7 @@ async def internal_matching(
         if not job_ids:
             return JobDetailResponse(jobs=[], count=0, status="success")
         
-        logger.info("ALL DETAILS: {job}", job=job_list)
-
         job_pydantic_list = [JobSchema.model_validate(job) for job in job_list]
-
-        logger.info("ALL DETAILS 2: {job}", job=job_pydantic_list)
 
         return JobDetailResponse(jobs=job_pydantic_list, count=len(job_pydantic_list), status="success")
 
