@@ -21,7 +21,7 @@ from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
 from app.schemas.location import LocationFilter
-from app.services.matching_service import get_resume_by_user_id, match_jobs_with_resume
+from app.services.matching_service import get_resume_by_user_id, match_jobs_with_resume, save_preference
 from app.tasks.job_processor import TaskManager
 from app.log.logging import logger
 
@@ -391,6 +391,9 @@ async def get_matched_jobs_legacy(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure for matched jobs.",
             )
+        
+        if experience is not None and len(experience) > 0:
+            await save_preference(user_id=current_user, experience=experience[0])
 
         # Extract jobs list
         job_list = matched_jobs.get("jobs", [])
