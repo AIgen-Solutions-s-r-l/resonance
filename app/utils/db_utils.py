@@ -34,11 +34,14 @@ async def fast_check(conn) -> None:
             # Keep the timeout local to this statement only
             await conn.execute("SET LOCAL statement_timeout = '1500ms'")
             await conn.execute("SELECT 1")
-            # Make sure we’re not leaving a tx around
+            
             await conn.rollback()
+            await conn.execute("BEGIN")
+            await conn.execute("SET LOCAL statement_timeout = '90s'")
     except Exception as e:
         # Any error during check should make the pool discard/reconnect this conn
         # Raising propagates to the pool — it will drop this connection and try another
+        await conn.rollback()
         raise
 
 async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool:
