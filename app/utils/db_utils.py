@@ -29,19 +29,9 @@ _pool_lock = asyncio.Lock()
 async def fast_check(conn) -> None:
     # Bound the liveness query tightly
     try:
-        # asyncio.timeout is non-blocking and cancels cleanly on Py 3.11+
-        async with asyncio.timeout(2.0):              # tune: 0.5–2.0s
-            # Keep the timeout local to this statement only
-            await conn.execute("SET LOCAL statement_timeout = '1500ms'")
-            await conn.execute("SELECT 1")
-            
-            await conn.rollback()
-            await conn.execute("BEGIN")
-            await conn.execute("SET LOCAL statement_timeout = '90s'")
+        await conn.execute("SELECT 1")
     except Exception as e:
-        # Any error during check should make the pool discard/reconnect this conn
-        # Raising propagates to the pool — it will drop this connection and try another
-        await conn.rollback()
+        logger.warning("Ill connection. Will be discarded")
         raise
 
 async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool:
@@ -489,6 +479,7 @@ async def execute_vector_similarity_query(
         query_start = time.time()
         # is relative important the consistency, important is resolve when hight concurrency
         await cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        await cursor.execute("SET LOCAL statement_timeout = '90s'")
         # specific for diskann
         await cursor.execute("SET LOCAL enable_seqscan TO OFF")
         await cursor.execute(query, sql_params)
