@@ -26,21 +26,6 @@ _connection_pools: Dict[str, AsyncConnectionPool] = {}
 _pool_lock = asyncio.Lock()
 
 
-async def fast_check(conn) -> None:
-    # Bound the liveness query tightly
-    try:
-        # asyncio.timeout is non-blocking and cancels cleanly on Py 3.11+
-        async with asyncio.timeout(2.0):              # tune: 0.5–2.0s
-            # Keep the timeout local to this statement only
-            await conn.execute("SET LOCAL statement_timeout = '1500ms'")
-            await conn.execute("SELECT 1")
-            # Make sure we’re not leaving a tx around
-            await conn.rollback()
-    except Exception as e:
-        # Any error during check should make the pool discard/reconnect this conn
-        # Raising propagates to the pool — it will drop this connection and try another
-        raise
-
 async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool:
     """
     Get or create a connection pool for the specified name.
@@ -69,7 +54,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     open=False,  # Don't open in constructor to avoid deprecation warning
                     # Configure reconnection and reset behavior
                     max_lifetime=settings.db_pool_max_lifetime,
-                    check=fast_check,
+                    check=AsyncConnectionPool.check,
                     reconnect_timeout=3  # Shorter reconnect timeout for tests
                 )
 
