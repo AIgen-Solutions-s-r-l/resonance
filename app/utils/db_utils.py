@@ -57,7 +57,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
             logger.info("Creating new connection pool", pool_name=pool_name)
 
             try:
-                url = settings.database_url +  "&options=-c%20statement_timeout%3D1500ms%20-c%20idle_in_transaction_session_timeout%3D2000ms"
+                url = settings.database_url +  "?options=-c%20statement_timeout%3D1500ms%20-c%20idle_in_transaction_session_timeout%3D2000ms"
                 # Create connection pool with optimal settings
                 pool = AsyncConnectionPool(
                     conninfo=url,
