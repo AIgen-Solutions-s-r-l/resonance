@@ -114,15 +114,16 @@ async def get_db_connection(pool_name: str = "default"):
 
     try:
         pool = await get_connection_pool(pool_name)
-        conn = await pool.getconn()
-        logger.debug(f"Connection acquired in {time.time() - start_time:.6f}s")
+        async with pool.connection() as conn:
 
-        try:
-            logger.debug(f"Connection status before yielding: {{'closed': conn.closed, 'broken': conn.broken, 'pgconn': conn.pgconn is not None}}")
-            yield conn
-        finally:
-            logger.debug("Returning connection to pool")
-            await pool.putconn(conn)
+            logger.debug(f"Connection acquired in {time.time() - start_time:.6f}s")
+
+            try:
+                logger.debug(f"Connection status before yielding: {{'closed': conn.closed, 'broken': conn.broken, 'pgconn': conn.pgconn is not None}}")
+                yield conn
+            finally:
+                logger.debug("Returning connection to pool")
+
     except Exception as e:
         logger.exception(f"Error in database connection management: {str(e)}")
         raise
