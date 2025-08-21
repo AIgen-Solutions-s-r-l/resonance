@@ -46,10 +46,10 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
 
     # Check the calls to cursor.execute
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 3 # SET TRANSACTION, SET LOCAL, main query
+    assert len(execute_calls) == 4 # SET TRANSACTION, SET LOCAL, main query
 
     # Verify the main query call
-    main_query_call = execute_calls[2]
+    main_query_call = execute_calls[3]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -100,9 +100,9 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     assert results == [{"id": 4, "score": 0.8}]
 
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 3
+    assert len(execute_calls) == 4
 
-    main_query_call = execute_calls[2]
+    main_query_call = execute_calls[3]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -149,9 +149,9 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     assert results == [{"id": 5, "score": 0.7}]
 
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 3
+    assert len(execute_calls) == 4
 
-    main_query_call = execute_calls[2]
+    main_query_call = execute_calls[3]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
