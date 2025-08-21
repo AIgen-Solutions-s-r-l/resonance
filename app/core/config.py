@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     # Database connection pooling settings
     db_pool_min_size: int = int(os.getenv("DB_POOL_MIN_SIZE", "2"))
     db_pool_max_size: int = int(os.getenv("DB_POOL_MAX_SIZE", "10"))
-    db_pool_timeout: float = float(os.getenv("DB_POOL_TIMEOUT", "30.0"))
+    db_pool_timeout: float = float(os.getenv("DB_POOL_TIMEOUT", "60.0"))
     db_pool_max_idle: int = int(os.getenv("DB_POOL_MAX_IDLE", "300"))
     db_pool_max_lifetime: int = int(os.getenv("DB_POOL_MAX_LIFETIME", "3600"))
     db_statement_timeout: int = int(os.getenv("DB_STATEMENT_TIMEOUT", "60000"))  # 60 seconds in ms

@@ -55,7 +55,7 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     # Configure reconnection and reset behavior
                     max_lifetime=settings.db_pool_max_lifetime,
                     check=AsyncConnectionPool.check,
-                    reconnect_timeout=3  # Shorter reconnect timeout for tests
+                    reconnect_timeout=30 
                 )
 
                 logger.debug(
