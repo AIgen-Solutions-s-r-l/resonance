@@ -140,10 +140,11 @@ async def get_db_cursor(pool_name: str = "default"):
     try:
         async with get_db_connection(pool_name) as conn:
             logger.debug("Creating cursor")
-            async with conn.cursor(row_factory=dict_row) as cursor:
-                logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
-                logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
-                yield cursor
+            async with conn.transaction():
+                async with conn.cursor(row_factory=dict_row) as cursor:
+                    logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
+                    logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
+                    yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
         raise
