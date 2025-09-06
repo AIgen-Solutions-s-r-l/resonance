@@ -159,15 +159,20 @@ class JobQueryBuilder:
         where_clauses = []
         query_params = []
 
+        if len(locations) == 0:
+            return where_clauses, query_params
+
         where_clause = """
             (
         """
         
+        is_valid = False
         for i, location in enumerate(locations):
-            if i > 0:
+            if is_valid:
                 where_clause += ") OR ("
             # Country filter - Using direct comparison without CASE statement
             if location.country:
+                is_valid = True
                 if location.country == 'USA':
                     # Handle USA/United States special case without parameters in the CASE
                     where_clause += ("(co.country_name = 'United States')")
@@ -177,6 +182,7 @@ class JobQueryBuilder:
             
             # Check if we have both latitude and longitude
             if location.latitude is not None and location.longitude is not None:
+                is_valid = True
                 if location.country:
                     where_clause += " AND "
 
@@ -203,12 +209,15 @@ class JobQueryBuilder:
                     
             # City filter - only add if geo coordinates are NOT provided
             elif location.city:
+                is_valid = True
                 if location.country:
                     where_clause += " AND "
                 where_clause += "(l.city = %s OR l.city = 'remote')"
                 query_params.append(location.city)
                 
         where_clause += ")"  
+
+        
 
         where_clauses.append(where_clause)   
 
