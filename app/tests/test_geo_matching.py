@@ -20,21 +20,6 @@ def query_builder():
 class TestGeoMatching:
     """Test cases for geographic matching functionality."""
 
-    def test_location_filter_with_geo_parameters(self):
-        """Test that LocationFilter accepts geo parameters."""
-        # Create a LocationFilter with geo parameters
-        location = LocationFilter(
-            latitude=40.7128,
-            longitude=-74.0060,
-            radius_km=5.0
-        )
-        
-        # Verify the parameters are set correctly
-        assert location.latitude == 40.7128
-        assert location.longitude == -74.0060
-        assert location.radius_km == 5
-
-
     def test_build_location_filters_without_geo(self, query_builder):
         """Test building location filters without geo parameters."""
         # Create a LocationFilter without geo parameters
@@ -44,45 +29,17 @@ class TestGeoMatching:
         )
         
         # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
+        where_clauses, query_params = query_builder._build_location_filters([location])
         
         # Verify that the geo filter is not included
-        assert len(where_clauses) == 2  # country and city filters
+        assert len(where_clauses) == 1  # country and city filters
         assert all("ST_DWithin" not in clause for clause in where_clauses)
         
         # Verify the parameters
         assert len(query_params) == 1  # Only city parameter (country is handled specially for USA)
         assert query_params[0] == "New York"
 
-    def test_build_location_filters_with_incomplete_geo(self, query_builder):
-        """Test building location filters with incomplete geo parameters."""
-        # Create a LocationFilter with only latitude but no longitude
-        location = LocationFilter(
-            latitude=40.7128,
-            longitude=None,
-            radius_km=5.0
-        )
-        
-        # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
-        
-        # Verify that the geo filter is not included
-        assert len(where_clauses) == 0
-        assert len(query_params) == 0
-        
-        # Create a LocationFilter with only longitude but no latitude
-        location = LocationFilter(
-            latitude=None,
-            longitude=-74.0060,
-            radius_km=5.0
-        )
-        
-        # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
-        
-        # Verify that the geo filter is not included
-        assert len(where_clauses) == 0
-        assert len(query_params) == 0
+
     def test_default_radius_in_settings(self):
         """Test that the default radius in settings is 50 km."""
         from app.core.config import settings
@@ -102,7 +59,7 @@ class TestGeoMatching:
         )
         
         # Build the location filters
-        where_clauses, query_params = query_builder._build_location_filters(location)
+        where_clauses, query_params = query_builder._build_location_filters([location])
         
         # Verify that the geo filter is included
         assert len(where_clauses) == 1

@@ -140,11 +140,11 @@ async def get_db_cursor(pool_name: str = "default"):
     try:
         async with get_db_connection(pool_name) as conn:
             logger.debug("Creating cursor")
-            #async with conn.transaction():
-            async with conn.cursor(row_factory=dict_row) as cursor:
-                logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
-                logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
-                yield cursor
+            async with conn.transaction():
+                async with conn.cursor(row_factory=dict_row) as cursor:
+                    logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
+                    logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
+                    yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
         raise
@@ -241,6 +241,9 @@ async def execute_simple_query(
     
     # Add filter params for the WHERE clause
     sql_params.extend(query_params)
+
+    if blacklisted_job_ids: # Check original list, not the tuple
+        sql_params.append(blacklisted_job_ids) # Append the list directly
 
     # Add limit and offset
     sql_params.append(limit)

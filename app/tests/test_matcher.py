@@ -147,7 +147,7 @@ async def test_process_job_success(
     # Create mock results for the get_top_jobs method
     mock_results = [
         JobMatch(
-            id=f"{i}",
+            id=i,
             title=f"Software Engineer {i}",
             description=f"Job description {i}",
             workplace_type="office",
@@ -263,14 +263,14 @@ async def test_process_job_cache_handles_different_applied_ids(
     base_params = {
         "offset": 0,
         "limit": 10,
-        "location": None,
+        "location": [],
         "keywords": None,
         "experience": None
     }
 
     # Mock results from vector matcher
     mock_job_matches = [
-        JobMatch(id=f"{i}", title=f"Job {i}", score=0.9, description="Desc", workplace_type="remote", short_description="Short", field="IT", experience="Mid", skills_required=["Python"], country="UK", city="London", company_name="Test Co")
+        JobMatch(id=i, title=f"Job {i}", score=0.9, description="Desc", workplace_type="remote", short_description="Short", field="IT", experience="Mid", skills_required=["Python"], country="UK", city="London", company_name="Test Co")
         for i in range(5)
     ]
     mock_get_top_jobs.return_value = mock_job_matches

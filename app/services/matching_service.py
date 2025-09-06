@@ -101,7 +101,7 @@ async def save_preference(
 
 async def match_jobs_with_resume(
     resume: Optional[Dict[str, Any]],
-    location: Optional[LocationFilter] = None,
+    location: List[LocationFilter] = [],
     fields: Optional[List[int]] = None,
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,

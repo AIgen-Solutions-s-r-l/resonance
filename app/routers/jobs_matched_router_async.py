@@ -143,7 +143,7 @@ async def start_job_matching(
             TaskManager.process_job_matching,
             task_id,
             resume,
-            location_filter,
+            [location_filter] if location_filter else [],
             processed_keywords,
             offset if offset is not None else 0,
             experience,
@@ -376,7 +376,7 @@ async def get_matched_jobs_legacy(
             
         matched_jobs = await match_jobs_with_resume(
             resume,
-            location=location_filter, 
+            location=[location_filter] if location_filter else [], 
             fields=fields,
             keywords=processed_keywords,
             offset=offset if offset is not None else 0,
@@ -450,9 +450,7 @@ async def internal_matching(
         description="How many matches to return (defaults to 10 if not set)",
     ),
     experience: Optional[str] = Query(None, description="Experience level filter"),
-    country: Optional[str] = Query(None, description="Country filter"),
-    latitude: Optional[float] = Query(None, description="Latitude for geo-based filtering"),
-    longitude: Optional[float] = Query(None, description="Longitude for geo-based filtering"),
+    locations: List[LocationFilter] = Query([], description="Location list"),
     fields: Optional[List[int]] = Query(None, description="Fields to include in the job details")
 ):
     """
@@ -472,12 +470,6 @@ async def internal_matching(
         logger.info("Internal matching for user {user_id} with resume: {resume}",
                     user_id=user_id, resume=resume)
         
-        location = LocationFilter(
-            country=country,
-            city=None,  # legit doubt
-            latitude=latitude,
-            longitude=longitude,
-        )
         exp_list = [experience] if experience else None
 
         # 2) run the matching service with all filters + sort_by="matching_score"
@@ -488,7 +480,7 @@ async def internal_matching(
             fields=fields,
             sort_type=SortType.RECOMMENDED,
             experience=exp_list,
-            location=location,
+            location=locations,
             fallback=False
         )
         if not isinstance(matched, dict):

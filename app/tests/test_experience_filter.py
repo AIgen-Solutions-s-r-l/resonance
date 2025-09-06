@@ -92,7 +92,7 @@ async def test_process_job_with_experience_filter(
         mock_generate_key.assert_called_with(
             "test_resume_id",
             offset=0,
-            location=None,
+            location=[],
             fields=None,
             keywords=None,
             experience=experience,
@@ -204,7 +204,7 @@ async def test_match_jobs_with_resume_integration(
     # Execute the function with all parameters
     result = await match_jobs_with_resume(
         resume,
-        location=location,
+        location=[location],
         keywords=keywords, # Keep existing params
         experience=experience
     )
@@ -216,17 +216,13 @@ async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
     assert args[0] == resume["vector"]
-    assert kwargs["location"] == location
+    assert kwargs["location"][0] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
     assert kwargs["limit"] == settings.CACHE_SIZE
     assert kwargs["experience"] == experience
     assert "is_remote_only" in kwargs # Add check for new param
     assert kwargs["is_remote_only"] is None # Check default value
-    assert "location" in kwargs
-    assert kwargs["location"] == location
-    assert "keywords" in kwargs
-    assert kwargs["keywords"] == keywords
 
 
 @pytest.mark.asyncio
@@ -290,7 +286,7 @@ async def test_experience_filter_with_cache(
         mock_generate_key.assert_called_with(
             "test_resume_id",
             offset=0,
-            location=None,
+            location=[],
             fields=None,
             keywords=None,
             experience=experience_1,
@@ -326,7 +322,7 @@ async def test_experience_filter_with_cache(
     mock_generate_key.assert_called_with(
         "test_resume_id",
         offset=0,
-        location=None,
+        location=[],
         keywords=None,
         fields=None,
         experience=experience_2,
@@ -393,7 +389,7 @@ async def test_experience_filter_with_cache_hit(
     mock_generate_key.assert_called_with(
         "test_resume_id",
         offset=0,
-        location=None,
+        location=[],
         keywords=None,
         fields=None,
         experience=experience,

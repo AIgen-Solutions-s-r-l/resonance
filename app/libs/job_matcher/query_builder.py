@@ -18,7 +18,7 @@ class JobQueryBuilder:
     
     def build_filter_conditions(
         self,
-        location: Optional[LocationFilter] = None,
+        location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
         fields: Optional[List[int]] = None,
         experience: Optional[List[str]] = None,
@@ -49,7 +49,7 @@ class JobQueryBuilder:
                 many_to_many_filters.extend(fields_filter)
 
             # Add location filters
-            if location:
+            if len(location) > 0:
                 location_clauses, location_params = self._build_location_filters(location)
                 where_clauses.extend(location_clauses)
                 query_params.extend(location_params)
@@ -145,7 +145,7 @@ class JobQueryBuilder:
 
 
     def _build_location_filters(
-        self, location: LocationFilter
+        self, locations: List[LocationFilter]
     ) -> Tuple[List[str], List[Any]]:
         """
         Build location filter conditions.
@@ -158,44 +158,37 @@ class JobQueryBuilder:
         """
         where_clauses = []
         query_params = []
+
+        where_clause = """
+            (
+        """
         
-        # Country filter - Using direct comparison without CASE statement
-        if location.country:
-            if location.country == 'USA':
-                # Handle USA/United States special case without parameters in the CASE
-                where_clauses.append("(co.country_name = 'United States')")
-            else:
-                where_clauses.append("(co.country_name = %s)")
-                query_params.append(location.country)
-        
-        # Check if we have both latitude and longitude
-        has_geo_coordinates = location.latitude is not None and location.longitude is not None
-        
-        # City filter - only add if geo coordinates are NOT provided
-        if location.city and not has_geo_coordinates:
-            where_clauses.append("(l.city = %s OR l.city = 'remote')")
-            query_params.append(location.city)
-        
-        # Geo filter - if we have both latitude and longitude
-        if has_geo_coordinates:
-            # Determine which radius to use (radius in meters takes precedence over radius_km)
-            if hasattr(location, 'radius') and location.radius is not None:
-                # Use radius in meters directly
-                radius_meters = float(location.radius)
-                use_km_multiplier = False
-            elif location.radius_km is not None:
-                # Use radius in km, will be multiplied by 1000 in the query
-                radius_meters = float(location.radius_km)
-                use_km_multiplier = True
-            else:
-                # Use default radius from settings if no radius is specified
-                radius_meters = float(settings.default_geo_radius_meters / 1000)  # Convert from meters to km
-                use_km_multiplier = True
+        for i, location in enumerate(locations):
+            if i > 0:
+                where_clause += ") OR ("
+            # Country filter - Using direct comparison without CASE statement
+            if location.country:
+                if location.country == 'USA':
+                    # Handle USA/United States special case without parameters in the CASE
+                    where_clause += ("(co.country_name = 'United States')")
+                else:
+                    where_clause += "(co.country_name = %s)"
+                    query_params.append(location.country)
             
-            # Build the geo filter clause
-            if use_km_multiplier:
-                where_clauses.append(
-                    """
+            # Check if we have both latitude and longitude
+            if location.latitude is not None and location.longitude is not None:
+                if location.country:
+                    where_clause += " AND "
+
+                if location.radius_km is not None:
+                    # Use radius in km, will be multiplied by 1000 in the query
+                    radius_km = float(location.radius_km)
+                else:
+                    # Use default radius from settings if no radius is specified
+                    radius_km = float(settings.default_geo_radius_meters / 1000)  # Convert from meters to km
+                
+                # Build the geo filter clause
+                where_clause += """
                     (
                         l.city = 'remote'
                         OR ST_DWithin(
@@ -205,30 +198,20 @@ class JobQueryBuilder:
                         )
                     )
                     """
-                )
-            else:
-                where_clauses.append(
-                    """
-                    (
-                        l.city = 'remote'
-                        OR (
-                            l.latitude IS NOT NULL
-                            AND l.longitude IS NOT NULL
-                            AND ST_DWithin(
-                                ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
-                                ST_MakePoint(%s, %s)::geography,
-                                %s
-                            )
-                        )
-                    )
-                    """
-                )
-            
-            # Convert to float to ensure proper parameter handling
-            query_params.append(float(location.longitude))
-            query_params.append(float(location.latitude))
-            query_params.append(radius_meters)
-        
+                
+                query_params.extend([location.longitude, location.latitude, radius_km])
+                    
+            # City filter - only add if geo coordinates are NOT provided
+            elif location.city:
+                if location.country:
+                    where_clause += " AND "
+                where_clause += "(l.city = %s OR l.city = 'remote')"
+                query_params.append(location.city)
+                
+        where_clause += ")"  
+
+        where_clauses.append(where_clause)   
+
         return where_clauses, query_params
     
     def _build_keyword_filters(

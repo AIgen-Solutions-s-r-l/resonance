@@ -127,7 +127,7 @@ class TaskManager:
         cls,
         task_id: str,
         resume: Dict[str, Any],
-        location: Optional[LocationFilter] = None,
+        location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
         offset: int = 0, # Keep existing parameters
         experience: Optional[List[str]] = None,
@@ -192,7 +192,7 @@ class TaskManager:
         cls,
         task_id: str,
         resume: Dict[str, Any],
-        location: Optional[LocationFilter] = None,
+        location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
         offset: int = 0,
         experience: Optional[List[str]] = None,
