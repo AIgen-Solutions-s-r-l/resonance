@@ -450,7 +450,7 @@ async def internal_matching(
         description="How many matches to return (defaults to 10 if not set)",
     ),
     experience: Optional[str] = Query(None, description="Experience level filter"),
-    locations: List[LocationFilter] = Query([], description="Location list"),
+    locations: Optional[List[LocationFilter]] = Query(None, description="Location list"),
     fields: Optional[List[int]] = Query(None, description="Fields to include in the job details")
 ):
     """
@@ -480,7 +480,7 @@ async def internal_matching(
             fields=fields,
             sort_type=SortType.RECOMMENDED,
             experience=exp_list,
-            location=locations,
+            location=locations or [],
             fallback=False
         )
         if not isinstance(matched, dict):
