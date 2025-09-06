@@ -217,7 +217,8 @@ class JobQueryBuilder:
                 
         where_clause += ")"  
 
-        
+        if not is_valid:
+            return [], []
 
         where_clauses.append(where_clause)   
 
