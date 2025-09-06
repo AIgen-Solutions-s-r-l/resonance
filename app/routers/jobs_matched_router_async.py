@@ -450,7 +450,7 @@ async def internal_matching(
         description="How many matches to return (defaults to 10 if not set)",
     ),
     experience: Optional[str] = Query(None, description="Experience level filter"),
-    locations: Optional[List[LocationFilter]] = Query(None, description="Location list"),
+    locations: Optional[List[Dict[str, Any]]] = Query(None, description="Location list"),
     fields: Optional[List[int]] = Query(None, description="Fields to include in the job details")
 ):
     """
@@ -472,6 +472,8 @@ async def internal_matching(
         
         exp_list = [experience] if experience else None
 
+        location = [LocationFilter.model_validate(loc) for loc in locations] if locations else []
+
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
             resume,
@@ -480,7 +482,7 @@ async def internal_matching(
             fields=fields,
             sort_type=SortType.RECOMMENDED,
             experience=exp_list,
-            location=locations or [],
+            location=location,
             fallback=False
         )
         if not isinstance(matched, dict):
