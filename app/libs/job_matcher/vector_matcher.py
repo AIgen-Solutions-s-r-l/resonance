@@ -30,7 +30,7 @@ class VectorMatcher:
     async def get_top_jobs(
         self,
         cv_embedding: Optional[List[float]],
-        location: Optional[LocationFilter] = None,
+        location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
         fields: Optional[List[int]] = None,
         offset: int = 0,

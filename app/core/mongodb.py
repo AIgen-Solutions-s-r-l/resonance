@@ -16,6 +16,8 @@ try:
     database = client[settings.mongodb_database]
     collection_name = database.get_collection("resumes")
 
+    user_collection = database.get_collection("user_operations")
+
     client.admin.command("ping")
     logger.info(
         "MongoDB connection established",

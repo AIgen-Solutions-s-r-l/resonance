@@ -26,6 +26,14 @@ _connection_pools: Dict[str, AsyncConnectionPool] = {}
 _pool_lock = asyncio.Lock()
 
 
+async def fast_check(conn) -> None:
+    # Bound the liveness query tightly
+    try:
+        await conn.execute("SELECT 1")
+    except Exception as e:
+        logger.warning("Ill connection. Will be discarded")
+        raise
+
 async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool:
     """
     Get or create a connection pool for the specified name.
@@ -42,9 +50,10 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
             logger.info("Creating new connection pool", pool_name=pool_name)
 
             try:
+                url = settings.database_url +  "?options=-c%20statement_timeout%3D1500ms%20-c%20idle_in_transaction_session_timeout%3D2000ms"
                 # Create connection pool with optimal settings
                 pool = AsyncConnectionPool(
-                    conninfo=settings.database_url,
+                    conninfo=url,
                     min_size=settings.db_pool_min_size,
                     max_size=settings.db_pool_max_size,
                     timeout=settings.db_pool_timeout,
@@ -53,9 +62,9 @@ async def get_connection_pool(pool_name: str = "default") -> AsyncConnectionPool
                     kwargs={"row_factory": dict_row},
                     open=False,  # Don't open in constructor to avoid deprecation warning
                     # Configure reconnection and reset behavior
-                    # max_lifetime=settings.db_pool_max_lifetime,
-                    # check=AsyncConnectionPool.check_connection,
-                    reconnect_timeout=3  # Shorter reconnect timeout for tests
+                    max_lifetime=settings.db_pool_max_lifetime,
+                    check=fast_check,
+                    reconnect_timeout=15  # Shorter reconnect timeout for tests
                 )
 
                 logger.debug(
@@ -99,15 +108,16 @@ async def get_db_connection(pool_name: str = "default"):
 
     try:
         pool = await get_connection_pool(pool_name)
-        conn = await pool.getconn()
-        logger.debug(f"Connection acquired in {time.time() - start_time:.6f}s")
+        async with pool.connection() as conn:
 
-        try:
-            logger.debug(f"Connection status before yielding: {{'closed': conn.closed, 'broken': conn.broken, 'pgconn': conn.pgconn is not None}}")
-            yield conn
-        finally:
-            logger.debug("Returning connection to pool")
-            await pool.putconn(conn)
+            logger.debug(f"Connection acquired in {time.time() - start_time:.6f}s")
+
+            try:
+                logger.debug(f"Connection status before yielding: {{'closed': conn.closed, 'broken': conn.broken, 'pgconn': conn.pgconn is not None}}")
+                yield conn
+            finally:
+                logger.debug("Returning connection to pool")
+
     except Exception as e:
         logger.exception(f"Error in database connection management: {str(e)}")
         raise
@@ -130,10 +140,11 @@ async def get_db_cursor(pool_name: str = "default"):
     try:
         async with get_db_connection(pool_name) as conn:
             logger.debug("Creating cursor")
-            async with conn.cursor(row_factory=dict_row) as cursor:
-                logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
-                logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
-                yield cursor
+            async with conn.transaction():
+                async with conn.cursor(row_factory=dict_row) as cursor:
+                    logger.debug(f"Cursor created in {time.time() - start_time:.6f}s")
+                    logger.debug(f"Cursor status before yielding: {{'closed': cursor.closed, 'connection_closed': cursor.connection.closed if cursor.connection else 'N/A'}}")
+                    yield cursor
     except Exception as e:
         logger.exception(f"Error getting database cursor: {str(e)}")
         raise
@@ -230,6 +241,9 @@ async def execute_simple_query(
     
     # Add filter params for the WHERE clause
     sql_params.extend(query_params)
+
+    if blacklisted_job_ids: # Check original list, not the tuple
+        sql_params.append(blacklisted_job_ids) # Append the list directly
 
     # Add limit and offset
     sql_params.append(limit)
@@ -469,6 +483,7 @@ async def execute_vector_similarity_query(
         query_start = time.time()
         # is relative important the consistency, important is resolve when hight concurrency
         await cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        await cursor.execute("SET LOCAL statement_timeout = '200s'")
         # specific for diskann
         await cursor.execute("SET LOCAL enable_seqscan TO OFF")
         await cursor.execute(query, sql_params)

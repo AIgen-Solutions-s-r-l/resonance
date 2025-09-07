@@ -6,6 +6,8 @@ a non-blocking asynchronous approach for better performance and scalability.
 """
 
 
+import ast
+import json
 from typing import Dict, List, Any, Optional, Union
 from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks, Body
 from datetime import datetime, UTC
@@ -21,7 +23,7 @@ from app.models.job import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
 from app.schemas.location import LocationFilter
-from app.services.matching_service import get_resume_by_user_id, match_jobs_with_resume
+from app.services.matching_service import get_resume_by_user_id, match_jobs_with_resume, save_preference
 from app.tasks.job_processor import TaskManager
 from app.log.logging import logger
 
@@ -143,7 +145,7 @@ async def start_job_matching(
             TaskManager.process_job_matching,
             task_id,
             resume,
-            location_filter,
+            [location_filter] if location_filter else [],
             processed_keywords,
             offset if offset is not None else 0,
             experience,
@@ -376,7 +378,7 @@ async def get_matched_jobs_legacy(
             
         matched_jobs = await match_jobs_with_resume(
             resume,
-            location=location_filter, 
+            location=[location_filter] if location_filter else [], 
             fields=fields,
             keywords=processed_keywords,
             offset=offset if offset is not None else 0,
@@ -391,6 +393,9 @@ async def get_matched_jobs_legacy(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Invalid data structure for matched jobs.",
             )
+        
+        if experience is not None and len(experience) > 0:
+            await save_preference(user_id=current_user, experience=experience[0])
 
         # Extract jobs list
         job_list = matched_jobs.get("jobs", [])
@@ -431,7 +436,24 @@ async def get_matched_jobs_legacy(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
         )
-    
+
+def _parse_locations_param(
+    locations: Optional[Union[str, List[str]]]
+) -> List[LocationFilter]:
+    if not locations:
+        return []
+    items = [locations] if isinstance(locations, str) else locations
+    out: List[LocationFilter] = []
+    for s in items:
+        if not s:
+            continue
+        try:
+            # Always fallback to literal_eval because input is single-quoted dicts
+            obj = ast.literal_eval(s)
+        except Exception as e:
+            raise ValueError(f"Invalid locations item: {s!r} ({e})")
+        out.append(LocationFilter.model_validate(obj))
+    return out
 
 @router.get(
     "/internal_matching",
@@ -447,9 +469,7 @@ async def internal_matching(
         description="How many matches to return (defaults to 10 if not set)",
     ),
     experience: Optional[str] = Query(None, description="Experience level filter"),
-    country: Optional[str] = Query(None, description="Country filter"),
-    latitude: Optional[float] = Query(None, description="Latitude for geo-based filtering"),
-    longitude: Optional[float] = Query(None, description="Longitude for geo-based filtering"),
+    locations: Optional[str] = Query(None, description="Location list"),
     fields: Optional[List[int]] = Query(None, description="Fields to include in the job details")
 ):
     """
@@ -469,13 +489,9 @@ async def internal_matching(
         logger.info("Internal matching for user {user_id} with resume: {resume}",
                     user_id=user_id, resume=resume)
         
-        location = LocationFilter(
-            country=country,
-            city=None,  # legit doubt
-            latitude=latitude,
-            longitude=longitude,
-        )
         exp_list = [experience] if experience else None
+
+        location_filters: List[LocationFilter] = _parse_locations_param(locations)
 
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
@@ -485,7 +501,7 @@ async def internal_matching(
             fields=fields,
             sort_type=SortType.RECOMMENDED,
             experience=exp_list,
-            location=location,
+            location=location_filters,
             fallback=False
         )
         if not isinstance(matched, dict):

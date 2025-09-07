@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from typing import List
 from app.libs.job_matcher_optimized import OptimizedJobMatcher
-from app.core.mongodb import collection_name
+from app.core.mongodb import collection_name, user_collection
 from app.log.logging import logger
 from app.core.config import settings
 from app.schemas.job_match import SortType
@@ -84,9 +84,24 @@ def sort_jobs(
 
         jobs.sort(key = recommend_algo, reverse = True)
 
+
+# TODO: temporary approach
+async def save_preference(
+    user_id: int,
+    experience: str
+) -> None:
+    
+    await user_collection.update_one(
+        {"user_id": user_id},
+        {"$set": {
+            "experience": experience
+        }},
+        upsert=True
+    )
+
 async def match_jobs_with_resume(
     resume: Optional[Dict[str, Any]],
-    location: Optional[LocationFilter] = None,
+    location: List[LocationFilter] = [],
     fields: Optional[List[int]] = None,
     keywords: Optional[List[str]] = None,
     save_to_mongodb: bool = False,

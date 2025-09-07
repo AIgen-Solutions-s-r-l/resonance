@@ -37,7 +37,7 @@ class JobMatcher:
     async def process_job(
         self,
         resume: Optional[Dict[str, Any]],
-        location: Optional[LocationFilter] = None,
+        location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
         fields: Optional[List[int]] = None,
         save_to_mongodb: bool = False,
@@ -151,7 +151,7 @@ class JobMatcher:
                 cache_key = await cache.generate_key(
                     resume_id,
                     offset=offset // settings.CACHE_SIZE,
-                    location=location.model_dump() if location else None,
+                    location=[loc.model_dump() for loc in location],
                     keywords=keywords,
                     fields=fields,
                     experience=experience,
@@ -224,7 +224,7 @@ class JobMatcher:
                 cache_key = await cache.generate_key(
                     resume_id,
                     offset=offset // settings.CACHE_SIZE,
-                    location=location.model_dump() if location else None,
+                    location=[loc.model_dump() for loc in location],
                     keywords=keywords,
                     fields=fields,
                     experience=experience,
@@ -237,8 +237,8 @@ class JobMatcher:
             # if cache was not used, save the request to be used for metrics
 
             location_for_metrics = None
-            if location and location.latitude and location.longitude:
-                location_for_metrics = [location.latitude, location.longitude]
+            if len(location) > 0 and location[0].latitude and location[0].longitude:
+                location_for_metrics = [location[0].latitude, location[0].longitude]
 
             keywords_for_metrics = None
             if keywords:
