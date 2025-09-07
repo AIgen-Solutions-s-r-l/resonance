@@ -493,6 +493,8 @@ async def internal_matching(
 
         location_filters: List[LocationFilter] = _parse_locations_param(locations)
 
+        logger.info("extracted location filters from location parameter", location_filters=location_filters, locations=locations)
+
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
             resume,
