@@ -437,24 +437,6 @@ async def get_matched_jobs_legacy(
             detail="An unexpected error occurred.",
         )
 
-def _parse_locations_param(
-    locations: Optional[Union[str, List[str]]]
-) -> List[LocationFilter]:
-    if not locations:
-        return []
-    items = [locations] if isinstance(locations, str) else locations
-    out: List[LocationFilter] = []
-    for s in items:
-        if not s:
-            continue
-        try:
-            # Always fallback to literal_eval because input is single-quoted dicts
-            obj = ast.literal_eval(s)
-        except Exception as e:
-            raise ValueError(f"Invalid locations item: {s!r} ({e})")
-        out.append(LocationFilter.model_validate(obj))
-    return out
-
 @router.get(
     "/internal_matching",
     response_model=JobDetailResponse,
@@ -491,7 +473,9 @@ async def internal_matching(
         
         exp_list = [experience] if experience else None
 
-        location_filters: List[LocationFilter] = _parse_locations_param(locations)
+        location_filters = json.loads(locations) if locations else []
+
+        location_filters = [LocationFilter.model_validate(loc) for loc in location_filters]
 
         logger.info("extracted location filters from location parameter", location_filters=location_filters, locations=locations)
 
