@@ -6,6 +6,7 @@ a non-blocking asynchronous approach for better performance and scalability.
 """
 
 
+import ast
 import json
 from typing import Dict, List, Any, Optional, Union
 from fastapi import APIRouter, HTTPException, Depends, status, Query, Path, BackgroundTasks, Body
@@ -435,7 +436,24 @@ async def get_matched_jobs_legacy(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred.",
         )
-    
+
+def _parse_locations_param(
+    locations: Optional[Union[str, List[str]]]
+) -> List[LocationFilter]:
+    if not locations:
+        return []
+    items = [locations] if isinstance(locations, str) else locations
+    out: List[LocationFilter] = []
+    for s in items:
+        if not s:
+            continue
+        try:
+            # Always fallback to literal_eval because input is single-quoted dicts
+            obj = ast.literal_eval(s)
+        except Exception as e:
+            raise ValueError(f"Invalid locations item: {s!r} ({e})")
+        out.append(LocationFilter.model_validate(obj))
+    return out
 
 @router.get(
     "/internal_matching",
@@ -473,9 +491,7 @@ async def internal_matching(
         
         exp_list = [experience] if experience else None
 
-        location = json.loads(locations) if locations else []
-
-        location = [LocationFilter.model_validate(loc) for loc in location]
+        location_filters: List[LocationFilter] = _parse_locations_param(locations)
 
         # 2) run the matching service with all filters + sort_by="matching_score"
         matched = await match_jobs_with_resume(
@@ -485,7 +501,7 @@ async def internal_matching(
             fields=fields,
             sort_type=SortType.RECOMMENDED,
             experience=exp_list,
-            location=location,
+            location=location_filters,
             fallback=False
         )
         if not isinstance(matched, dict):
