@@ -473,9 +473,14 @@ async def internal_matching(
         
         exp_list = [experience] if experience else None
 
-        location_filters = json.loads(locations) if locations else []
+        location_filters_raw = json.loads(locations) if locations else []
 
-        location_filters = [LocationFilter.model_validate(loc) for loc in location_filters]
+        cleaned_location_filters = [
+            {k: v for k, v in loc.items() if not (isinstance(v, str) and v.strip() == "")}
+            for loc in location_filters_raw
+        ]
+
+        location_filters = [LocationFilter.model_validate(loc) for loc in cleaned_location_filters]
 
         logger.info("extracted location filters from location parameter", location_filters=location_filters, locations=locations)
 
