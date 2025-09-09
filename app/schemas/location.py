@@ -7,4 +7,4 @@ class LocationFilter(BaseModel):
     city: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-    radius_km: Optional[float] = 10.0
+    radius_km: Optional[float] = 30.0
