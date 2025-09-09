@@ -475,10 +475,16 @@ async def internal_matching(
 
         location_filters_raw = json.loads(locations) if locations else []
 
-        cleaned_location_filters = [
-            {k: v for k, v in loc.items() if not (isinstance(v, str) and v.strip() == "")}
-            for loc in location_filters_raw
-        ]
+        cleaned_location_filters = []
+        for loc in location_filters_raw:
+            loc_cleaned = {
+                k: v for k, v in loc.items() if not (isinstance(v, str) and v.strip() == "")
+            }
+            if not loc.get("city") or str(loc.get("city")).strip() == "":
+                loc_cleaned["latitude"] = None
+                loc_cleaned["longitude"] = None
+                loc_cleaned["city"] = None
+            cleaned_location_filters.append(loc_cleaned)
 
         location_filters = [LocationFilter.model_validate(loc) for loc in cleaned_location_filters]
 
