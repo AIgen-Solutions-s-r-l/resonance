@@ -29,6 +29,7 @@ class VectorMatcher:
     @async_matching_algorithm_timer("optimized_vector_similarity")
     async def get_top_jobs(
         self,
+        user_id: int,
         cv_embedding: Optional[List[float]],
         location: List[LocationFilter] = [],
         keywords: Optional[List[str]] = None,
@@ -85,7 +86,7 @@ class VectorMatcher:
                         # then execute simple query
                         logger.info("No cv embeddings provided, proceeding with embeddingless query")
                         result = await self.similarity_searcher._execute_query(
-                            cursor, many_to_many_filters, where_clauses, query_params, limit, offset, blacklisted_job_ids
+                            cursor, many_to_many_filters, where_clauses, query_params, limit, offset
                         )
                         return result
 
@@ -143,7 +144,7 @@ class VectorMatcher:
                     )
 
                     result = await self.similarity_searcher._execute_vector_query(
-                        cursor, cv_embedding, many_to_many_filters, where_clauses, query_params, limit, offset, blacklisted_job_ids
+                        cursor, user_id, cv_embedding, many_to_many_filters, where_clauses, query_params, limit, offset, blacklisted_job_ids
                     )
                     logger.info(
                         f"VECTOR_MATCH: Vector query returned {len(result)} results")
