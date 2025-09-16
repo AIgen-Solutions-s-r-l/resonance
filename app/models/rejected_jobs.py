@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, PrimaryKeyConstraint, func
 from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+from app.models.classes import Base
 
 class RejectedJob(Base):
     __tablename__ = "rejected_jobs"
