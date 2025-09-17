@@ -19,7 +19,7 @@ from app.core.auth import get_current_user, verify_api_key
 from app.models.classes import Field
 from app.schemas.job import JobSchema, JobDetailResponse, MissingJobsResponse
 from app.schemas.job_match import RootField, FieldsResponse, JobsMatchedResponse, SortType, Subfield
-from app.models.job import Job
+from app.models.classes import Job
 from app.utils.db_utils import get_db_cursor
 from app.schemas.task import TaskCreationResponse, TaskStatusResponse, TaskStatus
 from app.schemas.location import LocationFilter
