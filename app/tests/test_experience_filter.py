@@ -21,21 +21,23 @@ def job_matcher():
 
 
 @pytest.mark.asyncio
-@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
+@patch('app.services.applied_jobs_service.AppliedJobsService.get_applied_jobs', new_callable=AsyncMock)
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.vector_matcher.query_builder._build_experience_filters')
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query', new_callable=AsyncMock)
+@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_vector_query', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_process_job_with_experience_filter(
     mock_get_db_cursor,
-    mock_exec_sim,
+    mock_exec_vector,              # SimilaritySearcher._execute_vector_query
     mock_generate_key,
     mock_get_cached,
     mock_store_cached,
     mock_build_experience_filters,
     mock_get_cooled_jobs,
+    mock_get_applied_jobs,
     job_matcher,
 ):
     """Test that process_job correctly applies experience filtering."""
@@ -55,7 +57,9 @@ async def test_process_job_with_experience_filter(
     mock_generate_key.return_value = "test_key_with_experience"
     mock_get_cached.return_value = None  # No cache hit
     mock_get_cooled_jobs.return_value = []  # No cooled jobs
-    mock_exec_sim.return_value = [
+    mock_get_applied_jobs.return_value = []  # No applied jobs
+
+    mock_exec_vector.return_value = [
         {
             "id": 1,
             "title": "Senior Software Engineer",
@@ -112,17 +116,17 @@ async def test_process_job_with_experience_filter(
         # Ensure database connections are cleaned up
         await close_all_connection_pools()
 
-    # Ensure we hit the vector similarity layer (but via our stub, not real DB)
-    mock_exec_sim.assert_awaited()
+    # Ensure vector path was used
+    mock_exec_vector.assert_awaited()
 
 
 @pytest.mark.asyncio
 @patch('app.libs.job_matcher.vector_matcher.query_builder.build_filter_conditions')
-@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query', new_callable=AsyncMock)
+@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_vector_query', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_vector_matcher_with_experience_filter(
     mock_get_db_cursor,
-    mock_exec_sim,
+    mock_exec_vector,
     mock_build_filter_conditions,
     job_matcher,
 ):
@@ -142,7 +146,7 @@ async def test_vector_matcher_with_experience_filter(
     )
 
     # Vector similarity returns one row
-    mock_exec_sim.return_value = [
+    mock_exec_vector.return_value = [
         {
             "id": 1,
             "title": "Mid Level Developer",
@@ -182,7 +186,7 @@ async def test_vector_matcher_with_experience_filter(
     assert kwargs["is_remote_only"] is None  # Default value
 
     # Ensure vector similarity executor was awaited
-    mock_exec_sim.assert_awaited()
+    mock_exec_vector.assert_awaited()
 
 
 @pytest.mark.asyncio
@@ -191,7 +195,7 @@ async def test_vector_matcher_with_experience_filter(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.VectorMatcher.get_top_jobs', new_callable=AsyncMock)  # <- change target
+@patch('app.libs.job_matcher.vector_matcher.VectorMatcher.get_top_jobs', new_callable=AsyncMock)
 async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs,
     mock_generate_key,
@@ -224,6 +228,8 @@ async def test_match_jobs_with_resume_integration(
     # Mocks
     mock_generate_key.return_value = "test_key_with_everything"
     mock_get_cached.return_value = None
+    mock_get_applied_jobs.return_value = []  # prevent real Mongo call
+    mock_get_cooled_jobs.return_value = []
     mock_get_top_jobs.return_value = [
         JobMatch(
             id=1,
@@ -268,19 +274,21 @@ async def test_match_jobs_with_resume_integration(
 
 
 @pytest.mark.asyncio
-@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
+@patch('app.services.applied_jobs_service.AppliedJobsService.get_applied_jobs', new_callable=AsyncMock)
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query', new_callable=AsyncMock)
+@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_vector_query', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_experience_filter_with_cache(
     mock_get_db_cursor,
-    mock_exec_sim,
+    mock_exec_vector,
     mock_generate_key,
     mock_get_cached,
     mock_store_cached,
     mock_get_cooled_jobs,
+    mock_get_applied_jobs,
     job_matcher,
 ):
     """Test that different experience filters use different cache keys."""
@@ -298,9 +306,10 @@ async def test_experience_filter_with_cache(
     mock_generate_key.return_value = "key_with_mid"  # First key
     mock_get_cached.return_value = None  # No cache hit
     mock_get_cooled_jobs.return_value = []  # No cooled jobs
+    mock_get_applied_jobs.return_value = []
 
     # Vector similarity fake rows
-    mock_exec_sim.return_value = [
+    mock_exec_vector.return_value = [
         {
             "id": 1,
             "title": "Mid Level Developer",
@@ -378,19 +387,21 @@ async def test_experience_filter_with_cache(
 
 
 @pytest.mark.asyncio
-@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
+@patch('app.services.applied_jobs_service.AppliedJobsService.get_applied_jobs', new_callable=AsyncMock)
+@patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
-@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query', new_callable=AsyncMock)
+@patch('app.libs.job_matcher.similarity_searcher.SimilaritySearcher._execute_vector_query', new_callable=AsyncMock)
 async def test_experience_filter_with_cache_hit(
-    mock_exec_sim,
+    mock_exec_vector,
     mock_get_db_cursor,
     mock_generate_key,
     mock_get_cached,
     mock_store_cached,
     mock_get_cooled_jobs,
+    mock_get_applied_jobs,
     job_matcher,
 ):
     """Test that cached results are correctly retrieved with experience filter."""
@@ -406,6 +417,7 @@ async def test_experience_filter_with_cache_hit(
     # Mock cache key generation
     mock_generate_key.return_value = "key_with_mid_experience"
     mock_get_cooled_jobs.return_value = []  # No cooled jobs
+    mock_get_applied_jobs.return_value = []
 
     # Create cached result that should be returned
     cached_result = {
@@ -449,5 +461,5 @@ async def test_experience_filter_with_cache_hit(
     # Verify cached result was returned
     assert result == cached_result
 
-    # Ensure no DB vector call happened due to cache hit
-    mock_exec_sim.assert_not_called()
+    # Ensure vector similarity executor was NOT called due to cache hit
+    mock_exec_vector.assert_not_called()
