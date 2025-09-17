@@ -602,7 +602,7 @@ async def job_search_legacy(
             
         matched_jobs = await match_jobs_with_resume(
             None,
-            location=location_filter, 
+            location=[location_filter] if location_filter else [], 
             fields=fields,
             keywords=processed_keywords,
             offset=offset if offset is not None else 0,
