@@ -166,6 +166,7 @@ async def test_vector_matcher_with_experience_filter(
     cv_embedding = [0.1] * 1024
     experience = ["Mid-level"]
     await job_matcher.get_top_jobs(
+        "123",  
         cv_embedding,
         experience=experience,
         fields=[],
@@ -193,7 +194,7 @@ async def test_vector_matcher_with_experience_filter(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.services.matching_service.OptimizedJobMatcher.get_top_jobs', new_callable=AsyncMock)
+@patch('app.libs.job_matcher.vector_matcher.VectorMatcher.get_top_jobs', new_callable=AsyncMock)  # <- change target
 async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs,
     mock_generate_key,
