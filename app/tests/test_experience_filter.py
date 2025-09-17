@@ -27,7 +27,7 @@ def job_matcher():
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.get_top_jobs', new_callable=AsyncMock)  # <-- fixed
+@patch.object(OptimizedJobMatcher, 'get_top_jobs', new_callable=AsyncMock)  # <-- fixed
 async def test_process_job_with_experience_filter(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_build_experience_filters, mock_get_cooled_jobs, job_matcher, monkeypatch
@@ -155,7 +155,7 @@ async def test_vector_matcher_with_experience_filter(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.get_top_jobs', new_callable=AsyncMock)
+@patch.object(OptimizedJobMatcher, 'get_top_jobs', new_callable=AsyncMock)
 async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached
 ):
@@ -228,7 +228,7 @@ async def test_match_jobs_with_resume_integration(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.get_top_jobs', new_callable=AsyncMock)  # <-- fixed
+@patch.object(OptimizedJobMatcher, 'get_top_jobs', new_callable=AsyncMock)  # <-- fixed
 async def test_experience_filter_with_cache(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_get_cooled_jobs, job_matcher, monkeypatch
@@ -338,7 +338,7 @@ async def test_experience_filter_with_cache(
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.get_top_jobs', new_callable=AsyncMock)  # <-- fixed
+@patch.object(OptimizedJobMatcher, 'get_top_jobs', new_callable=AsyncMock)  # <-- fixed
 async def test_experience_filter_with_cache_hit(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached,
     mock_get_cooled_jobs, job_matcher
