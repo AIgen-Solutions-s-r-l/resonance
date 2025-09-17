@@ -260,8 +260,9 @@ async def test_match_jobs_with_resume_integration(
     # get_top_jobs was called with the right args
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
-    # When patching a bound method, 'self' is not in args; embedding is first
-    assert args[0] == resume["vector"]
+    user_id_arg, embedding_arg = args[:2]
+    assert user_id_arg == resume["user_id"]
+    assert embedding_arg == resume["vector"]
     assert kwargs["location"][0] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
