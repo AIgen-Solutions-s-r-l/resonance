@@ -152,24 +152,29 @@ async def test_vector_matcher_with_experience_filter(
     assert kwargs["is_remote_only"] is None # Check default value
 
 
+import pytest
+from unittest.mock import patch, AsyncMock
+from app.core.config import settings
+from app.libs.job_matcher.types import LocationFilter, JobMatch
+
 @pytest.mark.asyncio
 @patch('app.libs.job_matcher.cache.cache.set')
 @patch('app.libs.job_matcher.cache.cache.get')
 @patch('app.libs.job_matcher.cache.cache.generate_key')
-@patch('app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs')
+@patch('app.libs.job_matcher.vector_matcher.get_top_jobs', new_callable=AsyncMock)
 async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs, mock_generate_key, mock_get_cached, mock_store_cached
 ):
     """Integration test for match_jobs_with_resume with experience parameter."""
     from app.services.matching_service import match_jobs_with_resume
-    
+
     # Set up test data
     resume = {
         "user_id": "123",
         "vector": [0.1] * 1024,
         "_id": "test_resume_id"
     }
-    
+
     location = LocationFilter(
         country="USA",
         city="New York",
@@ -177,11 +182,11 @@ async def test_match_jobs_with_resume_integration(
         latitude=43.0,
         longitude=-75.0
     )
-    
+
     keywords = ["Python", "Django"]
     experience = ["Entry-level", "Mid-level"]
-    
-    # Mock return values
+
+    # Mocks
     mock_generate_key.return_value = "test_key_with_everything"
     mock_get_cached.return_value = None
     mock_get_top_jobs.return_value = [
@@ -200,30 +205,29 @@ async def test_match_jobs_with_resume_integration(
             score=1.0
         )
     ]
-    
-    # Execute the function with all parameters
+
+    # Execute
     result = await match_jobs_with_resume(
         resume,
         location=[location],
-        keywords=keywords, # Keep existing params
+        keywords=keywords,
         experience=experience
     )
-    
+
     # Verify results
     assert isinstance(result, list) or (isinstance(result, dict) and "jobs" in result)
-    
-    # Check that get_top_jobs was called with all parameters
+
+    # get_top_jobs was called with the right args
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
-    assert args[0] == resume["vector"]
+    assert args[0] == resume["vector"]              # embedding is positional arg 0
     assert kwargs["location"][0] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
     assert kwargs["limit"] == settings.CACHE_SIZE
     assert kwargs["experience"] == experience
-    assert "is_remote_only" in kwargs # Add check for new param
-    assert kwargs["is_remote_only"] is None # Check default value
-
+    assert "is_remote_only" in kwargs
+    assert kwargs["is_remote_only"] is None
 
 @pytest.mark.asyncio
 @patch('app.services.cooled_jobs_service.cooled_jobs_service.get_cooled_jobs')
