@@ -39,6 +39,7 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
         limit=limit,
         offset=offset,
         blacklisted_job_ids=applied_job_ids,
+        user_id=123
     )
 
     # Assertions
@@ -95,6 +96,7 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
         limit=limit,
         offset=offset,
         blacklisted_job_ids=applied_job_ids,
+        user_id=123
     )
 
     assert results == [{"id": 4, "score": 0.8}]
@@ -144,6 +146,7 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
         limit=limit,
         offset=offset,
         blacklisted_job_ids=applied_job_ids,
+        user_id=123
     )
 
     assert results == [{"id": 5, "score": 0.7}]
