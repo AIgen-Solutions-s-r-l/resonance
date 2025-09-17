@@ -145,6 +145,11 @@ class JobMatcher:
                 logger.error(f"Error fetching cooled job IDs for cache key: {e}")
                 cooled_ids = None # Proceed without filtering on error
 
+            if location is None:
+                location = []
+            else:
+                location = location if isinstance(location, list) else [location]
+
             # Check cache if enabled
             if use_cache:
                 logger.info("CACHE CHECK: Checking cache for existing results")
