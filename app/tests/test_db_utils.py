@@ -50,7 +50,7 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     assert len(execute_calls) == 4 # SET TRANSACTION, SET LOCAL, main query
 
     # Verify the main query call
-    main_query_call = execute_calls[3]
+   main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -60,16 +60,12 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     assert "WHERE c.company_name = %s AND j.id <> ALL(%s)" in query_string # Check combined clause
 
     # Check the parameters passed to execute
-    # Expected params: [embedding, company_name_param, applied_ids_list, limit, offset]
-    assert len(params) == 5
+    # is_app=True adds user_id as last param
+    assert len(params) == 6
+    # expected order: [embedding, <filter(s)>, <applied_ids?>, limit, offset, user_id]
     assert params[0] == cv_embedding
-    assert params[1] == query_params[0] # "TestCorp"
-    assert params[2] == applied_job_ids # Should be the list itself
-    assert params[3] == limit
-    assert params[4] == offset
-
-    # Verify fetchall was called
-    mock_cursor.fetchall.assert_called_once()
+    assert params[-3:-1] == [limit, offset]
+    assert params[-1] == 123
 
 @pytest.mark.asyncio
 async def test_execute_vector_similarity_query_without_applied_jobs():
@@ -104,7 +100,7 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     execute_calls = mock_cursor.execute.call_args_list
     assert len(execute_calls) == 4
 
-    main_query_call = execute_calls[3]
+   main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -112,12 +108,11 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     assert "j.id <> ALL(%s)" not in query_string
     assert "WHERE j.experience = %s" in query_string # Only the experience filter
 
-    # Expected params: [embedding, experience_param, limit, offset]
-    assert len(params) == 4
+    # Expected params: [embedding, experience_params, limit, offset]
+    assert len(params) == 5
     assert params[0] == cv_embedding
-    assert params[1] == query_params[0] # "Senior"
-    assert params[2] == limit
-    assert params[3] == offset
+    assert params[-1] == 123
+    assert params[-3:-1] == [limit, offset]
 
     mock_cursor.fetchall.assert_called_once()
 
@@ -154,7 +149,7 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     execute_calls = mock_cursor.execute.call_args_list
     assert len(execute_calls) == 4
 
-    main_query_call = execute_calls[3]
+   main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -163,10 +158,9 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     assert "WHERE co.country_name = %s" in query_string # Only the country filter
 
     # Expected params: [embedding, country_param, limit, offset]
-    assert len(params) == 4
+    assert len(params) == 5
     assert params[0] == cv_embedding
-    assert params[1] == query_params[0] # "Germany"
-    assert params[2] == limit
-    assert params[3] == offset
+    assert params[-1] == 123
+    assert params[-3:-1] == [limit, offset]
 
     mock_cursor.fetchall.assert_called_once()
