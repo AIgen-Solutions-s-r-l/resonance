@@ -216,7 +216,7 @@ async def test_match_jobs_with_resume_integration(
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
     assert args[0] == resume["vector"]
-    #assert kwargs["location"][0] == location
+    assert kwargs["location"][0] == location
     assert kwargs["keywords"] == keywords
     assert kwargs["offset"] == 0
     assert kwargs["limit"] == settings.CACHE_SIZE
