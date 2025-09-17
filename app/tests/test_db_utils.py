@@ -50,7 +50,7 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     assert len(execute_calls) == 4 # SET TRANSACTION, SET LOCAL, main query
 
     # Verify the main query call
-   main_query_call = execute_calls[-1]
+    main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -100,7 +100,7 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     execute_calls = mock_cursor.execute.call_args_list
     assert len(execute_calls) == 4
 
-   main_query_call = execute_calls[-1]
+    main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
@@ -149,7 +149,7 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     execute_calls = mock_cursor.execute.call_args_list
     assert len(execute_calls) == 4
 
-   main_query_call = execute_calls[-1]
+    main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
     params = main_query_call.args[1]
 
