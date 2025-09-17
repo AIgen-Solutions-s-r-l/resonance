@@ -21,7 +21,7 @@ def job_matcher():
     return OptimizedJobMatcher()
 
 @pytest.mark.asyncio
-@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query')
+@patch('app.libs.job_matcher.similarity_searcher.execute_vector_similarity_query', new_callable=AsyncMock)
 @patch('app.libs.job_matcher.vector_matcher.get_db_cursor')
 async def test_get_top_jobs_multiple_results(
     mock_get_db_cursor, mock_execute_query, job_matcher

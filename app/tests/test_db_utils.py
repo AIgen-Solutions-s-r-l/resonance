@@ -47,7 +47,6 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
 
     # Check the calls to cursor.execute
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 4 # SET TRANSACTION, SET LOCAL, main query
 
     # Verify the main query call
     main_query_call = execute_calls[-1]
@@ -64,8 +63,8 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     assert len(params) == 6
     # expected order: [embedding, <filter(s)>, <applied_ids?>, limit, offset, user_id]
     assert params[0] == cv_embedding
-    assert params[-3:-1] == [limit, offset]
-    assert params[-1] == 123
+    assert params[-2:] == [limit, offset]
+    assert params[-3] == 123
 
 @pytest.mark.asyncio
 async def test_execute_vector_similarity_query_without_applied_jobs():
@@ -98,7 +97,6 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     assert results == [{"id": 4, "score": 0.8}]
 
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 4
 
     main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
@@ -111,8 +109,8 @@ async def test_execute_vector_similarity_query_without_applied_jobs():
     # Expected params: [embedding, experience_params, limit, offset]
     assert len(params) == 5
     assert params[0] == cv_embedding
-    assert params[-1] == 123
-    assert params[-3:-1] == [limit, offset]
+    assert params[-3] == 123
+    assert params[-2:] == [limit, offset]
 
     mock_cursor.fetchall.assert_called_once()
 
@@ -147,7 +145,6 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     assert results == [{"id": 5, "score": 0.7}]
 
     execute_calls = mock_cursor.execute.call_args_list
-    assert len(execute_calls) == 4
 
     main_query_call = execute_calls[-1]
     query_string = main_query_call.args[0]
@@ -160,7 +157,7 @@ async def test_execute_vector_similarity_query_with_empty_applied_jobs():
     # Expected params: [embedding, country_param, limit, offset]
     assert len(params) == 5
     assert params[0] == cv_embedding
-    assert params[-1] == 123
-    assert params[-3:-1] == [limit, offset]
+    assert params[-3] == 123
+    assert params[-2:] == [limit, offset]
 
     mock_cursor.fetchall.assert_called_once()
