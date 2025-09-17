@@ -192,6 +192,7 @@ class JobMatcher:
             # Use the vector matcher to find matches, passing combined IDs for filtering
             logger.info("PROCESSING: Calling vector_matcher.get_top_jobs with filtering")
             job_matches = await vector_matcher.get_top_jobs(
+                user_id,
                 cv_embedding,
                 location=location,
                 keywords=keywords,

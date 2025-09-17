@@ -3,6 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import (
     Column,
     Integer,
+    PrimaryKeyConstraint,
     String,
     ForeignKey,
     DateTime,
@@ -126,3 +127,15 @@ class Job(Base):
 
     company: Mapped["Company"] = relationship("Company", back_populates="jobs")
     location: Mapped["Location"] = relationship("Location", back_populates="jobs")
+
+
+class RejectedJob(Base):
+    __tablename__ = "rejected_jobs"
+
+    user_id = Column(Integer, nullable=False)
+    job_id = Column(String, nullable=False)
+    timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+
+    __table_args__ = (
+        PrimaryKeyConstraint("user_id", "job_id", name="pk_rejected_jobs"),
+    )

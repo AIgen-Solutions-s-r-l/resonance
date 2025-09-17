@@ -35,8 +35,7 @@ class SimilaritySearcher:
         where_clauses: List[str],
         query_params: List[Any],
         limit: int,
-        offset: int,
-        blacklisted_job_ids: Optional[List[int]] = None
+        offset: int
     ) -> List[JobMatch]:
         """
         Execute vector similarity query.
@@ -76,8 +75,7 @@ class SimilaritySearcher:
             where_clauses,
             query_params,
             limit,
-            offset,
-            blacklisted_job_ids
+            offset
         )
         vector_elapsed = time() - vector_start
         
@@ -130,6 +128,7 @@ class SimilaritySearcher:
     async def _execute_vector_query(
         self,
         cursor: Any,
+        user_id: int,
         cv_embedding: List[float],
         many_to_many_filters: List[ManyToManyFilter],
         where_clauses: List[str],
@@ -173,6 +172,7 @@ class SimilaritySearcher:
         logger.info("SIMILARITY: Calling execute_vector_similarity_query")
         results = await execute_vector_similarity_query(
             cursor,
+            user_id,
             cv_embedding,
             many_to_many_filters,
             where_clauses,
