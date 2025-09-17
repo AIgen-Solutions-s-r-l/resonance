@@ -41,39 +41,38 @@ async def test_process_job_with_experience_filter(
     job_matcher,
 ):
     """Test that process_job correctly applies experience filtering."""
-    # Set up test data
     resume = {
         "user_id": "123",
-        "vector": [0.1] * 1024,  # Properly sized embedding vector
+        "vector": [0.1] * 1024,
         "_id": "test_resume_id",
     }
     experience = ["Mid-level", "Executive-level"]
 
-    # Mock return values
     mock_build_experience_filters.return_value = (
         ["(j.experience = %s OR j.experience = %s)"],
         ["Mid-level", "Executive-level"],
     )
     mock_generate_key.return_value = "test_key_with_experience"
-    mock_get_cached.return_value = None  # No cache hit
-    mock_get_cooled_jobs.return_value = []  # No cooled jobs
-    mock_get_applied_jobs.return_value = []  # No applied jobs
+    mock_get_cached.return_value = None
+    mock_get_cooled_jobs.return_value = []
+    mock_get_applied_jobs.return_value = []
 
+    # Return JobMatch objects (so .to_dict() exists)
     mock_exec_vector.return_value = [
-        {
-            "id": 1,
-            "title": "Senior Software Engineer",
-            "description": "Job description",
-            "workplace_type": "office",
-            "short_description": "short desc",
-            "field": "IT",
-            "experience": "Mid-level",
-            "skills_required": "Python, Django",
-            "country": "USA",
-            "city": "New York",
-            "company_name": "TechCorp",
-            "score": 1.0,
-        }
+        JobMatch(
+            id=1,
+            title="Senior Software Engineer",
+            description="Job description",
+            workplace_type="office",
+            short_description="short desc",
+            field="IT",
+            experience="Mid-level",
+            skills_required=["Python", "Django"],
+            country="USA",
+            city="New York",
+            company_name="TechCorp",
+            score=1.0,
+        )
     ]
 
     # Proper async context manager mock for DB cursor
@@ -84,20 +83,17 @@ async def test_process_job_with_experience_filter(
     mock_get_db_cursor.return_value = mock_ctx
 
     try:
-        # Execute the function with experience parameter
         result = await job_matcher.process_job(
             resume,
             experience=experience,
-            is_remote_only=None,  # explicit param
+            is_remote_only=None,
         )
 
-        # Verify results
         assert isinstance(result, dict)
         assert "jobs" in result
         assert len(result["jobs"]) == 1
         assert result["jobs"][0]["title"] == "Senior Software Engineer"
 
-        # Verify that the experience parameter was correctly passed into the cache key
         mock_generate_key.assert_called_with(
             "test_resume_id",
             offset=0,
@@ -109,14 +105,10 @@ async def test_process_job_with_experience_filter(
             cooled_job_ids=[],
             is_remote_only=None,
         )
-
-        # Experience filters were built
         mock_build_experience_filters.assert_called_once()
     finally:
-        # Ensure database connections are cleaned up
         await close_all_connection_pools()
 
-    # Ensure vector path was used
     mock_exec_vector.assert_awaited()
 
 
@@ -138,32 +130,29 @@ async def test_vector_matcher_with_experience_filter(
     mock_ctx.__aexit__.return_value = None
     mock_get_db_cursor.return_value = mock_ctx
 
-    # Mock filter conditions
     mock_build_filter_conditions.return_value = (
         [],
         ["embedding IS NOT NULL", "(j.experience = %s)"],
         ["Mid-level"],
     )
 
-    # Vector similarity returns one row
     mock_exec_vector.return_value = [
-        {
-            "id": 1,
-            "title": "Mid Level Developer",
-            "description": "Job description",
-            "workplace_type": "office",
-            "short_description": "short desc",
-            "field": "IT",
-            "experience": "Mid-level",
-            "skills_required": "Python",
-            "country": "USA",
-            "city": "New York",
-            "company_name": "TechCorp",
-            "score": 1.0,
-        }
+        JobMatch(
+            id=1,
+            title="Mid Level Developer",
+            description="Job description",
+            workplace_type="office",
+            short_description="short desc",
+            field="IT",
+            experience="Mid-level",
+            skills_required=["Python"],
+            country="USA",
+            city="New York",
+            company_name="TechCorp",
+            score=1.0,
+        )
     ]
 
-    # Call the vector matcher with experience parameter
     cv_embedding = [0.1] * 1024
     experience = ["Mid-level"]
     await job_matcher.get_top_jobs(
@@ -171,21 +160,19 @@ async def test_vector_matcher_with_experience_filter(
         cv_embedding,
         experience=experience,
         fields=[],
-        location=None,  # Keep existing params
+        location=None,
         keywords=None,
         offset=0,
         limit=5,
     )
 
-    # Verify build_filter_conditions was called with the experience parameter
     mock_build_filter_conditions.assert_called_once()
     args, kwargs = mock_build_filter_conditions.call_args
     assert "experience" in kwargs
     assert kwargs["experience"] == experience
-    assert "is_remote_only" in kwargs  # Check new param presence
-    assert kwargs["is_remote_only"] is None  # Default value
+    assert "is_remote_only" in kwargs
+    assert kwargs["is_remote_only"] is None
 
-    # Ensure vector similarity executor was awaited
     mock_exec_vector.assert_awaited()
 
 
@@ -207,7 +194,6 @@ async def test_match_jobs_with_resume_integration(
     """Integration test for match_jobs_with_resume with experience parameter."""
     from app.services.matching_service import match_jobs_with_resume
 
-    # Set up test data
     resume = {
         "user_id": "123",
         "vector": [0.1] * 1024,
@@ -225,10 +211,9 @@ async def test_match_jobs_with_resume_integration(
     keywords = ["Python", "Django"]
     experience = ["Entry-level", "Mid-level"]
 
-    # Mocks
     mock_generate_key.return_value = "test_key_with_everything"
     mock_get_cached.return_value = None
-    mock_get_applied_jobs.return_value = []  # prevent real Mongo call
+    mock_get_applied_jobs.return_value = []
     mock_get_cooled_jobs.return_value = []
     mock_get_top_jobs.return_value = [
         JobMatch(
@@ -247,7 +232,6 @@ async def test_match_jobs_with_resume_integration(
         )
     ]
 
-    # Execute
     result = await match_jobs_with_resume(
         resume,
         location=[location],
@@ -255,10 +239,8 @@ async def test_match_jobs_with_resume_integration(
         experience=experience,
     )
 
-    # Verify results
     assert isinstance(result, list) or (isinstance(result, dict) and "jobs" in result)
 
-    # get_top_jobs was called with the right args
     mock_get_top_jobs.assert_called()
     args, kwargs = mock_get_top_jobs.call_args_list[0]
     user_id_arg, embedding_arg = args[:2]
@@ -292,7 +274,6 @@ async def test_experience_filter_with_cache(
     job_matcher,
 ):
     """Test that different experience filters use different cache keys."""
-    # Set up test data
     resume = {
         "user_id": "123",
         "vector": [0.1] * 1024,
@@ -302,31 +283,28 @@ async def test_experience_filter_with_cache(
     experience_1 = ["Mid-level"]
     experience_2 = ["Entry-level"]
 
-    # Configure mocks for experience filtering
-    mock_generate_key.return_value = "key_with_mid"  # First key
-    mock_get_cached.return_value = None  # No cache hit
-    mock_get_cooled_jobs.return_value = []  # No cooled jobs
+    mock_generate_key.return_value = "key_with_mid"
+    mock_get_cached.return_value = None
+    mock_get_cooled_jobs.return_value = []
     mock_get_applied_jobs.return_value = []
 
-    # Vector similarity fake rows
     mock_exec_vector.return_value = [
-        {
-            "id": 1,
-            "title": "Mid Level Developer",
-            "description": "Job description",
-            "workplace_type": "office",
-            "short_description": "short desc",
-            "field": "IT",
-            "experience": "Mid-level",
-            "skills_required": "Python",
-            "country": "USA",
-            "city": "New York",
-            "company_name": "TechCorp",
-            "score": 1.0,
-        }
+        JobMatch(
+            id=1,
+            title="Mid Level Developer",
+            description="Job description",
+            workplace_type="office",
+            short_description="short desc",
+            field="IT",
+            experience="Mid-level",
+            skills_required=["Python"],
+            country="USA",
+            city="New York",
+            company_name="TechCorp",
+            score=1.0,
+        )
     ]
 
-    # Proper async context manager mock for DB cursor
     mock_cursor = AsyncMock()
     mock_ctx = AsyncMock()
     mock_ctx.__aenter__.return_value = mock_cursor
@@ -334,10 +312,8 @@ async def test_experience_filter_with_cache(
     mock_get_db_cursor.return_value = mock_ctx
 
     try:
-        # First call with experience_1
         await job_matcher.process_job(resume, experience=experience_1, is_remote_only=None)
 
-        # Verify first call generated correct cache key with experience_1
         mock_generate_key.assert_called_with(
             "test_resume_id",
             offset=0,
@@ -350,26 +326,19 @@ async def test_experience_filter_with_cache(
             is_remote_only=None,
         )
 
-        # Store what would be cached for first call
         mock_store_cached.assert_called_once()
         args, _ = mock_store_cached.call_args
         cached_key_1, cached_result_1 = args
 
-        # Change the mock return value for the second call
         mock_generate_key.return_value = "key_with_entry"
-
-        # Reset mocks for second call
         mock_generate_key.reset_mock()
         mock_get_cached.reset_mock()
         mock_store_cached.reset_mock()
 
-        # Second call with different experience filter
         await job_matcher.process_job(resume, experience=experience_2, is_remote_only=None)
     finally:
-        # Ensure database connections are cleaned up
         await close_all_connection_pools()
 
-    # Verify second call generated key with experience_2
     mock_generate_key.assert_called_with(
         "test_resume_id",
         offset=0,
@@ -382,7 +351,6 @@ async def test_experience_filter_with_cache(
         is_remote_only=None,
     )
 
-    # Verify that the experience parameter affects the cache key
     assert "key_with_entry" != "key_with_mid"
 
 
@@ -405,7 +373,6 @@ async def test_experience_filter_with_cache_hit(
     job_matcher,
 ):
     """Test that cached results are correctly retrieved with experience filter."""
-    # Set up test data
     resume = {
         "user_id": "123",
         "vector": [0.1] * 1024,
@@ -414,12 +381,10 @@ async def test_experience_filter_with_cache_hit(
 
     experience = ["Mid-level"]
 
-    # Mock cache key generation
     mock_generate_key.return_value = "key_with_mid_experience"
-    mock_get_cooled_jobs.return_value = []  # No cooled jobs
+    mock_get_cooled_jobs.return_value = []
     mock_get_applied_jobs.return_value = []
 
-    # Create cached result that should be returned
     cached_result = {
         "jobs": [
             {
@@ -439,13 +404,10 @@ async def test_experience_filter_with_cache_hit(
         ]
     }
 
-    # Mock cache hit
     mock_get_cached.return_value = cached_result
 
-    # Call process_job with experience filter
     result = await job_matcher.process_job(resume, experience=experience, is_remote_only=None)
 
-    # Verify cache key was generated with experience parameter
     mock_generate_key.assert_called_with(
         "test_resume_id",
         offset=0,
@@ -458,8 +420,6 @@ async def test_experience_filter_with_cache_hit(
         is_remote_only=None,
     )
 
-    # Verify cached result was returned
     assert result == cached_result
 
-    # Ensure vector similarity executor was NOT called due to cache hit
     mock_exec_vector.assert_not_called()
