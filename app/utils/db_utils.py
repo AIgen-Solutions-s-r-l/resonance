@@ -351,7 +351,7 @@ async def execute_vector_similarity_query(
         logger.info("Applied job IDs list is empty, skipping filter.")
 
     if is_app:
-        all_where_clauses.append("NOT EXIST (SELECT 1 FROM \"rejected_jobs\" AS rj WHERE rj.job_id = j.id AND rj.user_id = %s)")
+        all_where_clauses.append("NOT EXISTS (SELECT 1 FROM \"rejected_jobs\" AS rj WHERE rj.job_id = j.id AND rj.user_id = %s)")
 
     # Construct the final WHERE string
     where_sql = ""
