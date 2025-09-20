@@ -216,3 +216,7 @@ app.include_router(healthcheck_router)
 from app.routers.cronrouters import router as cronrouter
 
 app.include_router(cronrouter)
+
+from app.routers.rejections_router import router as rejections_router
+
+app.include_router(rejections_router)
