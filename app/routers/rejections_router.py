@@ -39,7 +39,7 @@ SQL_SELECT_ONE = """
     LIMIT 1
 """
 
-@router.post("/pass", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/pass")
 async def pass_job(
     payload: PassJobIn,
     user_id: str = Depends(get_current_user),
@@ -50,7 +50,7 @@ async def pass_job(
         await cur.execute(SQL_INSERT_PASS, (user_id, job_id))
     return
 
-@router.delete("/undo", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/undo")
 async def undo_pass(
     payload: UndoJobIn,
     user_id: str = Depends(get_current_user),
