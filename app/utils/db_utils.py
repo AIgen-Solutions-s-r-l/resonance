@@ -275,6 +275,7 @@ async def execute_simple_query(
         query_start = time.time()
         # is relative important the consistency, important is resolve when hight concurrency
         await cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
+        await cursor.execute("SET LOCAL statement_timeout = '200s'")
         # specific for diskann
         await cursor.execute("SET LOCAL enable_seqscan TO OFF")
         await cursor.execute(query, sql_params)
