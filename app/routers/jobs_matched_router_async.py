@@ -366,7 +366,7 @@ async def get_matched_jobs_legacy(
         if keywords and len(keywords) > 0:
             processed_keywords = [" ".join(keywords)]
 
-        sort_type = SortType.RECOMMENDED
+        sort_type = SortType.RECOMMENDED if resume is not None else SortType.DATE
         try:
             if sort_by is not None:
                 sort_type = SortType(sort_by.lower())
