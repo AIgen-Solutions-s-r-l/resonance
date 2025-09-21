@@ -356,13 +356,10 @@ async def get_matched_jobs_legacy(
 
         resume = await get_resume_by_user_id(current_user)
         if not resume or "error" in resume:
-            logger.error(
-                "Resume not found for user {current_user}", current_user=current_user
+            logger.warning(
+                "Resume not found for user {current_user}. Falling back to search", current_user=current_user
             )
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Resume not found for the current user.",
-            )
+            resume = None
 
         # Preprocess keywords: concatenate multiple keywords into a single string with spaces
         processed_keywords = None
