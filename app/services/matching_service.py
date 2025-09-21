@@ -77,7 +77,7 @@ def sort_jobs(
             if isinstance(posted_date, str):
                 posted_date = datetime.fromisoformat(posted_date)
             delta: timedelta = datetime.now() - posted_date
-            score = job.get('score', 0.0)
+            score = job.get('score') or 0.0
             if score < score_threshold:
                 return score -100 * 14.4
             return score + 100 * (-(1.03)**delta.days + 1)

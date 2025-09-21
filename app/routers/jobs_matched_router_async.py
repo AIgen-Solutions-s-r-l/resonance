@@ -366,12 +366,15 @@ async def get_matched_jobs_legacy(
         if keywords and len(keywords) > 0:
             processed_keywords = [" ".join(keywords)]
 
-        sort_type = SortType.RECOMMENDED if resume is not None else SortType.DATE
+        sort_type = SortType.RECOMMENDED
         try:
             if sort_by is not None:
                 sort_type = SortType(sort_by.lower())
         except ValueError:
             sort_type = SortType.RECOMMENDED
+
+        if resume is None:
+            sort_type = SortType.DATE
             
         matched_jobs = await match_jobs_with_resume(
             resume,
