@@ -208,7 +208,7 @@ class JobValidator:
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
                 score=float(JobValidator.score_to_percentage(
-                    row.get('score', 0.0))
+                    row.get('score', None))
                 ),
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
