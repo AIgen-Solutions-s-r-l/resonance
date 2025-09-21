@@ -3,7 +3,7 @@ Job validation and transformation functionality.
 
 This module handles validation and creation of JobMatch objects from database rows.
 """
-
+import math
 from typing import Optional, Dict, Any, Tuple
 from app.log.logging import logger
 from time import time
@@ -62,7 +62,7 @@ class JobValidator:
     """
 
     @staticmethod
-    def score_to_percentage(score):
+    def score_to_percentage(score: Optional[float]):
         """
         Converte la distanza semantica in percentuale di match usando una funzione sigmoide modificata.
         
@@ -121,11 +121,13 @@ class JobValidator:
         Returns:
             float: Percentuale di match (0-100, dove 100 è match perfetto)
         """
-        import math
         
         # Parametri della sigmoide
         k = 13.0      # Controlla la pendenza della curva
         midpoint = 0.369  # Punto centrale della transizione (90% at score 0.20, 82% at score 0.25)
+        
+        if score is None:
+            return None
         
         if score < 0:
             # Gestisce potenziali punteggi negativi (non dovrebbero verificarsi nella similarità coseno)
@@ -136,7 +138,7 @@ class JobValidator:
         else:
             # Applica la trasformazione sigmoide: 100 / (1 + e^(k*(score-midpoint)))
             percentage = 100.0 / (1.0 + math.exp(k * (float(score) - midpoint)))
-            return round(percentage, 2)
+            return float(round(percentage, 2))
 
     def validate_row_data(self, row: dict) -> bool:
         """
@@ -207,9 +209,9 @@ class JobValidator:
                 company_name=row.get('company_name'),
                 company_logo=row.get('company_logo'),
                 portal=row.get('portal', 'test_portal'),
-                score=float(JobValidator.score_to_percentage(
+                score=JobValidator.score_to_percentage(
                     row.get('score', None))
-                ),
+                ,
                 posted_date=row.get('posted_date'),
                 job_state=row.get('job_state'),
                 apply_link=row.get('apply_link'),
