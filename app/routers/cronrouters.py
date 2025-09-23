@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.post("/clean_requests")
-async def forward_emails():
+async def clean_request_records():
     limit = datetime.now() - timedelta(days=30)
 
     metrics_collection = database.get_collection("requests")

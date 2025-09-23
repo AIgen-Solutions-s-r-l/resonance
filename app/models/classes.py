@@ -134,7 +134,7 @@ class RejectedJob(Base):
 
     user_id = Column(Integer, nullable=False)
     job_id: Mapped[uuid.UUID] = Column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        UUID(as_uuid=True), ForeignKey("Jobs.id", ondelete="CASCADE"), nullable=False
     )
     timestamp = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
 
