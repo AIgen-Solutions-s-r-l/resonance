@@ -54,5 +54,7 @@ class JobMatch:
             "job_state": self.job_state,
             "apply_link": self.apply_link,
             "portal": self.portal,
-            "location": self.location
+            "location": self.location,
+            "root_fields": self.root_fields,
+            "sub_fields": self.sub_fields,
         }
