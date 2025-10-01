@@ -40,7 +40,7 @@ from loguru import logger
 from app.utils.db_utils import get_db_cursor
 from app.core.config import settings
 
-DEFAULT_BASE_URL = "https://laboroprodhot.z1.web.core.windows.net/logos"
+DEFAULT_BASE_URL = "https://static.laboro.co/logos"
 
 @dataclass
 class Args:
