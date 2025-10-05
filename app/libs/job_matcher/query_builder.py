@@ -149,81 +149,65 @@ class JobQueryBuilder:
     ) -> Tuple[List[str], List[Any]]:
         """
         Build location filter conditions.
-        
-        Args:
-            location: Location filter
-            
-        Returns:
-            Tuple of (where clauses list, query parameters list)
-        """
-        where_clauses = []
-        query_params = []
 
-        if len(locations) == 0:
+        Returns:
+            Tuple of (where_clauses, query_params)
+        """
+        where_clauses: List[str] = []
+        query_params: List[Any] = []
+
+        if not locations:
             return where_clauses, query_params
 
-        where_clause = """
-            (
-        """
-        
-        is_valid = False
-        for i, location in enumerate(locations):
-            if is_valid:
-                where_clause += ") OR ("
-            # Country filter - Using direct comparison without CASE statement
-            if location.country:
-                is_valid = True
-                if location.country == 'USA':
-                    # Handle USA/United States special case without parameters in the CASE
-                    where_clause += ("(co.country_name = 'United States')")
-                else:
-                    where_clause += "(co.country_name = %s)"
-                    query_params.append(location.country)
-            
-            # Check if we have both latitude and longitude
-            if location.latitude is not None and location.longitude is not None:
-                is_valid = True
-                if location.country:
-                    where_clause += " AND "
+        segments: List[str] = []
 
-                if location.radius_km is not None:
-                    # Use radius in km, will be multiplied by 1000 in the query
-                    radius_km = float(location.radius_km)
+        for loc in locations:
+            sub: List[str] = []
+
+            # Country
+            if getattr(loc, "country", None):
+                if loc.country == "USA":
+                    sub.append("(co.country_name = 'United States')")
                 else:
-                    # Use default radius from settings if no radius is specified
-                    radius_km = float(settings.default_geo_radius_meters / 1000)  # Convert from meters to km
-                
-                # Build the geo filter clause
-                where_clause += """
-                    (
+                    sub.append("(co.country_name = %s)")
+                    query_params.append(loc.country)
+
+            # Geo radius (preferred if coords provided)
+            has_latlon = getattr(loc, "latitude", None) is not None and getattr(loc, "longitude", None) is not None
+            if has_latlon:
+                radius_km = float(loc.radius_km) if getattr(loc, "radius_km", None) is not None \
+                            else float(self.settings.default_geo_radius_meters / 1000.0)
+
+                sub.append(
+                    """(
                         l.city = 'remote'
                         OR ST_DWithin(
                             ST_MakePoint(l.longitude::DOUBLE PRECISION, l.latitude::DOUBLE PRECISION)::geography,
                             ST_MakePoint(%s, %s)::geography,
                             %s * 1000
                         )
-                    )
-                    """
-                
-                query_params.extend([location.longitude, location.latitude, radius_km])
-                    
-            # City filter - only add if geo coordinates are NOT provided
-            elif location.city:
-                is_valid = True
-                if location.country:
-                    where_clause += " AND "
-                where_clause += "(l.city = %s OR l.city = 'remote')"
-                query_params.append(location.city)
-                
-        where_clause += ")"  
+                    )"""
+                )
+                query_params.extend([loc.longitude, loc.latitude, radius_km])
 
-        if not is_valid:
+            # City (only if no geo coords)
+            elif getattr(loc, "city", None):
+                sub.append("(l.city = %s OR l.city = 'remote')")
+                query_params.append(loc.city)
+
+            # If this location yielded any clause, wrap it and add as a segment
+            if sub:
+                segments.append("( " + " AND ".join(sub) + " )")
+
+        # If none of the locations produced a valid segment, return empty
+        if not segments:
             return [], []
 
-        where_clauses.append(where_clause)   
-
+        # Critically: wrap the entire OR block in one pair of parentheses
+        where_clauses.append("( " + " OR ".join(segments) + " )")
         return where_clauses, query_params
-    
+
+
     def _build_keyword_filters(
         self, keywords: List[str]
     ) -> Tuple[List[str], List[Any]]:
