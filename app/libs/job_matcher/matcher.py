@@ -86,6 +86,7 @@ class JobMatcher:
 
             user_id = -1
             if resume is None:
+                logger.info("RESUME MISSING: Must be a guest request")
                 resume_id = "guest"
                 applied_ids = None
                 cv_embedding = None
