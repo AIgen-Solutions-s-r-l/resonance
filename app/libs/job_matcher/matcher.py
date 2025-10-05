@@ -6,6 +6,7 @@ This module contains the main functionality for matching jobs with resumes.
 
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
+import uuid
 from app.log.logging import logger
 from time import time
 
@@ -86,6 +87,7 @@ class JobMatcher:
 
             user_id = -1
             if resume is None:
+                logger.info("RESUME MISSING: Must be a guest request")
                 resume_id = "guest"
                 applied_ids = None
                 cv_embedding = None
