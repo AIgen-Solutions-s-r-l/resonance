@@ -346,7 +346,7 @@ async def execute_vector_similarity_query(
 
     # Add blacklisted jobs filter if provided
     if blacklisted_job_ids:
-        all_where_clauses.append("j.id <> ALL(%s)") # Use ANY/ALL for list parameter
+        all_where_clauses.append("j.id <> ALL(%s::uuid[])")
         logger.info(f"Filtering out {len(blacklisted_job_ids)} applied job IDs.")
     else:
         logger.info("Applied job IDs list is empty, skipping filter.")

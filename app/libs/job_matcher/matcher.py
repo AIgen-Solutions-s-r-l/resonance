@@ -6,6 +6,7 @@ This module contains the main functionality for matching jobs with resumes.
 
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Tuple
+import uuid
 from app.log.logging import logger
 from time import time
 
@@ -195,6 +196,19 @@ class JobMatcher:
             else:
                 logger.info("PROCESSING: No job IDs to filter (neither applied nor cooled)")
 
+            normalized_blacklist = []
+            for x in filtered_job_ids:
+                try:
+                    normalized_blacklist.append(str(uuid.UUID(str(x))))
+                except Exception:
+                    logger.warning("Skipping non-UUID blacklisted id {val}", val=x)
+
+            logger.info(
+                "Using {count} blacklisted job ids for user {user_id}",
+                count=len(normalized_blacklist),
+                user_id=user_id,
+            )
+
             # Use the vector matcher to find matches, passing combined IDs for filtering
             logger.info("PROCESSING: Calling vector_matcher.get_top_jobs with filtering")
             job_matches = await vector_matcher.get_top_jobs(
@@ -206,7 +220,7 @@ class JobMatcher:
                 offset=(offset // settings.CACHE_SIZE) * settings.CACHE_SIZE,
                 limit=limit,
                 experience=experience,
-                blacklisted_job_ids=filtered_job_ids, # Pass the combined IDs
+                blacklisted_job_ids=normalized_blacklist, # Pass the combined IDs
                 is_remote_only=is_remote_only # Pass new parameter
             )
             
