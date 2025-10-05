@@ -54,9 +54,9 @@ async def test_execute_vector_similarity_query_with_applied_jobs():
     params = main_query_call.args[1]
 
     # Check if the correct WHERE clause for applied jobs is present
-    assert "j.id <> ALL(%s)" in query_string
+    assert "j.id <> ALL(%s::uuid[])" in query_string
     assert "j.id NOT IN %s" not in query_string # Ensure old clause is gone
-    assert "WHERE c.company_name = %s AND j.id <> ALL(%s)" in query_string # Check combined clause
+    assert "WHERE c.company_name = %s AND j.id <> ALL(%s::uuid[])" in query_string # Check combined clause
 
     # Check the parameters passed to execute
     # is_app=True adds user_id as last param
