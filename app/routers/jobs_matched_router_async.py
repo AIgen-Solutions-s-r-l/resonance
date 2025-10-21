@@ -582,7 +582,7 @@ async def job_search_legacy(
             city=city,
             latitude=latitude,
             longitude=longitude,
-            radius_km=radius_km if radius_km is not None else 20.0,
+            radius_km=radius_km if radius_km is not None else 30.0,
         )
 
         logger.info(
