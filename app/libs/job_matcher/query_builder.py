@@ -176,7 +176,7 @@ class JobQueryBuilder:
             has_latlon = getattr(loc, "latitude", None) is not None and getattr(loc, "longitude", None) is not None
             if has_latlon:
                 radius_km = float(loc.radius_km) if getattr(loc, "radius_km", None) is not None \
-                            else float(self.settings.default_geo_radius_meters / 1000.0)
+                            else float(settings.default_geo_radius_meters / 1000.0)
 
                 sub.append(
                     """(
