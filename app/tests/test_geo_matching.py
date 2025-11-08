@@ -41,11 +41,11 @@ class TestGeoMatching:
 
 
     def test_default_radius_in_settings(self):
-        """Test that the default radius in settings is 50 km."""
+        """Test that the default radius in settings is 30 km."""
         from app.core.config import settings
         
-        # Verify the default radius is 50000 meters (50 km)
-        assert settings.default_geo_radius_meters == 50000
+        # Verify the default radius is 30000 meters (30 km)
+        assert settings.default_geo_radius_meters == 30000
 
         
     def test_geo_coordinates_prioritized_over_city(self, query_builder):
