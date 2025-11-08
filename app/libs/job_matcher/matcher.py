@@ -135,7 +135,7 @@ class JobMatcher:
                     try:
                         async with get_db_cursor("default") as cursor:
                             rejected_jobs = await get_rejected_jobs(cursor, user_id) # type: ignore
-                            rejected_ids = [int(row.get("id")) for row in rejected_jobs if "id" in row] # type: ignore
+                            rejected_ids = [int(row.get("job_id")) for row in rejected_jobs if "job_id" in row] # type: ignore
                     except Exception as e:
                         logger.error(f"Error fetching rejected job IDs for cache key: {e}")
                         rejected_ids = None

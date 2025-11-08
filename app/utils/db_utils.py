@@ -508,7 +508,7 @@ async def get_rejected_jobs(
     cursor: psycopg.AsyncCursor,
     user_id: int
 ) -> List[Dict[str, Any]]:
-    query = """SELECT rj.id FROM "rejected_jobs" AS rj WHERE rj.user_id = %s)"""
+    query = """SELECT rj.job_id AS job_id FROM "rejected_jobs" AS rj WHERE rj.user_id = %s"""
     await cursor.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED")
     await cursor.execute("SET LOCAL statement_timeout = '200s'")
     await cursor.execute("SET LOCAL enable_seqscan TO OFF")
