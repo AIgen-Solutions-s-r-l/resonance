@@ -315,8 +315,8 @@ async def execute_vector_similarity_query(
     query_params: List[Any],
     limit: int = 25,
     offset: int = 0,
-    blacklisted_job_ids: Optional[List[int]] = None,
-    is_app: bool = True
+    blacklisted_job_ids: Optional[List[int]] = None
+    #is_app: bool = True
 ) -> List[Dict[str, Any]]:
     """
     Execute an optimized vector similarity query.
@@ -351,8 +351,8 @@ async def execute_vector_similarity_query(
     else:
         logger.info("Applied job IDs list is empty, skipping filter.")
 
-    if is_app:
-        all_where_clauses.append("NOT EXISTS (SELECT 1 FROM \"rejected_jobs\" AS rj WHERE rj.job_id = j.id AND rj.user_id = %s)")
+    #if is_app:
+    all_where_clauses.append("NOT EXISTS (SELECT 1 FROM \"rejected_jobs\" AS rj WHERE rj.job_id = j.id AND rj.user_id = %s)")
 
     # Construct the final WHERE string
     where_sql = ""
@@ -427,8 +427,8 @@ async def execute_vector_similarity_query(
     if blacklisted_job_ids: # Check original list, not the tuple
         sql_params.append(blacklisted_job_ids) # Append the list directly
 
-    if is_app:
-        sql_params.append(user_id)
+    #if is_app:
+    sql_params.append(user_id)
 
     # Add limit and offset
     sql_params.append(limit)
