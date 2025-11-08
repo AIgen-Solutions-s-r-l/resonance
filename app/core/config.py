@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Any, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     # Service settings
     service_name: str = os.getenv("SERVICE_NAME", "matching_service")
     environment: str = os.getenv("ENVIRONMENT", "development")
-    debug: bool = os.getenv("DEBUG", "True").lower() == "true"
+    debug: Any = (os.getenv("DEBUG", "True").lower() == "true")
 
     # Logging settings
     log_level: str = os.getenv("LOG_LEVEL", "DEBUG")
@@ -34,8 +34,8 @@ class Settings(BaseSettings):
     
     # Redis settings
     redis_host: str = os.getenv("REDIS_HOST", "localhost")
-    redis_port: int = os.getenv("REDIS_PORT", 6379)
-    redis_db: int = os.getenv("REDIS_DB", 0)
+    redis_port: int = int(os.getenv("REDIS_PORT", 6379))
+    redis_db: int = int(os.getenv("REDIS_DB", 0))
     redis_password: str = os.getenv("REDIS_PASSWORD", "")
 
     # RabbitMQ settings

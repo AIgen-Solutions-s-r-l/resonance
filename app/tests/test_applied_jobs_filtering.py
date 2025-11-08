@@ -44,66 +44,70 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
     with patch.object(applied_jobs_service, "get_applied_jobs", new_callable=AsyncMock) as mock_get_applied_jobs:
         mock_get_applied_jobs.return_value = mock_applied_job_ids
 
-        # Mock the vector matcher to return the *already filtered* results
-        with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs",
-                   new_callable=AsyncMock) as mock_get_jobs:
-            mock_get_jobs.return_value = mock_filtered_job_matches
-            
-            with patch("app.libs.job_matcher.cache.cache.get", 
-                      new_callable=AsyncMock) as mock_cache_get:
-                mock_cache_get.return_value = None  # Force a cache miss
+        with patch("app.utils.db_utils.get_rejected_jobs", new_callable=AsyncMock) as mock_get_rejected:
+
+            mock_get_rejected.return_value = []
+            # Mock the vector matcher to return the *already filtered* results
+            with patch("app.libs.job_matcher.vector_matcher.vector_matcher.get_top_jobs",
+                    new_callable=AsyncMock) as mock_get_jobs:
+                mock_get_jobs.return_value = mock_filtered_job_matches
                 
-                with patch("app.libs.job_matcher.cache.cache.set", 
-                          new_callable=AsyncMock) as mock_cache_set:
-                    with patch("app.libs.job_matcher.cache.cache.generate_key", 
-                               new_callable=AsyncMock) as mock_generate_key:
-                        mock_generate_key.return_value = "test-cache-key"
-                        
-                        # Create a proper async context manager mock for db_cursor
-                        class MockDBCursor:
-                            async def __aenter__(self):
-                                return AsyncMock()
-                            async def __aexit__(self, *args):
-                                pass
-                        
-                        # Apply the mock to prevent actual database connections
-                        monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
-                        
-                        try:
-                            # Initialize matcher and process job
-                            matcher = JobMatcher()
-                            result = await matcher.process_job(
-                                test_resume,
-                                use_cache=True
-                            )
+                with patch("app.libs.job_matcher.cache.cache.get", 
+                        new_callable=AsyncMock) as mock_cache_get:
+                    mock_cache_get.return_value = None  # Force a cache miss
+                    
+                    with patch("app.libs.job_matcher.cache.cache.set", 
+                            new_callable=AsyncMock) as mock_cache_set:
+                        with patch("app.libs.job_matcher.cache.cache.generate_key", 
+                                new_callable=AsyncMock) as mock_generate_key:
+                            mock_generate_key.return_value = "test-cache-key"
                             
-                            # Verify the result - should contain the pre-filtered jobs from the mock
-                            assert len(result["jobs"]) == 2, "Should return the 2 non-applied jobs"
-                            job_ids = [job["id"] for job in result["jobs"]]
-                            assert 2 in job_ids, "Non-applied job 2 should be present"
-                            assert 4 in job_ids, "Non-applied job 4 should be present"
+                            # Create a proper async context manager mock for db_cursor
+                            class MockDBCursor:
+                                async def __aenter__(self):
+                                    return AsyncMock()
+                                async def __aexit__(self, *args):
+                                    pass
                             
-                            # Verify that get_applied_job_ids was called with the correct user_id
-                            mock_get_applied_jobs.assert_called_once_with(user_id_to_test)
+                            # Apply the mock to prevent actual database connections
+                            monkeypatch.setattr("app.utils.db_utils.get_db_cursor", lambda: MockDBCursor())
+                            monkeypatch.setattr("app.libs.job_matcher.matcher.get_db_cursor", lambda: MockDBCursor())
+                            
+                            try:
+                                # Initialize matcher and process job
+                                matcher = JobMatcher()
+                                result = await matcher.process_job(
+                                    test_resume,
+                                    use_cache=True
+                                )
+                                
+                                # Verify the result - should contain the pre-filtered jobs from the mock
+                                assert len(result["jobs"]) == 2, "Should return the 2 non-applied jobs"
+                                job_ids = [job["id"] for job in result["jobs"]]
+                                assert 2 in job_ids, "Non-applied job 2 should be present"
+                                assert 4 in job_ids, "Non-applied job 4 should be present"
+                                
+                                # Verify that get_applied_job_ids was called with the correct user_id
+                                mock_get_applied_jobs.assert_called_once_with(user_id_to_test)
 
-                            # Verify that get_top_jobs was called with applied_job_ids
-                            mock_get_jobs.assert_called_once()
-                            call_args, call_kwargs = mock_get_jobs.call_args
-                            assert call_kwargs.get("blacklisted_job_ids") == mock_applied_job_ids, \
-                                "get_top_jobs should be called with applied_job_ids"
+                                # Verify that get_top_jobs was called with applied_job_ids
+                                mock_get_jobs.assert_called_once()
+                                call_args, call_kwargs = mock_get_jobs.call_args
+                                assert call_kwargs.get("blacklisted_job_ids") == mock_applied_job_ids, \
+                                    "get_top_jobs should be called with applied_job_ids"
 
-                            # Verify cache stores the results returned by the mock (already filtered)
-                            mock_cache_set.assert_called_once()
-                            cache_key_arg, cache_data_arg = mock_cache_set.call_args[0]
-                            assert cache_key_arg == "test-cache-key"
-                            assert len(cache_data_arg["jobs"]) == 2, "Cache should store the 2 returned jobs"
-                            assert cache_data_arg["jobs"][0]["id"] == 2
-                            assert cache_data_arg["jobs"][1]["id"] == 4
-                        finally:
-                            # Ensure database connections are cleaned up
+                                # Verify cache stores the results returned by the mock (already filtered)
+                                mock_cache_set.assert_called_once()
+                                cache_key_arg, cache_data_arg = mock_cache_set.call_args[0]
+                                assert cache_key_arg == "test-cache-key"
+                                assert len(cache_data_arg["jobs"]) == 2, "Cache should store the 2 returned jobs"
+                                assert cache_data_arg["jobs"][0]["id"] == 2
+                                assert cache_data_arg["jobs"][1]["id"] == 4
+                            finally:
+                                # Ensure database connections are cleaned up
+                                await close_all_connection_pools()
+
+                            # Removed test_filter_applied_jobs_from_cache as the filtering logic
+                            # in the cache hit path of matcher.py was removed. Filtering now happens
+                            # before the DB query / cache check.
                             await close_all_connection_pools()
-
-                        # Removed test_filter_applied_jobs_from_cache as the filtering logic
-                        # in the cache hit path of matcher.py was removed. Filtering now happens
-                        # before the DB query / cache check.
-                        await close_all_connection_pools()

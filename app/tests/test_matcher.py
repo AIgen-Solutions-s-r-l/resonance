@@ -42,7 +42,14 @@ async def test_process_job_with_experience_filter(
     mock_get_cooled_jobs,
     mock_get_applied_jobs,
     job_matcher,
+    monkeypatch
 ):
+    
+    monkeypatch.setattr("app.libs.job_matcher.matcher.get_db_cursor",mock_get_db_cursor)
+    mock_get_rejected_jobs = AsyncMock()
+    monkeypatch.setattr("app.utils.db_utils.get_rejected_jobs", mock_get_rejected_jobs)
+    mock_get_rejected_jobs.return_value = []
+
     resume = {"user_id": "123", "vector": [0.1] * 1024, "_id": "test_resume_id"}
     experience = ["Mid-level", "Executive-level"]
 
@@ -100,6 +107,7 @@ async def test_process_job_with_experience_filter(
             experience=experience,
             applied_job_ids=[],
             cooled_job_ids=[],
+            rejected_job_ids=[],
             is_remote_only=None,
         )
         mock_build_experience_filters.assert_called_once()
@@ -119,12 +127,18 @@ async def test_vector_matcher_with_experience_filter(
     mock_exec_vector_query,         # SimilaritySearcher._execute_vector_query
     mock_build_filter_conditions,
     job_matcher,
+    monkeypatch
 ):
     mock_cursor = AsyncMock()
     mock_ctx = AsyncMock()
     mock_ctx.__aenter__.return_value = mock_cursor
     mock_ctx.__aexit__.return_value = None
     mock_get_db_cursor.return_value = mock_ctx
+
+    monkeypatch.setattr("app.libs.job_matcher.matcher.get_db_cursor",mock_get_db_cursor)
+    mock_get_rejected_jobs = AsyncMock()
+    monkeypatch.setattr("app.utils.db_utils.get_rejected_jobs", mock_get_rejected_jobs)
+    mock_get_rejected_jobs.return_value = []
 
     mock_build_filter_conditions.return_value = (
         [], ["embedding IS NOT NULL", "(j.experience = %s)"], ["Mid-level"]
@@ -271,7 +285,13 @@ async def test_experience_filter_with_cache(
     mock_get_applied_jobs,
     mock_get_cooled_jobs,
     job_matcher,
+    monkeypatch
 ):
+    monkeypatch.setattr("app.libs.job_matcher.matcher.get_db_cursor",mock_get_db_cursor)
+    mock_get_rejected_jobs = AsyncMock()
+    monkeypatch.setattr("app.utils.db_utils.get_rejected_jobs", mock_get_rejected_jobs)
+    mock_get_rejected_jobs.return_value = []
+
     resume = {"user_id": "123", "vector": [0.1] * 1024, "_id": "test_resume_id"}
     experience_1 = ["Mid-level"]
     experience_2 = ["Entry-level"]
@@ -314,6 +334,7 @@ async def test_experience_filter_with_cache(
             keywords=None,
             experience=experience_1,
             applied_job_ids=[],
+            rejected_job_ids=[],
             cooled_job_ids=[],
             is_remote_only=None,
         )
@@ -337,6 +358,7 @@ async def test_experience_filter_with_cache(
         fields=None,
         experience=experience_2,
         applied_job_ids=[],
+        rejected_job_ids=[],
         cooled_job_ids=[],
         is_remote_only=None,
     )
@@ -363,7 +385,13 @@ async def test_experience_filter_with_cache_hit(
     mock_get_applied_jobs,
     mock_get_cooled_jobs,
     job_matcher,
+    monkeypatch
 ):
+    monkeypatch.setattr("app.libs.job_matcher.matcher.get_db_cursor",mock_get_db_cursor)
+    mock_get_rejected_jobs = AsyncMock()
+    monkeypatch.setattr("app.utils.db_utils.get_rejected_jobs", mock_get_rejected_jobs)
+    mock_get_rejected_jobs.return_value = []
+
     resume = {"user_id": "123", "vector": [0.1] * 1024, "_id": "test_resume_id"}
     experience = ["Mid-level"]
 
@@ -403,6 +431,7 @@ async def test_experience_filter_with_cache_hit(
         experience=experience,
         applied_job_ids=[],
         cooled_job_ids=[],
+        rejected_job_ids=[],
         is_remote_only=None,
     )
     assert result == cached_result

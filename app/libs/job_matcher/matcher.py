@@ -22,6 +22,7 @@ from app.libs.job_matcher.query_builder import query_builder
 from app.services.applied_jobs_service import applied_jobs_service
 from app.services.cooled_jobs_service import cooled_jobs_service
 from app.core.mongodb import database
+from app.utils.db_utils import get_db_cursor, get_rejected_jobs
 # import spacy
 
 # spacy_nlp = spacy.load("en_core_web_sm")
@@ -90,6 +91,7 @@ class JobMatcher:
                 logger.info("RESUME MISSING: Must be a guest request")
                 resume_id = "guest"
                 applied_ids = None
+                rejected_ids = None
                 cv_embedding = None
                 
             else:
@@ -112,6 +114,7 @@ class JobMatcher:
             
                 # Fetch applied job IDs for the user *before* cache check
                 applied_ids: Optional[List[str]] = None
+                rejected_ids: Optional[List[str]] = None
                 if "user_id" in resume:
                     user_id = resume["user_id"]
                     logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
@@ -128,6 +131,14 @@ class JobMatcher:
                     except Exception as e:
                         logger.error(f"Error fetching applied job IDs for cache key: {e}")
                         applied_ids = None # Proceed without filtering on error
+
+                    try:
+                        async with get_db_cursor("default") as cursor:
+                            rejected_jobs = await get_rejected_jobs(cursor, user_id) # type: ignore
+                            rejected_ids = [int(row.get("id")) for row in rejected_jobs if "id" in row] # type: ignore
+                    except Exception as e:
+                        logger.error(f"Error fetching rejected job IDs for cache key: {e}")
+                        rejected_ids = None
                 else:
                     logger.info("PROCESSING: No user_id in resume, cannot fetch applied jobs for cache key.")
                 
@@ -163,6 +174,7 @@ class JobMatcher:
                     fields=fields,
                     experience=experience,
                     applied_job_ids=applied_ids,
+                    rejected_job_ids=rejected_ids,
                     cooled_job_ids=cooled_ids,
                     is_remote_only=is_remote_only # Include in cache key
                 )
@@ -237,6 +249,7 @@ class JobMatcher:
                     fields=fields,
                     experience=experience,
                     applied_job_ids=applied_ids,
+                    rejected_job_ids=rejected_ids,
                     cooled_job_ids=cooled_ids,
                     is_remote_only=is_remote_only # Include in cache key
                 )
