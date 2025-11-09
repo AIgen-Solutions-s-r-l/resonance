@@ -193,15 +193,18 @@ class JobMatcher:
                     logger.info("Filtering not desired ids", user_id=user_id, ids=undesired_ids)
 
                     cached_size = len(cached_results.get('jobs', []))
+                    logger.info(f"RESULTS: job matches count from cache (pre-filter): {cached_size}")
+                                
                     cached_results = {
                         "jobs": [
                             job for job in cached_results["jobs"] if job.get("id") not in undesired_ids
                         ]
                     }
+                    logger.info(cached_results["jobs"][0])
 
                     new_cached_size = len(cached_results.get('jobs', []))
                     # Post-cache filtering is removed. Cache key now includes applied_ids hash.
-                    logger.info(f"RESULTS: Final job matches count from cache (key includes applied_ids): {new_cached_size}")
+                    logger.info(f"RESULTS: Final job matches count from cache: {new_cached_size}")
                     
                     if new_cached_size >= 25 or cached_size < 50: # either the query was terrible or we have a cache hit
                         return cached_results
