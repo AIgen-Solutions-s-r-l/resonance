@@ -114,7 +114,7 @@ class JobMatcher:
             
                 # Fetch applied job IDs for the user *before* cache check
                 applied_ids: Optional[List[str]] = None
-                rejected_ids: Optional[List[str]] = None
+                rejected_ids: Optional[List[uuid.UUID]] = None
                 if "user_id" in resume:
                     user_id = resume["user_id"]
                     logger.info(f"PROCESSING: Fetching applied job IDs for user: {user_id}")
@@ -189,14 +189,14 @@ class JobMatcher:
                         elapsed_time=f"{time() - start_time:.6f}s"
                     )
 
-                    undesired_ids = set((applied_ids or []) + (rejected_ids or []) + (cooled_ids or []))
+                    undesired_ids = set(([uuid.UUID(x) for x in applied_ids or []]) + (rejected_ids or []) + ([uuid.UUID(x) for x in cooled_ids or []]))
                     logger.info("Filtering not desired ids", user_id=user_id, ids=undesired_ids)
 
                     cached_size = len(cached_results.get('jobs', []))
                                 
                     cached_results = {
                         "jobs": [
-                            job for job in cached_results["jobs"] if job.get("id") not in undesired_ids
+                            job for job in cached_results["jobs"] if uuid.UUID(job.get("id")) not in undesired_ids
                         ]
                     }
 
