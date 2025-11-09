@@ -107,9 +107,6 @@ async def test_process_job_with_experience_filter(
             fields=None,
             keywords=None,
             experience=experience,
-            applied_job_ids=[],
-            rejected_job_ids=[],
-            cooled_job_ids=[],
             is_remote_only=None,
         )
         mock_build_experience_filters.assert_called_once()
@@ -348,9 +345,6 @@ async def test_experience_filter_with_cache(
             fields=None,
             keywords=None,
             experience=experience_1,
-            applied_job_ids=[],
-            rejected_job_ids=[],
-            cooled_job_ids=[],
             is_remote_only=None,
         )
 
@@ -374,9 +368,6 @@ async def test_experience_filter_with_cache(
         keywords=None,
         fields=None,
         experience=experience_2,
-        applied_job_ids=[],
-        cooled_job_ids=[],
-        rejected_job_ids=[],
         is_remote_only=None,
     )
 
@@ -450,9 +441,6 @@ async def test_experience_filter_with_cache_hit(
         keywords=None,
         fields=None,
         experience=experience,
-        applied_job_ids=[],
-        cooled_job_ids=[],
-        rejected_job_ids=[],
         is_remote_only=None,
     )
 

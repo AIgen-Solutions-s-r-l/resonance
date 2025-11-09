@@ -55,7 +55,7 @@ def sort_jobs(
     
     if sort_type == SortType.DATE:
 
-        def sorting_algo(job: dict) -> datetime:
+        def sorting_algo(job: dict) -> float:
             posted_date = job.get('posted_date', datetime(1999, 1, 1))
             if isinstance(posted_date, str):
                 posted_date = datetime.fromisoformat(posted_date)
@@ -83,6 +83,15 @@ def sort_jobs(
             return score + 100 * (-(1.03)**delta.days + 1)
 
         jobs.sort(key = recommend_algo, reverse = True)
+
+    elif sort_type == SortType.SCORE:
+
+        def sorting_algo(job: dict) -> float:
+            score = job.get('score') or 0.0
+            return score
+        
+        jobs.sort(key = sorting_algo, reverse = True)
+
 
 
 # TODO: temporary approach

@@ -173,9 +173,9 @@ class JobMatcher:
                     keywords=keywords,
                     fields=fields,
                     experience=experience,
-                    applied_job_ids=applied_ids,
-                    rejected_job_ids=rejected_ids,
-                    cooled_job_ids=cooled_ids,
+                    #applied_job_ids=applied_ids,
+                    #rejected_job_ids=rejected_ids,
+                    #cooled_job_ids=cooled_ids,
                     is_remote_only=is_remote_only # Include in cache key
                 )
                 logger.info(f"CACHE CHECK: Generated cache key: {cache_key}")
@@ -189,10 +189,24 @@ class JobMatcher:
                         elapsed_time=f"{time() - start_time:.6f}s"
                     )
 
+                    undesired_ids = set((applied_ids or []) + (rejected_ids or []) + (cooled_ids or []))
+                    logger.info("Filtering not desired ids", user_id=user_id, ids=undesired_ids)
+
+                    cached_size = len(cached_results.get('jobs', []))
+                    cached_results = {
+                        "jobs": [
+                            job for job in cached_results["jobs"] if job.get("id") not in undesired_ids
+                        ]
+                    }
+
+                    new_cached_size = len(cached_results.get('jobs', []))
                     # Post-cache filtering is removed. Cache key now includes applied_ids hash.
-                    logger.info(f"RESULTS: Final job matches count from cache (key includes applied_ids): {len(cached_results.get('jobs', []))}")
+                    logger.info(f"RESULTS: Final job matches count from cache (key includes applied_ids): {new_cached_size}")
                     
-                    return cached_results
+                    if new_cached_size >= 25 or cached_size < 50: # either the query was terrible or we have a cache hit
+                        return cached_results
+                    else:
+                        logger.info("Too many cache elements are outdated, must rerun the query")
             
             logger.info("PROCESSING: No cache hit, proceeding with matching (and recording request)")
             
@@ -248,9 +262,9 @@ class JobMatcher:
                     keywords=keywords,
                     fields=fields,
                     experience=experience,
-                    applied_job_ids=applied_ids,
-                    rejected_job_ids=rejected_ids,
-                    cooled_job_ids=cooled_ids,
+                    #applied_job_ids=applied_ids,
+                    #rejected_job_ids=rejected_ids,
+                    #cooled_job_ids=cooled_ids,
                     is_remote_only=is_remote_only # Include in cache key
                 )
                 await cache.set(cache_key, job_results)

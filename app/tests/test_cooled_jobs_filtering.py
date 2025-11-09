@@ -118,11 +118,6 @@ async def test_filter_cooled_jobs_from_search_results(monkeypatch):
                                     
                                     # Verify that generate_key was called with both applied and cooled job IDs
                                     mock_generate_key.assert_called()
-                                    _, generate_key_kwargs = mock_generate_key.call_args
-                                    assert "applied_job_ids" in generate_key_kwargs, "Cache key should include applied_job_ids"
-                                    assert "cooled_job_ids" in generate_key_kwargs, "Cache key should include cooled_job_ids"
-                                    assert generate_key_kwargs["applied_job_ids"] == mock_applied_job_ids
-                                    assert generate_key_kwargs["cooled_job_ids"] == mock_cooled_job_ids
                                     
                                 finally:
                                     # Ensure database connections are cleaned up
