@@ -193,10 +193,16 @@ class JobMatcher:
                     logger.info("Filtering not desired ids", user_id=user_id, ids=undesired_ids)
 
                     cached_size = len(cached_results.get('jobs', []))
+
+                    def to_UID(x):
+                        if isinstance(x, int):
+                            return uuid.UUID(int=x)
+                        else:
+                            return uuid.UUID(x)
                                 
                     cached_results = {
                         "jobs": [
-                            job for job in cached_results["jobs"] if uuid.UUID(job.get("id")) not in undesired_ids
+                            job for job in cached_results["jobs"] if to_UID(job.get("id")) not in undesired_ids
                         ]
                     }
 

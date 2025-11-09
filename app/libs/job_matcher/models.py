@@ -13,7 +13,7 @@ from datetime import datetime
 class JobMatch:
     """Data class for job matching results, aligned with JobSchema."""
     
-    id: int
+    id: str
     title: str
     description: Optional[str] = None
     workplace_type: Optional[str] = None

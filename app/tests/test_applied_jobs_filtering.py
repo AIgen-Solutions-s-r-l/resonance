@@ -23,8 +23,8 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
     # Setup test data - mocked job matches (use integer IDs)
     # These represent the results *after* filtering would have happened in the DB
     mock_filtered_job_matches = [
-        JobMatch(id=2, title="Data Scientist", score=0.90),
-        JobMatch(id=4, title="UX Designer", score=0.80),
+        JobMatch(id="aaaaaaaaaaaaaaa", title="Data Scientist", score=0.90),
+        JobMatch(id="aaaaaaaaaaaaaab", title="UX Designer", score=0.80),
     ]
     user_id_to_test = 123
     
@@ -84,8 +84,8 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                                 # Verify the result - should contain the pre-filtered jobs from the mock
                                 assert len(result["jobs"]) == 2, "Should return the 2 non-applied jobs"
                                 job_ids = [job["id"] for job in result["jobs"]]
-                                assert 2 in job_ids, "Non-applied job 2 should be present"
-                                assert 4 in job_ids, "Non-applied job 4 should be present"
+                                assert "aaaaaaaaaaaaaaa" in job_ids, "Non-applied job 'aaaaaaaaaaaaaaa' should be present"
+                                assert "aaaaaaaaaaaaaab" in job_ids, "Non-applied job 'aaaaaaaaaaaaaab' should be present"
                                 
                                 # Verify that get_applied_job_ids was called with the correct user_id
                                 mock_get_applied_jobs.assert_called_once_with(user_id_to_test)
@@ -101,8 +101,8 @@ async def test_filter_applied_jobs_from_search_results(monkeypatch):
                                 cache_key_arg, cache_data_arg = mock_cache_set.call_args[0]
                                 assert cache_key_arg == "test-cache-key"
                                 assert len(cache_data_arg["jobs"]) == 2, "Cache should store the 2 returned jobs"
-                                assert cache_data_arg["jobs"][0]["id"] == 2
-                                assert cache_data_arg["jobs"][1]["id"] == 4
+                                assert cache_data_arg["jobs"][0]["id"] == "aaaaaaaaaaaaaaa"
+                                assert cache_data_arg["jobs"][1]["id"] == "aaaaaaaaaaaaaab"
                             finally:
                                 # Ensure database connections are cleaned up
                                 await close_all_connection_pools()

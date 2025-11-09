@@ -65,7 +65,7 @@ async def test_process_job_with_experience_filter(
     # Return JobMatch objects so .to_dict() works inside process_job
     mock_exec_vector.return_value = [
         JobMatch(
-            id=1,
+            id="aaaaaaaaaaaaaaa",
             title="Senior Software Engineer",
             description="Job description",
             workplace_type="office",
@@ -143,7 +143,7 @@ async def test_vector_matcher_with_experience_filter(
 
     mock_exec_vector_query.return_value = [
         JobMatch(
-            id=1,
+            id="aaaaaaaaaaaaaaa",
             title="Mid Level Developer",
             description="Job description",
             workplace_type="office",
@@ -220,7 +220,7 @@ async def test_match_jobs_with_resume_integration(
     mock_get_cooled_jobs.return_value = []
     mock_get_top_jobs.return_value = [
         JobMatch(
-            id=1,
+            id="aaaaaaaaaaaaaaa",
             title="Entry Level Developer",
             description="Job description",
             workplace_type="office",
@@ -300,7 +300,7 @@ async def test_experience_filter_with_cache(
 
     mock_exec_vector.return_value = [
         JobMatch(
-            id=1,
+            id="aaaaaaaaaaaaaaaa",
             title="Mid Level Developer",
             description="Job description",
             workplace_type="office",
@@ -393,7 +393,7 @@ async def test_experience_filter_with_cache_hit(
     cached_result = {
         "jobs": [
             {
-                "id": "1",
+                "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 "title": "Mid Level Developer",
                 "description": "Job description",
                 "workplace_type": "office",
