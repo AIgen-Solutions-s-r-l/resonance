@@ -135,7 +135,7 @@ class JobMatcher:
                     try:
                         async with get_db_cursor("default") as cursor:
                             rejected_jobs = await get_rejected_jobs(cursor, user_id) # type: ignore
-                            rejected_ids = [int(row.get("job_id")) for row in rejected_jobs if "job_id" in row] # type: ignore
+                            rejected_ids = [row.get("job_id") for row in rejected_jobs if "job_id" in row] # type: ignore
                     except Exception as e:
                         logger.error(f"Error fetching rejected job IDs for cache key: {e}")
                         rejected_ids = None
@@ -193,14 +193,12 @@ class JobMatcher:
                     logger.info("Filtering not desired ids", user_id=user_id, ids=undesired_ids)
 
                     cached_size = len(cached_results.get('jobs', []))
-                    logger.info(f"RESULTS: job matches count from cache (pre-filter): {cached_size}")
                                 
                     cached_results = {
                         "jobs": [
                             job for job in cached_results["jobs"] if job.get("id") not in undesired_ids
                         ]
                     }
-                    logger.info(cached_results["jobs"][0])
 
                     new_cached_size = len(cached_results.get('jobs', []))
                     # Post-cache filtering is removed. Cache key now includes applied_ids hash.
