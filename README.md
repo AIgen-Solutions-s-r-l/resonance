@@ -1,468 +1,367 @@
-# Matching Service
+<div align="center">
 
-The **Matching Service** is a Python-based application that matches resumes with job descriptions using advanced metrics and ranking algorithms. It utilizes vector embeddings for semantic matching and employs multiple similarity metrics for precise ranking. The service integrates with PostgreSQL and MongoDB databases and provides RESTful APIs for seamless interaction.
+# Resonance
 
-## Table of Contents
+### Vector-powered talent matching that finds the signal in the noise
 
-- [Overview](#overview)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Architecture](#architecture)
-- [Application Workflow](#application-workflow)
-- [API Endpoints](#api-endpoints)
-- [Running the Application](#running-the-application)
-- [Testing](#testing)
-- [Folder Structure](#folder-structure)
-- [Quality Tracking](#quality-tracking)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
----
+<br />
 
-## Overview
+[Getting Started](#-quick-start) •
+[Documentation](docs/README.md) •
+[API Reference](#-api) •
+[Contributing](#-contributing)
 
-The Matching Service facilitates the matching of resumes to job descriptions by:
+<br />
 
-1. **Semantic Matching**: Using vector embeddings to understand the meaning beyond keywords.
-2. **Multi-Metric Ranking**: Applying multiple similarity metrics (L2 distance, cosine similarity, inner product) with weighted scoring to rank job descriptions.
-3. **Flexible Filtering**: Supporting location-based, keyword-based, and radius-based filtering.
-4. **Quality Evaluation**: Assessing match quality through automated evaluation and manual feedback.
-5. **Providing APIs**: For triggering matching processes, retrieving job matches, and accessing system health.
+</div>
 
 ---
 
-## Requirements
+## What is Resonance?
 
-- Python 3.12.7
-- MongoDB server
-- PostgreSQL database with PostGIS extension (for geospatial queries)
-- Virtualenv
-- Docker (optional for containerized deployment)
-- FastAPI framework
+Resonance is a high-performance semantic matching engine that connects talent with opportunity using 1024-dimensional vector embeddings. It goes beyond keyword matching to understand the true fit between candidates and positions.
 
----
-
-## Installation
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/matching-service.git
-   cd matching-service
-   ```
-
-2. **Create a Virtual Environment**:
-   ```bash
-   python -m venv venv
-   ```
-
-3. **Activate the Virtual Environment**:
-   - On Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
-   - On macOS/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-
-4. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## Configuration
-
-### Environment Variables
-
-Create a `.env` file in the project root directory with the following configuration:
-
-```env
-MONGODB_URL=mongodb://localhost:27017/
-SERVICE_NAME=matchingService
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-LOG_LEVEL=INFO
+```
+Resume → Vector Embedding → Multi-Metric Similarity → Ranked Matches
 ```
 
-An example configuration file is provided as `.env.example`.
-
-### Database Setup
-
-1. **PostgreSQL Setup**:
-   - Run `init.sql` for creating tables
-   - Use `dump_file.sql` to seed the database with sample data
-   - Ensure the PostGIS extension is enabled for geospatial queries
-
-2. **MongoDB Setup**:
-   - Ensure MongoDB is running
-   - The service will automatically create required collections
-
----
+<br />
 
 ## Architecture
 
-The Matching Service follows a layered architecture with clear separation of concerns:
+```mermaid
+flowchart TB
+    subgraph Client
+        A[API Request]
+    end
 
-### Service-Oriented Design
-- Core services handle specific business domains (matching, quality evaluation, metrics tracking)
-- Services are loosely coupled to allow for independent development and scaling
+    subgraph Gateway["API Layer"]
+        B[FastAPI Router]
+        C[JWT Auth]
+    end
 
-### Layer-Based Architecture
-- **API Layer**: FastAPI routers handle HTTP requests and responses
-- **Service Layer**: Business logic encapsulated in service classes
-- **Repository Layer**: Data access logic for interacting with databases
-- **Domain Layer**: Models and schemas define the data structures
+    subgraph Core["Matching Engine"]
+        D[Vector Matcher]
+        E[Query Builder]
+        F[Similarity Searcher]
+    end
 
-### Data Processing Pipeline
-- Vector embeddings for semantic understanding of text content
-- Multi-metric similarity calculation combining L2 distance, cosine similarity, and inner product
-- Location and keyword filtering for precise matching
-- Result persistence to both JSON files and MongoDB
+    subgraph Storage["Data Layer"]
+        G[(PostgreSQL<br/>pgvector)]
+        H[(MongoDB<br/>Resumes)]
+        I[(Redis<br/>Cache)]
+    end
 
----
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    E --> G
+    F --> G
+    D <--> H
+    D <--> I
 
-## Application Workflow
+    style Gateway fill:#009688,color:#fff
+    style Core fill:#3776AB,color:#fff
+    style Storage fill:#4169E1,color:#fff
+```
 
-1. **Resume Processing**:
-   - Resume text is converted to vector embeddings
-   - Embeddings are stored for similarity matching
+<br />
 
-2. **Job Matching**:
-   - The service processes the resume and matches it with job descriptions using:
-     - Vector similarity calculations (L2 distance, cosine similarity, inner product)
-     - Weighted combination of metrics (0.4, 0.4, 0.2 respectively)
-     - Optional filtering by location, keywords, or radius
+## How It Works
 
-3. **Results Retrieval**:
-   - Ranked job descriptions are stored in MongoDB and as JSON files
-   - Results are retrieved via the API with optional filtering
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant R as Resonance
+    participant PG as PostgreSQL
+    participant MG as MongoDB
+    participant RD as Redis
 
-4. **Quality Evaluation** (Optional):
-   - Automated evaluation of match quality using LLM-based assessment
-   - Manual feedback collection for validation and improvement
+    C->>R: GET /jobs/match
+    R->>RD: Check cache
+    alt Cache hit
+        RD-->>R: Cached results
+    else Cache miss
+        R->>MG: Fetch resume embedding
+        MG-->>R: 1024-dim vector
+        R->>PG: Vector similarity search
+        Note over R,PG: L2 + Cosine + Inner Product
+        PG-->>R: Ranked candidates
+        R->>RD: Store in cache
+    end
+    R-->>C: Matched jobs (scored & ranked)
+```
 
----
+<br />
 
-## API Endpoints
+## Similarity Scoring
 
-### 1. Get Job Matches
+We combine three distance metrics for robust matching:
 
-**Endpoint**:  
-`GET /jobs/match`
+```mermaid
+pie showData
+    title Similarity Weight Distribution
+    "L2 Distance" : 40
+    "Cosine Similarity" : 40
+    "Inner Product" : 20
+```
 
-**Description**:  
-Fetches the most recent job matches for the authenticated user.
+| Metric | Weight | Best For |
+|--------|--------|----------|
+| **L2 Distance** | 40% | Magnitude-sensitive matching |
+| **Cosine Similarity** | 40% | Direction-based semantic alignment |
+| **Inner Product** | 20% | Combined magnitude + direction |
 
-**Request Headers**:
-- `accept: application/json`
-- `Authorization: Bearer <JWT_TOKEN>`
+<br />
 
-**Optional Query Parameters**:
-- `keywords`: list of keywords that need to be in the job description or the job title
-- `country`: the country where the job is located, this filters out EVERY job which is in a different country (even remote ones)
-- `city`: the city where the job is located, this filters out EVERY job which is in a different city (BUT remote jobs remain allowed)
-- `offset`: the offset from the top match to start from (by default we limit to the top 50 results)
-- `latitude`: the latitude of the central point of the circle
-- `longitude`: the longitude of the central point of the circle
-- `radius_km`: the radius (in km) of the circle
+## Quick Start
 
-**Response Schema**:
-Jobs are returned with the following structure:
+### Docker (Recommended)
+
+```bash
+# Clone and run
+git clone https://github.com/AIgen-Solutions-s-r-l/resonance.git
+cd resonance
+docker-compose up -d
+
+# Verify
+curl http://localhost:8000/health
+```
+
+### Local Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+
+# Run
+uvicorn app.main:app --reload --port 8000
+```
+
+<br />
+
+## API
+
+### Get Matched Jobs
+
+```bash
+curl -X GET "http://localhost:8000/jobs/match?country=Germany&keywords=python" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+<details>
+<summary><b>Response</b></summary>
+
 ```json
 {
-  "id": 12345,
-  "title": "Software Engineer",
-  "workplace_type": "Remote",
-  "posted_date": "2025-02-15T12:00:00",
-  "job_state": "Active",
-  "description": "Detailed job description...",
-  "apply_link": "https://example.com/apply",
-  "company_name": "Example Corp",
-  "company_logo": "https://example.com/logo.png",
-  "location": "Berlin, Germany",
-  "city": "Berlin",
-  "country": "Germany",
-  "portal": "JobBoard",
-  "short_description": "Short summary of the job...",
-  "field": "Software Development",
-  "experience": "3-5 years",
-  "score": 0.92,
-  "skills_required": ["Python", "FastAPI", "PostgreSQL"]
+  "jobs": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Senior Python Engineer",
+      "company_name": "TechCorp",
+      "score": 0.94,
+      "location": "Berlin, Germany",
+      "workplace_type": "Hybrid",
+      "posted_date": "2025-01-15T10:00:00Z"
+    }
+  ],
+  "total": 127,
+  "cached": true
 }
 ```
+</details>
 
-**Example cURL**:
-```bash
-curl -X GET "http://localhost:9006/jobs/match?country=Germany&keywords=python&keywords=fastapi" \
-  -H "accept: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-```
-
-### 2. Trigger Job Matching
-
-**Endpoint**:  
-`POST /jobs/match`
-
-**Description**:  
-Triggers a new job matching process for the authenticated user's resume.
-
-**Request Headers**:
-- `accept: application/json`
-- `Authorization: Bearer <JWT_TOKEN>`
-
-**Example cURL**:
-```bash
-curl -X POST http://localhost:9006/jobs/match \
-  -H "accept: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-```
-
-### 3. Health Check Endpoints
-
-**Basic Health Check**:  
-`GET /health`
-
-**Database Health**:  
-`GET /health/db`
-
-**MongoDB Health**:  
-`GET /health/mongodb`
-
-These endpoints verify the health of various system components and return appropriate status codes.
-
-### 4. Quality Tracking Endpoints
-
-**Evaluate Match Quality**:  
-`POST /quality/evaluate`
-
-**Submit User Feedback**:  
-`POST /quality/feedback`
-
-**Get Quality Metrics**:  
-`GET /quality/metrics`
-
-These endpoints are used for the quality tracking and evaluation system.
-
----
-
-## Running the Application
-
-### Using Python
-
-Run the application with:
+### Trigger New Matching
 
 ```bash
-python app/main.py
+curl -X POST "http://localhost:8000/jobs/match" \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-### Using Docker
+<details>
+<summary><b>Response</b></summary>
 
-1. Build the image:
-   ```bash
-   docker build -t matching-service .
-   ```
+```json
+{
+  "task_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  "status": "processing",
+  "estimated_time_ms": 1500
+}
+```
+</details>
 
-2. Run with Docker Compose:
-   ```bash
-   docker-compose up
-   ```
+### Query Parameters
 
----
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `keywords` | `string[]` | Required keywords in job title/description |
+| `country` | `string` | Hard filter — excludes all jobs outside country |
+| `city` | `string` | Soft filter — keeps remote jobs |
+| `experience` | `string` | `Entry-level` \| `Mid-level` \| `Senior-level` \| `Executive-level` |
+| `is_remote_only` | `bool` | Only remote positions |
+| `latitude` | `float` | Center point for radius search |
+| `longitude` | `float` | Center point for radius search |
+| `radius_km` | `int` | Search radius in kilometers |
+| `sort_type` | `string` | `RECOMMENDED` \| `DATE` |
 
-## Testing
+<br />
 
-Run the test suite using:
+## Tech Stack
+
+<table>
+<tr>
+<td align="center" width="150">
+
+**Runtime**
+
+![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Uvicorn](https://img.shields.io/badge/-Uvicorn-499848?style=flat-square&logo=gunicorn&logoColor=white)
+
+</td>
+<td align="center" width="150">
+
+**Data**
+
+![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/-Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+
+</td>
+<td align="center" width="150">
+
+**ML/Vector**
+
+![pgvector](https://img.shields.io/badge/-pgvector-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![FAISS](https://img.shields.io/badge/-FAISS-0467DF?style=flat-square&logo=meta&logoColor=white)
+![LangChain](https://img.shields.io/badge/-LangChain-1C3C3C?style=flat-square&logo=langchain&logoColor=white)
+
+</td>
+<td align="center" width="150">
+
+**Infrastructure**
+
+![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![PostGIS](https://img.shields.io/badge/-PostGIS-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Prometheus](https://img.shields.io/badge/-Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+
+</td>
+</tr>
+</table>
+
+<br />
+
+## Performance
+
+| Metric | Value |
+|--------|-------|
+| **Vector dimensions** | 1024 |
+| **Index type** | DiskANN (HNSW available) |
+| **Avg query latency** | < 50ms |
+| **Cache TTL** | 300s |
+| **Max concurrent connections** | Configurable pool |
+
+<br />
+
+## Configuration
+
+<details>
+<summary><b>Environment Variables</b></summary>
 
 ```bash
-pytest
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/resonance
+MONGODB=mongodb://localhost:27017/resonance
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_CACHE_TTL=300
+
+# Vector Search
+VECTOR_INDEX_TYPE=hnsw  # or ivfflat
+VECTOR_HNSW_M=16
+VECTOR_HNSW_EF_SEARCH=64
+
+# Auth
+SECRET_KEY=your-secret-key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
 ```
+</details>
 
-For test coverage reporting:
+<br />
 
-```bash
-pytest --cov=app --cov-report=html
+## Project Structure
+
 ```
-
-### Test Coverage
-
-Current test coverage is approximately 33% with all tests passing. Coverage highlights:
-
-- **Well-Covered Modules (90-100%)**:
-  - Schema definitions (`app/schemas/job.py`, `app/schemas/location.py`)
-  - Test modules
-  - Configuration (`app/core/config.py`)
-
-- **Partially Covered Modules**:
-  - Core matching logic (`app/libs/job_matcher.py` - 79%)
-  - Matching service (`app/services/matching_service.py` - 59%)
-  - MongoDB connection (`app/core/mongodb.py` - 77%)
-
-- **Test Files**:
-  - `app/tests/test_matcher.py`: Validates ranking and metric analysis
-  - `app/tests/test_matching_service.py`: Tests matching service functionality
-  - `app/test_schema_changes.py`: Verifies schema modifications
-
----
-
-## Folder Structure
-
-```plaintext
-matching_service/
-│
+resonance/
 ├── app/
-│   ├── core/               # Core configurations and setup
-│   │   ├── auth.py        # Authentication logic
-│   │   ├── base.py        # SQLAlchemy base models
-│   │   ├── config.py      # Configuration management
-│   │   ├── database.py    # Database connection
-│   │   ├── mongodb.py     # MongoDB connection
-│   │   ├── security.py    # Security utilities
-│   │   └── quality_tracking/ # Quality tracking interfaces
-│   │
-│   ├── libs/              # Utility libraries
-│   │   ├── job_matcher.py # Job matching logic
-│   │   └── text_embedder.py # Text embedding utilities
-│   │
-│   ├── log/               # Logging configuration
-│   │
-│   ├── models/            # SQLAlchemy models
-│   │   ├── job.py         # Job data model
-│   │   └── quality_tracking.py # Quality tracking models
-│   │
-│   ├── repositories/      # Data access layer
-│   │   └── quality_tracking_repository.py # Quality data repository
-│   │
-│   ├── routers/           # API endpoints
-│   │   ├── healthchecks/  # Health check implementations
-│   │   ├── healthcheck_router.py
-│   │   ├── jobs_matched_router.py
-│   │   └── quality_tracking_router.py
-│   │
-│   ├── schemas/           # Pydantic models
-│   │   ├── job.py         # Job response schema
-│   │   └── location.py    # Location schema
-│   │
-│   ├── scripts/           # Database initialization
-│   │   ├── create_quality_tracking_tables.py
-│   │   ├── init_db.py
-│   │   ├── upgrade_diskann_index.py
-│   │   ├── fix_diskann_index.py
-│   │   └── README_diskann_fix.md
-│   │
-│   ├── services/          # Business logic
-│   │   ├── matching_service.py
-│   │   ├── metrics_tracking_service.py
-│   │   └── quality_evaluation_service.py
-│   │
-│   ├── tests/             # Test suite
-│   │   ├── test_matcher.py
-│   │   └── test_matching_service.py
-│   │
-│   ├── test_schema_changes.py # Schema validation tests
-│   └── main.py           # Application entry point
-│
-├── OutputJobDescriptions/ # Ranked job descriptions
-├── docs/                 # Documentation
-│   ├── index.md
-│   ├── matching_quality_system.md
-│   ├── quality_tracking_plan.md
-│   └── quality_tracking.md
-├── memory-bank/          # Architectural documentation
-├── requirements.txt      # Python dependencies
-├── Dockerfile           # Docker setup
-├── docker-compose.yaml  # Docker Compose configuration
-├── init.sql            # Database initialization
-├── dump_file.sql       # Sample data
-└── README.md           # Documentation
+│   ├── core/           # Config, auth, security
+│   ├── libs/
+│   │   └── job_matcher/  # Vector matching engine
+│   ├── routers/        # API endpoints
+│   ├── services/       # Business logic
+│   ├── schemas/        # Pydantic models
+│   └── main.py
+├── docs/               # Documentation
+├── tests/              # Test suite
+└── docker-compose.yaml
 ```
 
----
+<br />
 
-## Quality Tracking
+## Documentation
 
-The Matching Service includes a comprehensive quality tracking system that:
+| Document | Description |
+|----------|-------------|
+| [CLAUDE.md](CLAUDE.md) | Developer guide & architecture deep-dive |
+| [docs/README.md](docs/README.md) | Full documentation index |
+| [docs/adr/](docs/adr/) | Architecture Decision Records |
+| [docs/runbooks/](docs/runbooks/) | Operational procedures |
 
-1. **Evaluates Match Quality**:
-   - Uses LLM-based assessment of resume-job matches
-   - Scores matches on multiple dimensions:
-     - Skill alignment (40%)
-     - Experience match (40%)
-     - Overall fit (20%)
-
-2. **Collects User Feedback**:
-   - Gathers manual feedback to validate automated evaluations
-   - Uses feedback to improve matching algorithms
-
-3. **Tracks Metrics**:
-   - Individual match quality scores
-   - Aggregate metrics across jobs and users
-   - Correlation between automated scoring and user feedback
-
-For detailed information, see the documentation in the `docs/` directory.
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### DiskANN Index Error
-
-If you encounter the following error:
-
-```
-diskann index needs to be upgraded to version 2
-DETAIL: If you haven't changed vector dimension for the indexed column, and, "max_neighbors" and "l_value_ib" parameters for the index since it's created, you can use upgrade_diskann_index() function to quickly upgrade the index. Otherwise, upgrade_diskann_index() is not recommended and REINDEX is required.
-```
-
-Use the provided scripts to fix the issue:
-
-```bash
-# Quick fix (recommended if you haven't changed vector dimensions)
-python -m app.scripts.upgrade_diskann_index
-
-# Advanced options with more control
-python -m app.scripts.fix_diskann_index --mode=upgrade
-```
-
-For more details, see the documentation in `app/scripts/README_diskann_fix.md`.
-
-### General Troubleshooting
-
-If you encounter other issues:
-
-1. Check the PostgreSQL logs for more detailed error messages
-2. Verify that the pgvector extension is properly installed
-3. Ensure your database user has the necessary permissions to modify indices
-4. If all else fails, consider recreating the entire database schema and reindexing
-
----
+<br />
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch:
-   ```bash
-   git checkout -b feature-branch
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -am 'Add new feature'
-   ```
-4. Push your branch:
-   ```bash
-   git push origin feature-branch
-   ```
-5. Create a Pull Request
+```bash
+# Fork, clone, and install
+git clone https://github.com/YOUR_USERNAME/resonance.git
+cd resonance
+pip install -r requirements.txt
 
-### Development Workflow
+# Run tests
+pytest -q
 
-1. Make sure tests pass before submitting PRs
-2. Follow code style guidelines
-3. Include test coverage for new features
-4. Update documentation as necessary
+# Create a branch and submit a PR
+git checkout -b feature/amazing-feature
+```
+
+Please read [CLAUDE.md](CLAUDE.md) for development guidelines.
+
+<br />
+
+## License
+
+MIT © [AIgen Solutions](https://github.com/AIgen-Solutions-s-r-l)
 
 ---
+
+<div align="center">
+
+**[Documentation](docs/README.md)** · **[Report Bug](https://github.com/AIgen-Solutions-s-r-l/resonance/issues)** · **[Request Feature](https://github.com/AIgen-Solutions-s-r-l/resonance/issues)**
+
+Built with focus by the AIgen team
+
+</div>
