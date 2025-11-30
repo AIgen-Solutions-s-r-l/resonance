@@ -8,7 +8,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg?style=for-the-badge)](#license)
 
 <br />
 
@@ -354,7 +354,7 @@ Please read [CLAUDE.md](CLAUDE.md) for development guidelines.
 
 ## License
 
-MIT © [AIgen Solutions](https://github.com/AIgen-Solutions-s-r-l)
+Proprietary © [AIgen Solutions S.r.l.](https://github.com/AIgen-Solutions-s-r-l) — All rights reserved.
 
 ---
 
