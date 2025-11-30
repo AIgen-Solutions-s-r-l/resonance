@@ -118,4 +118,4 @@ Siamo aperti ai contributi! Segui questi passaggi per contribuire:
 
 ## Licenza
 
-Questo progetto è rilasciato sotto la licenza [Nome Licenza]. Vedi il file [LICENSE](./LICENSE) per più dettagli.
+Questo progetto è rilasciato sotto licenza. Contatta i maintainer per dettagli sulla licenza.
