@@ -94,6 +94,54 @@ class MLConfig(BaseSettings):
         description="Probability of masking skills"
     )
 
+    # Cross-Encoder Reranking (Phase 4)
+    cross_encoder_model: str = Field(
+        default="cross-encoder/ms-marco-MiniLM-L-6-v2",
+        description="Cross-encoder model for reranking"
+    )
+    cross_encoder_max_length: int = Field(
+        default=512,
+        description="Maximum sequence length for cross-encoder"
+    )
+    cross_encoder_batch_size: int = Field(
+        default=32,
+        description="Batch size for cross-encoder inference"
+    )
+    rerank_top_k_retrieve: int = Field(
+        default=100,
+        description="Number of candidates to retrieve for reranking"
+    )
+    rerank_top_k_final: int = Field(
+        default=25,
+        description="Number of final results after reranking"
+    )
+    cross_encoder_weight: float = Field(
+        default=0.5,
+        description="Weight for cross-encoder score in final ranking"
+    )
+    bi_encoder_weight: float = Field(
+        default=0.3,
+        description="Weight for bi-encoder score in final ranking"
+    )
+    skill_graph_weight: float = Field(
+        default=0.2,
+        description="Weight for skill graph score in final ranking"
+    )
+
+    # Pipeline Feature Flags (Phase 4)
+    use_cross_encoder: bool = Field(
+        default=True,
+        description="Enable cross-encoder reranking"
+    )
+    use_skill_graph: bool = Field(
+        default=True,
+        description="Enable skill graph enrichment"
+    )
+    use_explainability: bool = Field(
+        default=True,
+        description="Enable match explanations"
+    )
+
     # Paths
     models_dir: Path = Field(
         default=Path("models"),
