@@ -6,7 +6,8 @@ This directory contains High-Level Design (HLD) documents for complex features i
 
 | Feature | Version | Status | Date |
 |---------|---------|--------|------|
-| [Resonance v2 Matching Evolution](resonance-v2-matching-evolution-v1.0.md) | v1.0 | Draft | 2025-12-01 |
+| [Resonance v2 Matching Evolution](resonance-v2-matching-evolution-v1.0.md) | v1.0 | Implemented | 2025-12-01 |
+| [Phase 4: Cross-Encoder Reranking](phase4-cross-encoder-reranking-v1.0.md) | v1.0 | Implemented | 2025-12-01 |
 
 ---
 
